@@ -11,4 +11,11 @@ class Test extends BaseModel
     protected $guarded = [];
 
     protected $hidden = [];
+
+    protected $with = ['organization'];
+
+    public function organization()
+    {
+        return $this->belongsTo('\App\Gradlead\Organization');
+    }
 }

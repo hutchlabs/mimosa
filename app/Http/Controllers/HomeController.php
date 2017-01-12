@@ -12,6 +12,6 @@ class HomeController extends Controller
     public function show()
     {
         $tenant = Test::first();        
-        return view('welcome', array('name'=>$tenant->name));
+        return view('welcome', array('name'=>$tenant->organization->name));
     }
 }
