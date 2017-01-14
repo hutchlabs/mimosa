@@ -39743,8 +39743,7 @@ require('./bootstrap');
 
 require('./components/Users.vue');
 require('./components/Organizations.vue');
-//Vue.component('example', require('./components/Example.vue'));
-
+require('./components/Badges.vue');
 
 var app = new Vue({
   el: '#app',
@@ -39754,7 +39753,7 @@ var app = new Vue({
   }
 });
 
-},{"./bootstrap":7,"./components/Organizations.vue":11,"./components/Users.vue":12}],7:[function(require,module,exports){
+},{"./bootstrap":7,"./components/Badges.vue":11,"./components/Organizations.vue":12,"./components/Users.vue":13}],7:[function(require,module,exports){
 'use strict';
 
 window._ = require('lodash');
@@ -39806,7 +39805,7 @@ Vue.http.interceptors.push(function (request, next) {
 require('./common/bootstrap');
 require('./forms/bootstrap');
 
-},{"./common/bootstrap":8,"./forms/bootstrap":13,"bootstrap-sass":1,"jquery":2,"lodash":3,"vue-resource":4,"vue/dist/vue.js":5}],8:[function(require,module,exports){
+},{"./common/bootstrap":8,"./forms/bootstrap":14,"bootstrap-sass":1,"jquery":2,"lodash":3,"vue-resource":4,"vue/dist/vue.js":5}],8:[function(require,module,exports){
 'use strict';
 
 require('./notifications');
@@ -39902,6 +39901,118 @@ window.Notifications = Vue.extend({
 });
 
 },{}],11:[function(require,module,exports){
+Vue.component('gradlead-badges-screen', {
+
+    mounted: function() {
+        this.getBadges();
+    },
+
+    data: function() {
+        return {
+            badges: [],
+
+            editingBadge: {'name':'none'},
+            removingBadgeId: null,
+
+            forms: {
+                addBadge: new SparkForm ({
+                    name: '',
+                    description: '',
+                    uploaded_file: '',
+                }),
+
+                updateBadge: new SparkForm ({
+                    name: '',
+                    description: '',
+                    uploaded_file: '',
+                }),
+            }
+        };
+    },
+
+    events: {
+        'badgesUpdated': function(newusers) {
+            this.getBadges();
+         }
+    },
+
+    computed: {
+    },
+
+    methods: {
+        addBadge: function () {
+            this.forms.addBadge.name = '';
+            this.forms.addBadge.description = '';
+            this.forms.addBadge.uploaded_file = '';
+            $('#modal-add-badge').modal('show');
+        },
+        editBadge: function (badge) {
+            this.editingBadge = badge;
+            this.forms.updateBadge.name = badge.name;
+            this.forms.updateBadge.description = badge.description;
+            this.forms.updateBadge.uploaded_file = '';
+            $('#modal-edit-badge').modal('show');
+        },
+
+        removingBadge: function(id) { return (this.removingBadgeId == id); },
+
+        removeFromList: function (list, item) {
+            return _.reject(list, function (i) {
+                return i.id === item.id;
+            });
+        },
+
+        // Ajax calls
+        addNewBadge: function () {
+            var self = this;
+            Spark.post('/mimosa/api/badges', this.forms.addBadge)
+                .then(function () {
+                    $('#modal-add-badge').modal('hide');
+                    self.getBadges();
+                }, function(resp) {
+                    self.forms.addBadge.busy = false;
+                    NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
+                });
+        },
+        updateBadge: function () {
+            var self = this;
+            Spark.put('/mimosa/api/badges/' + this.editingBadge.id, this.forms.updateBadge)
+                .then(function () {
+                    self.getBadges();
+                    $('#modal-edit-badge').modal('hide');
+                });
+        },
+        removeBadge: function (badge) {
+            var self = this;
+            self.removingBadgeId = badge.id;
+
+            this.$http.delete('/mimosa/api/badges/' + badge.id)
+                .then(function () {
+                    self.removingBadgeId = 0;
+                    self.badges = self.removeFromList(this.badges, badge);
+                }, function(resp) {
+                    self.removingBadgeId = 0;
+                    NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
+                });
+        },
+        
+        getBadges: function () {
+            var self = this;
+            this.$http.get('/mimosa/api/badges')
+                .then(function (resp) {
+                    self.badges = resp.data;
+                });
+        },
+    },
+
+    filters: {
+        capitalize: function(value) {
+            return value[0].toUpperCase() + value.substring(1);
+        },
+    },
+});
+
+},{}],12:[function(require,module,exports){
 Vue.component('gradlead-orgs-screen', {
 
     mounted: function() {
@@ -39996,7 +40107,7 @@ Vue.component('gradlead-orgs-screen', {
             this.$http.delete('/mimosa/api/organizations/' + org.id)
                 .then(function () {
                     self.removingOrganizationId = 0;
-                    self.users = self.removeFromList(this.users, user);
+                    self.organizations = self.removeFromList(this.organizations, org);
                 }, function(resp) {
                     self.removingOrganizationId = 0;
                     NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
@@ -40022,7 +40133,7 @@ Vue.component('gradlead-orgs-screen', {
     },
 });
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 Vue.component('gradlead-users-screen', {
 
     mounted: function() {
@@ -40184,7 +40295,7 @@ Vue.component('gradlead-users-screen', {
     },
 });
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -40207,7 +40318,7 @@ $.extend(Spark, require('./http'));
  */
 require('./components');
 
-},{"./components":14,"./errors":15,"./http":16,"./instance":17}],14:[function(require,module,exports){
+},{"./components":15,"./errors":16,"./http":17,"./instance":18}],15:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-text', {
@@ -40387,7 +40498,7 @@ Vue.component('spark-select', {
     }
 });
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -40454,7 +40565,7 @@ window.SparkFormErrors = function () {
     };
 };
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -40494,7 +40605,7 @@ module.exports = {
     }
 };
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 
 /**

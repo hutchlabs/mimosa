@@ -14,8 +14,7 @@ require('./bootstrap');
 
 require('./components/Users.vue');
 require('./components/Organizations.vue');
-//Vue.component('example', require('./components/Example.vue'));
-
+require('./components/Badges.vue');
 
 const app = new Vue({
     el: '#app',

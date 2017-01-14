@@ -92,7 +92,7 @@ Vue.component('gradlead-orgs-screen', {
             this.$http.delete('/mimosa/api/organizations/' + org.id)
                 .then(function () {
                     self.removingOrganizationId = 0;
-                    self.users = self.removeFromList(this.users, user);
+                    self.organizations = self.removeFromList(this.organizations, org);
                 }, function(resp) {
                     self.removingOrganizationId = 0;
                     NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
