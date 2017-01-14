@@ -22,7 +22,7 @@
                 <tbody>
                     <tr v-for="b in badges">
 
-                        <td class="spark-table-pad"> <img src="" /></td>
+                        <td class="spark-table-pad"> <img src="/mimosa/badges/image/" /></td>
                         <td class="spark-table-pad"> @{{ b.name }} </td>
                         <td class="spark-table-pad"> @{{ b.description }} </td>
                         <td class="spark-table-pad"> @{{ b.numachievements }} </td>

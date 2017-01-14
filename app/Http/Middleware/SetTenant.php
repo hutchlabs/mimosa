@@ -19,7 +19,8 @@ class SetTenant
     {
         // get subdomain
         $parsedUrl =  parse_url($_SERVER['HTTP_HOST']);
-        $host = explode('.', $parsedUrl['path']);
+        $idx = (isset($parsedUrl['path'])) ? 'path' : 'host';
+        $host = explode('.', $parsedUrl[$idx]);
         $subdomain = $host[0];
 
         // get tenant info

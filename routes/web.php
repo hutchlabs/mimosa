@@ -10,8 +10,6 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-
 Route::group(['middleware' => 'web'], function ($router) {
         Auth::routes();
 
@@ -20,6 +18,7 @@ Route::group(['middleware' => 'web'], function ($router) {
 
         // Routes
         $router->get('badges',       'BadgeController@index');
+        $router->get('badges/image/{id}',       'BadgeController@badgeImage');
         $router->post('badges',      'BadgeController@store');
         $router->put('badges/{id}',  'BadgeController@update');
         $router->delete('badges/{id}',  'BadgeController@destroy');
@@ -32,9 +31,8 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->get('organizations',               'OrganizationController@index');
         $router->post('organizations',              'OrganizationController@store');
         $router->post('organizations/addaffiliate', 'OrganizationController@storeAffiliate');
-        $router->put('organizations/{id}',  'OrganizationController@update');
-        $router->delete('organizations/{id}',  'OrganizationController@destroy');
+        $router->put('organizations/{id}',          'OrganizationController@update');
+        $router->delete('organizations/{id}',       'OrganizationController@destroy');
 
         $router->get('roles',  function() { return \App\Gradlead\Role::all(); });
 });
-

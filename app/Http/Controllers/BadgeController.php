@@ -24,6 +24,22 @@ class BadgeController extends Controller
         return response()->json($badges);
     }
 
+    public function badgeImage(Request $request, $badgeId) 
+    {
+        $b = Badge::findOrFail($badgeId);
+
+        if ($b) {
+            $contents = Storage::get($b->file_path);
+            // send the right headers
+            header("Content-Type: image/png");
+            header("Content-Length: " . Storage::size($b->file_path));
+
+            // dump the picture and stop the script
+            echo $contents;
+        }
+        exit;
+    }
+
     public function store(Request $request)
     {
         $user = $request->user();
@@ -100,7 +116,7 @@ class BadgeController extends Controller
         $ONE_MEGA_BYTE = 1048576;
 
         list($type, $data) = explode(';', $request->uploaded_file);
-        $ext = str_replace($type,'data:image/','');
+        $ext = str_replace('data:image/','',$type);
         $name = md5($data.time()).'.'.$ext;;
         $path = 'files/badges/'.$name;
 
