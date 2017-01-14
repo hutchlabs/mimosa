@@ -15,7 +15,7 @@ class CreateOrganizationsTable extends Migration
     {
         Schema::create('organizations', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('subdomain')->unique();
+            $table->string('subdomain');
             $table->string('name')->unique();
             $table->integer('modified_by');
             $table->timestamp('created_at')->useCurrent();

@@ -13,15 +13,19 @@ class UsersTableSeeder extends Seeder
     {
         DB::table('users')->insert([
             'name' => 'Super Admin', 
-            'email' => 'uber@gmail.com',
+            'email' => 'uber@gradlead.com',
+            'organization_id' => '1',
             'role_id' => '1',
+            'type' => 'gradlead',
             'password' => bcrypt('uber'),
         ]);
 
         DB::table('users')->insert([
             'name' => 'Admin', 
-            'email' => 'admin@gmail.com',
+            'email' => 'admin@ashesi.edu',
             'role_id' => '2',
+            'organization_id' => '2',
+            'type' => 'school',
             'password' => bcrypt('admin'),
         ]);
     }
