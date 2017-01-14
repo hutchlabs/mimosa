@@ -7,3 +7,21 @@
 
 // Bootstrap
 @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+
+.notifications {
+    position: absolute;
+    z-index: 101;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background: transparent;
+    text-align: center;
+    line-height: 2.5;
+    overflow: hidden;
+}
+
+.notification p {
+    padding:10px;
+    line-height: 1.3;
+}
+

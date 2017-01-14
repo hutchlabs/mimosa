@@ -16,8 +16,10 @@ require('bootstrap-sass');
  * and simple, leaving you to focus on building your next great project.
  */
 
-window.Vue = require('vue');
+//window.Vue = require('vue');
+window.Vue = require('vue/dist/vue.js') 
 require('vue-resource');
+
 
 /**
  * We'll register a HTTP interceptor to attach the "CSRF" header to each of
@@ -27,7 +29,6 @@ require('vue-resource');
 
 Vue.http.interceptors.push((request, next) => {
     request.headers.set('X-CSRF-TOKEN', Laravel.csrfToken);
-
     next();
 });
 
@@ -43,3 +44,7 @@ Vue.http.interceptors.push((request, next) => {
 //     broadcaster: 'pusher',
 //     key: 'your-pusher-key'
 // });
+//
+
+require('./common/bootstrap');
+require('./forms/bootstrap');

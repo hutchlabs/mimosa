@@ -6,18 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Gradlead\Test;
 
-class HomeController extends Controller
+class WelcomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     /**
      * Show the application dashboard.
      *
@@ -26,6 +16,6 @@ class HomeController extends Controller
     public function index()
     {
         $tenant = Test::first();        
-        return view('home', array('name'=>$tenant->organization->name));
+        return view('welcome', array('name'=>$tenant->organization->name));
     }
 }
