@@ -1,0 +1,19 @@
+.main-container{
+    padding-top: 60px;
+    padding-left: 100px;
+}
+
+.nav-tabs{
+    width:900px;
+}
+
+.tab-stuff{
+    cursor: pointer;
+}
+.tab-bdy{
+    width: 900px;
+    height: 600px;
+    padding: 15px;
+    margin: 25px;
+    background: #ffffff;
+}

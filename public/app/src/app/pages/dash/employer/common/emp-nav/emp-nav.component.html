@@ -1,0 +1,52 @@
+<div class="nav-container">
+
+  <nav class="top-bar overlay-bar offscreen-menu">
+    <div class="container reveal-nav">
+
+
+      <div class="row nav-menu clearfix" style="margin-left: 350px;">
+        <div class="col-sm-2 col-xs-6">
+          <a href="index.html">
+            <img class="logo logo-light" alt="Logo" src="dist/assets/img/logo-light.png">
+            <img class="logo logo-dark" alt="Logo" src="dist/assets/img/logo-dark.png">
+          </a>
+        </div>
+
+        <div class="col-sm-9 col-md-10 columns">
+          <ul class="menu" style="margin-left: 380px;">
+
+            <li class=""><a style="cursor: pointer" routerLink="/jobsearch" routerLinkActive="active">POST A JOB</a></li>
+
+            <li class="" style="bottom: 15px;">
+              <a href="#" class="dropdown-toggle profile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img style="width: 40px; height: 40px;" src="dist/assets/images/users/avatar-1.jpg" alt="user-img" class="img-circle"><span style="margin-left: 10px;" class="caret"></span> </a>
+              <ul class="dropdown-menu">
+                <li><a href="#" style="color: #000;">Profile</a></li>
+                <li><a href="#" style="color: #000;">Settings</a></li>
+                <li><a href="#" style="color: #000;">Logout</a></li>
+              </ul>
+            </li>
+
+          </ul>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <hr class="no-margin">
+        </div>
+      </div>
+
+    </div>
+
+    <div class="offscreen-container reveal-nav">
+      <ul class="menu" style="right: 20px;">
+        <li><a style="cursor: pointer"  [routerLink]="['dashboard']" routerLinkActive="active" class="inner-link"> <i style="left: 5px; font-size: 25px;" class="glyphicon glyphicon-home"></i> Home</a></li>
+        <li><a style="cursor: pointer"  [routerLink]="['listings']" routerLinkActive="active" class="inner-link"><i style="left: 5px; font-size: 25px;" class="glyphicon glyphicon-file"></i>Jobs</a></li>
+        <li><a style="cursor: pointer"  [routerLink]="['prices']" routerLinkActive="active" class="inner-link"><i style="left: 5px; font-size: 25px;" class="glyphicon glyphicon-tags"></i>Prices</a></li>
+        <li><a style="cursor: pointer"  [routerLink]="['profile']" routerLinkActive="active" class="inner-link"><i style="left: 5px; font-size: 25px;" class="glyphicon glyphicon-user"></i>Profile</a></li>
+        <li><a style="cursor: pointer"  [routerLink]="['events']" routerLinkActive="active" class="inner-link"><i style="left: 5px; font-size: 25px;" class="glyphicon glyphicon-calendar"></i>Events</a></li>
+
+      </ul>
+    </div>
+  </nav>
+</div>

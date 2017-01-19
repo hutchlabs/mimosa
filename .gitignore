@@ -17,3 +17,5 @@ bootstrap/cache/
 # local development
 resources/views/production/
 resources/views/vendors/
+
+.idea/*

@@ -1,0 +1,12 @@
+.main-container{
+    padding-top: 80px;
+    padding-left: 180px;
+}
+
+.nav-tabs{
+    width:600px;
+}
+
+.tab-stuff{
+    cursor: pointer;
+}
