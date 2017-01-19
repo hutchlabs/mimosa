@@ -22,6 +22,10 @@ import { EmpHomeComponent } from '../pages/dash/employer/emp-home/emp-home.compo
 import { StDashboardComponent } from '../pages/dash/student/st-dashboard/st-dashboard.component';
 import { StProfileComponent } from '../pages/dash/student/st-profile/st-profile.component';
 import { StSettingsComponent } from '../pages/dash/student/st-settings/st-settings.component';
+import { StHomeComponent } from '../pages/dash/student/st-home/st-home.component';
+import { StJobsComponent }  from '../pages/dash/student/st-jobs/st-jobs.component';
+import { StEmployerComponent } from '../pages/dash/student/st-employer/st-employer.component';
+
 import { EmployerRoutingComponent } from '../employer-routing/employer-routing.component';
 
 import { AdminCMSComponent} from '../pages/dash/admin/admin-cms/admin-cms.component';
@@ -38,6 +42,7 @@ import { SchJobListingsComponent } from '../pages/dash/school/sch-job-listings/s
 import { SchProfileComponent } from '../pages/dash/school/sch-profile/sch-profile.component';
 import { SchSettingsComponent } from '../pages/dash/school/sch-settings/sch-settings.component';
 import { SchStudentsComponent } from '../pages/dash/school/sch-students/sch-students.component';
+import { SchPricesComponent } from '../pages/dash/school/sch-prices/sch-prices.component';
 
 
 import { AuthGuardService } from '../pages/main/login/auth-guard.service';
@@ -67,16 +72,18 @@ const appRoutes: Routes = [
   { path: 'student',canActivate: [AuthGuardService], component: StDashboardComponent  ,
     children: [
       { path: '',   redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: EmpHomeComponent },
-      { path: 'profile', component: ProfileComponent },
-      { path: 'settings', component: EventsComponent }
+      { path: 'dashboard', component: StHomeComponent },
+      { path: 'profile', component: StProfileComponent },
+      { path: 'settings', component: StSettingsComponent },
+      { path: 'jobs', component: StJobsComponent },
+      { path: 'employers', component: StEmployerComponent }
     ]},
   { path: 'school',canActivate: [AuthGuardService], component: ScDashboardComponent  ,
     children: [
       { path: '',   redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: SchHomeComponent },
       { path: 'listings', component: SchJobListingsComponent },
-      { path: 'prices', component: PriceListingsComponent },
+      { path: 'prices', component: SchPricesComponent },
       { path: 'profile', component: SchProfileComponent },
       { path: 'students', component: SchStudentsComponent },
       { path: 'settings', component: SchSettingsComponent }

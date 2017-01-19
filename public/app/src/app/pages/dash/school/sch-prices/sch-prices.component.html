@@ -1,0 +1,150 @@
+<div class="main-container">
+
+  <section>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <h2>First, choose your exposure plan</h2>
+          <h4>We have two tiers of pricing depending on your exposure type. See which is perfect for you.</h4>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="opt-select">
+                <h2>Candidate exposure on a single portal *</h2>
+                <form>
+                  <select class="select-input">
+                    <option>School A</option>
+                    <option>School B</option>
+                    <option>School C</option>
+                    <option>School D</option>
+                  </select>
+                </form>
+                <br><br>
+                <h5>Select a Payment Plan to highlight the job in the whole network</h5>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="opt-select">
+                <h2>Candidate exposure on a all portal *</h2>
+                <h3>All Gradlead Portals</h3>
+                <br><br>
+                <h6>Select a Payment Plan to highlight the job in the whole network</h6>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+
+  <section class="pricing-1 bg-secondary-1">
+    <div class="container">
+      <div class="row clearfix pricing-tables">
+        <h2 style="color: #ffffff">Next, choose your price plan</h2>
+
+        <div class="col-md-3  col-sm-6 no-pad-right">
+          <div class="pricing-table" [ngClass]="{'emphasis': planOne }">
+            <div class="price">
+              <span class="sub">GHC</span>
+              <span class="amount">299</span>
+              <span class="sub">/mo</span>
+            </div>
+            <ul class="features">
+              <li>Your job is online for up to 10 days</li>
+            </ul>
+            <a style="cursor: pointer" (click)="choosePlan('1')" class="btn btn-primary btn-white">Choose this plan</a>
+          </div>
+        </div>
+
+        <div class="col-md-3  col-sm-6 no-pad">
+          <div class="pricing-table" [ngClass]="{'emphasis': planTwo }">
+            <div class="price">
+              <span class="sub">GHC</span>
+              <span class="amount">399</span>
+              <span class="sub">/mo</span>
+            </div>
+            <ul class="features">
+              <li>Send notifications to 5 candidates</li>
+              <li>Your job is online for up to 30 days</li>
+            </ul>
+            <a style="cursor: pointer" (click)="choosePlan('2')" class="btn btn-primary btn-white">Choose this plan</a>
+          </div>
+        </div>
+
+        <div class="col-md-3  col-sm-6 no-pad">
+          <div class="pricing-table emphasis" [ngClass]="{'emphasis': planThree }">
+            <div class="price">
+              <span class="sub">GHC</span>
+              <span class="amount">499</span>
+              <span class="sub">/mo</span>
+            </div>
+            <ul class="features">
+              <li>Send notifications to 15 candidates</li>
+              <li>Prime placement for 30 days</li>
+              <li>Dedicated editorial support</li>
+            </ul>
+            <a style="cursor: pointer" (click)="choosePlan('3')" class="btn btn-primary btn-white">Choose this plan</a>
+          </div>
+        </div>
+
+        <div class="col-md-3  col-sm-6 no-pad-left">
+          <div class="pricing-table" [ngClass]="{'emphasis': planFour }">
+            <div class="price">
+              <span class="sub">GHC</span>
+              <span class="amount">599</span>
+              <span class="sub">/mo</span>
+            </div>
+            <ul class="features">
+              <li>E-mails to relevant candidates</li>
+              <li>Send notifications to 25 candidates</li>
+              <li>Prime placement for 30 days</li>
+              <li>Dedicated editorial support</li>
+              <li>Your job is online for up to 30 days</li>
+            </ul>
+            <a style="cursor: pointer" (click)="choosePlan('4')" class="btn btn-primary btn-white">Choose this plan</a>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+  </section>
+
+  <section class="primary-features duplicatable-content">
+    <div class="container">
+      <div class="row">
+
+        <div class="col-md-4 col-sm-6 clearfix">
+          <div class="feature feature-icon-small">
+            <p class="text-white">
+              Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labor.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6 clearfix">
+          <div class="feature feature-icon-small">
+            <p class="text-white">
+              Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labor.
+            </p>
+          </div>
+
+        </div><div class="col-md-4 col-sm-6 clearfix">
+        <div class="feature feature-icon-small">
+          <p class="text-white">
+            Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labor.
+          </p>
+        </div>
+      </div>
+
+      </div>
+
+    </div>
+  </section>
+
+</div>

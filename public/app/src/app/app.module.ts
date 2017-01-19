@@ -50,6 +50,10 @@ import { AdminJobsComponent } from './pages/dash/admin/admin-jobs/admin-jobs.com
 import { AdminCMSComponent } from './pages/dash/admin/admin-cms/admin-cms.component';
 import { AdminHomeComponent } from './pages/dash/admin/admin-home/admin-home.component';
 import { SchoolsComponent } from './pages/main/schools/schools.component';
+import { SchPricesComponent } from './pages/dash/school/sch-prices/sch-prices.component';
+import { StHomeComponent } from './pages/dash/student/st-home/st-home.component';
+import { StJobsComponent } from './pages/dash/student/st-jobs/st-jobs.component';
+import { StEmployerComponent } from './pages/dash/student/st-employer/st-employer.component';
 
 @NgModule({
   declarations: [
@@ -93,7 +97,11 @@ import { SchoolsComponent } from './pages/main/schools/schools.component';
     AdminJobsComponent,
     AdminCMSComponent,
     AdminHomeComponent,
-    SchoolsComponent
+    SchoolsComponent,
+    SchPricesComponent,
+    StHomeComponent,
+    StJobsComponent,
+    StEmployerComponent
   ],
   imports: [
     BrowserModule,
