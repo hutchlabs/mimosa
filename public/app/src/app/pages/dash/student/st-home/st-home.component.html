@@ -6,23 +6,71 @@
         <h2>Your Dashboard</h2>
         <div class="col-md-4">
           <div class="profile-card">
-            <img alt="Client Logo" class="img-circle" src="dist/assets/images/users/avatar-1.jpg">
-            <h4>John Doe</h4>
-            <h5>john@gmail.com</h5>
+            <img alt="Client Logo" style="width: 80px; height: 80px; margin-bottom: 60px;" class="img-circle" src="dist/assets/images/users/avatar-1.jpg">
+            <div style="display: inline-block; margin-left: 15px;">
+              <h4>John Doe</h4>
+              <h6>john@gmail.com</h6>
+              <a style="cursor:pointer;" >Edit profile</a>
+            </div>
+
+            <h6>Job Alert</h6>
+            <a style="cursor:pointer;" ><i class="glyphicon glyphicon-plus"></i> Create Job Alert</a>
+            <h6 style="margin-top: 20px;">Dashboard display</h6>
+
+            <form>
+              <div class="checkbox">
+                <label><input type="checkbox" value="true">Followed Companies</label>
+              </div>
+
+              <div class="checkbox">
+                <label><input type="checkbox" value="true">Bookmarked Jobs</label>
+              </div>
+
+              <div class="checkbox">
+                <label><input type="checkbox" value="true">Applied Jobs</label>
+              </div>
+            </form>
+
+            <h6>Recommendations</h6>
+
+            <h4 style="margin-bottom: 20px;">Recommended Jobs</h4>
+
+            <h4>Recommended Companies</h4>
+
           </div>
         </div>
         <div class="col-md-8">
+          <h4>Recommended Jobs</h4>
+
           <div class="results-pan">
             <div class="result-card">
               <img alt="Client Logo" class="img-circle" src="dist/assets/images/users/avatar-1.jpg">
-              <h3>Nestle Ghana</h3>
-              <h4>Full time job at Nestle Ghana</h4>
+              <div style="display: inline-block;">
+                <h3>Nestle Ghana</h3>
+                <h4>Full time job </h4>
+                <h5>Accra, Ghana</h5>
+              </div>
 
               <h4>Be a part of our Client Management team and join us in areas of innovation, forecasting, brand & market understanding. Are you the curious bright mind we are looking for?</h4>
 
-              <h5>Posted an hour ago</h5>
             </div>
+          </div>
 
+          <h4>Recommended Companies</h4>
+          <div class="results-pan">
+            <div class="result-card" style="height: 180px;">
+              <img alt="Client Logo" style="margin-bottom: 150px;" class="img-circle" src="dist/assets/images/users/avatar-1.jpg">
+              <div style="display: inline-block; margin-left: 20px;">
+                <h3>Nestle Ghana</h3>
+                <h4>Full time job at Nestle Ghana</h4>
+
+                <div style="margin-left: 450px;">
+                  <h5> Follow <i class="material-icons">person_add</i></h5>
+                  <h6>Followers</h6>
+                  <h6>Number of Jobs</h6>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
