@@ -1,5 +1,68 @@
 .profile-card{
-    width: 350px;
+    width: 320px;
+    height: 120px;
     padding: 15px;
-    margin: 25px 25px 25px 105px;
+    background: #ffffff;
+    margin: 25px 25px 25px 5px;
+}
+
+.upload-card{
+    width: 320px;
+    height: 120px;
+    padding: 15px;
+    background: #ffffff;
+    margin: 25px 25px 25px 5px;
+}
+
+.pub-btn{
+    width: 320px;
+    height: 50px;
+    border: 2px solid #4CAF50;
+    color: #4caf50;
+    background-color: white;
+}
+
+.pub-btn:hover{
+    background-color: #4caf50;
+    color: white;
+
+}
+
+.result-pan{
+    width: 1000px;
+}
+.result-card{
+    width: 799px;
+    padding: 15px;
+    margin: 25px;
+    background: #ffffff;
+}
+
+.result-card > img{
+    width: 100px;
+    height: 100px;
+}
+.result-card > h3{
+    display: inline-block;
+}
+
+h6{
+    font-size: 12px;
+}
+h5{
+    margin-bottom: 0;
+    font-size: 18px;
+    font-weight:200;
+}
+.lines{
+    width: 750px;
+}
+.add-icon{
+    cursor: pointer;
+    font-size: 50px;
+    color: #949393;
+}
+.skill-input{
+    width: 780px;
+    height: 40px;
 }
