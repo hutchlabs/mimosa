@@ -3,16 +3,75 @@
   <section>
     <div class="container">
       <div class="row">
-        <h2>Your Dashboard</h2>
+        <h2>My Profile</h2>
         <div class="col-md-4">
           <div class="profile-card">
+            <img alt="Client Logo" style="width: 80px; height: 80px; margin-bottom: 60px;" class="img-circle" src="dist/assets/images/users/avatar-1.jpg">
+            <div style="display: inline-block; margin-left: 15px;">
+              <h4>John Doe</h4>
+              <h6>john@gmail.com</h6>
+              <a style="cursor:pointer;" [routerLink]="['../../profile']" routerLinkActive="active" >Edit profile</a>
+            </div>
 
           </div>
+
+          <button class="pub-btn">View Public Profile</button>
+
+          <div class="upload-card">
+            <i class="material-icons" style=" font-size: 80px;color: #5F9EA0; background: #ffffff;">note_add</i>
+            <a style="cursor: pointer">Upload CV</a>
+          </div>
+
         </div>
         <div class="col-md-8">
+
+          <div class="results-pan">
+
+            <div class="result-card">
+              <div style="display: inline-block;">
+                <h6>My Summary</h6>
+                <hr class="lines">
+                <h4>Add a summary that describes you </h4>
+              </div>
+            </div>
+
+            <div class="result-card">
+              <div style="display: inline-block;">
+                <h6>My Education</h6>
+                <hr class="lines">
+                <h4> <i class="material-icons add-icon">add_circle_outline</i>Add new </h4>
+              </div>
+            </div>
+
+            <div class="result-card">
+              <div style="display: inline-block;">
+                <h6>My Work Experience</h6>
+                <hr class="lines">
+                <h4> <i class="material-icons add-icon">add_circle_outline</i>Add new </h4>
+              </div>
+            </div>
+
+            <div class="result-card">
+              <div style="display: inline-block;">
+                <h6>My Skills</h6>
+                <hr class="lines">
+                <input class="skill-input" placeholder="start typing skill" >
+              </div>
+            </div>
+
+            <div class="result-card">
+              <div style="display: inline-block;">
+                <h6>My languages</h6>
+                <hr class="lines">
+                <h4> <i class="material-icons add-icon">add_circle_outline</i>Add new </h4>
+              </div>
+            </div>
+
+          </div>
 
         </div>
       </div>
     </div>
   </section>
+
 </div>
