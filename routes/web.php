@@ -88,19 +88,24 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->delete('profiles/users/resume/{id}',       'ProfileController@destroyUserResume');   
         $router->delete('profiles/users/skill/{id}',        'ProfileController@destroyUserSkill');   
 
+        // Plans
+        $router->get('plans',                   'PlanController@index');
+        $router->post('plans',                  'PlanController@store');
+        $router->put('plans/{id}',              'PlanController@update');
+        $router->delete('plans/{id}',           'PlanController@destroy');
     
         // Badges
-        $router->get('badges',              'BadgeController@index');
-        $router->get('badges/image/{id}',   'BadgeController@badgeImage');
-        $router->post('badges',             'BadgeController@store');
-        $router->put('badges/{id}',         'BadgeController@update');
-        $router->delete('badges/{id}',      'BadgeController@destroy');
+        $router->get('badges',                  'BadgeController@index');
+        $router->get('badges/image/{id}',       'BadgeController@badgeImage');
+        $router->post('badges',                 'BadgeController@store');
+        $router->put('badges/{id}',             'BadgeController@update');
+        $router->delete('badges/{id}',          'BadgeController@destroy');
 
         // Events
-        $router->get('events',              'EventController@index');
-        $router->post('events',             'EventController@store');
-        $router->put('events/{id}',         'EventController@update');
-        $router->delete('events/{id}',      'EventController@destroy');
+        $router->get('events',                  'EventController@index');
+        $router->post('events',                 'EventController@store');
+        $router->put('events/{id}',             'EventController@update');
+        $router->delete('events/{id}',          'EventController@destroy');
     
         // System Methods
         $router->get('degrees',                 'SystemController@degrees');
