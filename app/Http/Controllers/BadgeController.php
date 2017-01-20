@@ -8,11 +8,6 @@ use App\Gradlead\Badge;
 
 class BadgeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('auth');
@@ -20,24 +15,14 @@ class BadgeController extends Controller
 
     public function index()
     {
-        $badges = Badge::all();        
-        return response()->json($badges);
+        $badges = Badge::all();
+        return $this->json_response($badges);
     }
 
     public function badgeImage(Request $request, $badgeId) 
     {
         $b = Badge::findOrFail($badgeId);
-
-        if ($b) {
-            $contents = Storage::get($b->file_path);
-            // send the right headers
-            header("Content-Type: image/png");
-            header("Content-Length: " . Storage::size($b->file_path));
-
-            // dump the picture and stop the script
-            echo $contents;
-        }
-        exit;
+        return $this->display_image($b->file_path);
     }
 
     public function store(Request $request)
@@ -45,16 +30,15 @@ class BadgeController extends Controller
         $user = $request->user();
 
         $this->validate($request, [
-                                   'name' => 'required|max:255|unique:badges,name',
-                                   'description' => 'required|max:255',
-                                   'uploaded_file' => 'required',
-                                  ]
-                                );
+           'name' => 'required|max:255|unique:badges,name',
+           'description' => 'required|max:255',
+           'image' => 'required|image',
+          ]
+        );
 
-        $fileInfo = $this->handleFileUpload($request);
+        $fileInfo = $this->handleFileUpload($request, 'image', 'files/badges/');
 
         if (is_array($fileInfo)) {
-            // Add badge
             $b = new Badge();
             $b->name = $request->name;
             $b->description = $request->description;
@@ -64,10 +48,10 @@ class BadgeController extends Controller
             $b->modified_by = $user->id;
             $b->save();
         } else {
-            return response()->json(['uploaded_file' => [$fileInfo]], 422);
+            return $this->json_response(['image'=>$fileInfo], true, 422);
         }
 
-        return $b;
+        return $this->json_response($b);
     }
 
     public function update(Request $request, $badgeId)
@@ -77,21 +61,21 @@ class BadgeController extends Controller
         $b = Badge::findOrFail($badgeId);
 
         $this->validate($request, [
-                                   'name' => 'required|max:255|unique:badges,name,'.$b->id,
-                                   'description' => 'required|max:255',
-                                   'uploaded_file' => 'present',
-                                  ]
-                                );
+           'name' => 'required|max:255|unique:badges,name,'.$b->id,
+           'description' => 'required|max:255',
+           'image' => 'present|image',
+          ]
+        );
 
         // update badge
-        if ($request->uploaded_file <> '') {
-            $fileInfo = $this->handleFileUpload($request);
+        if ($request->file('image') <> '') {
+            $fileInfo = $this->handleFileUpload($request, 'image', 'files/badges/');
             if (is_array($fileInfo)) {
                 $b->file_name = $fileInfo['name'];
                 $b->file_path = $fileInfo['path'];
                 $b->file_url = $fileInfo['url'];
             } else {
-                return response()->json(['uploaded_file' => [$fileInfo]], 422);
+                return $this->json_response(['image'=>$fileInfo], true, 422);
             }
         } 
 
@@ -100,35 +84,14 @@ class BadgeController extends Controller
         $b->modified_by = $user->id;
         $b->save();
 
-        return $b;
+        return $this->json_response($b);
     }
-
 
     public function destroy(Request $request, $badgeId)
     {
         $b = Badge::findOrFail($badgeId);
         $b->removeAchievements();
         $b->delete();
-    }
-
-    private function handleFileUpload(Request $request, $fileSizeLimit=20)
-    {
-        $ONE_MEGA_BYTE = 1048576;
-
-        list($type, $data) = explode(';', $request->uploaded_file);
-        $ext = str_replace('data:image/','',$type);
-        $name = md5($data.time()).'.'.$ext;;
-        $path = 'files/badges/'.$name;
-
-        $file = Storage::put($path, $request->uploaded_file);
-        $size = Storage::size($path);
-        $url = Storage::url($path);
-
-        if ($size > ($fileSizeLimit * $ONE_MEGA_BYTE)) {
-            Storage::delete($path);
-            return "File size exceeds {$fileSizeLimit}MB";
-        }
-        
-        return array('name'=>$name, 'path'=>$path, 'url'=>$url,'size'=>$size);
+        return $this->ok();
     }
 }

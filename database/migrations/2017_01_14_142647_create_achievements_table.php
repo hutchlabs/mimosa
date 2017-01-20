@@ -13,10 +13,10 @@ class CreateAchievementsTable extends Migration
      */
     public function up()
     {
-        Schema::create('badges_achievements', function (Blueprint $table) {
+        Schema::create('users_achievements', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('badge_id');
             $table->integer('user_id');
+            $table->integer('badge_id');
             $table->integer('modified_by');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
@@ -30,6 +30,6 @@ class CreateAchievementsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('badges_achievements');
+        Schema::dropIfExists('users_achievements');
     }
 }

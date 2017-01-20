@@ -28,5 +28,23 @@ class UsersTableSeeder extends Seeder
             'type' => 'school',
             'password' => bcrypt('admin'),
         ]);
+
+        DB::table('users')->insert([
+            'name' => 'Student', 
+            'email' => 'student@ashesi.edu',
+            'role_id' => '4',
+            'organization_id' => '2',
+            'type' => 'student',
+            'password' => bcrypt('student'),
+        ]);
+
+        DB::table('users')->insert([
+            'name' => 'Graduate', 
+            'email' => 'graduate@ashesi.edu',
+            'role_id' => '4',
+            'organization_id' => '2',
+            'type' => 'graduate',
+            'password' => bcrypt('graduate'),
+        ]);
     }
 }

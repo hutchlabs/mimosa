@@ -3,15 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Gradlead\Organization;
+use App\Gradlead\Permission;
 
 class OrganizationController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('auth');
@@ -20,7 +17,7 @@ class OrganizationController extends Controller
     public function index()
     {
         $orgs = Organization::all();        
-        return response()->json($orgs);
+        return $this->json_response($orgs);
     }
 
     public function store(Request $request)
@@ -37,26 +34,29 @@ class OrganizationController extends Controller
         if ($request->type=='school') {
             $o = Organization::where('subdomain',$request->subdomin)->first();
             if ($o) {
-                return response()->json(
-                    ['subdomain' => ['The subdomain already exists for another organization.']], 422);
+                return $this->json_response(['subdomain' => ['The subdomain already exists for another organization.']], true, 422);
             } 
         }
 
         $o = Organization::whereRaw('name=? and type=?',array($request->name, $request->subdomain))->first();
 
         if(!$o) {
-            // Add org
             $o = new Organization();
             $o->name = $request->name;
             $o->type = $request->type;
             $o->subdomain = (in_array($request->type, array('employer','gradlead'))) ? 'localhost' : $request->subdomain; 
             $o->modified_by = $user->id;
             $o->save();
-
-            return $o;
-
+        
+            // Add permission record
+            $acl = new Plugin();
+            $acl->organization_id = $o->id;
+            $acl->save();
+            
+            return $this->json_response($o);
+        
         } else {
-            return response()->json(['name' => ['Organization already exists.']], 422);
+            return $this->json_response(['name' => ['Organization already exists.']], true, 422);
         }
     }
     
@@ -74,14 +74,23 @@ class OrganizationController extends Controller
         if ($request->type=='school') {
             $this->schools()->attach($request->org_id, ['organization_id'=>$request->affiliate_id, 
                                                         'modified_by' => $user->id, 
-                                                        'editor'=>$editor]);
+                                                        'approved'=>0]);
         } else {
            $this->recruiters()->attach($request->org_id, ['employer_id'=>$request->affiliate_id, 
                                                           'modified_by' => $user->id, 
-                                                          'editor'=>$editor]);
+                                                          'approved'=>1]);
         }
 
-        return Organization::find($request->org_id);
+        $o = Organization::find($request->org_id);
+        
+        return $this->json_response($o);
+    }
+    
+    public function updateAffiliateApproval(Request $request, $affiliationId)
+    {
+        $user = $request->user();        
+        $resp = Organization::updateApprovalStatus($affiliationId, $user->id);
+        return ($resp) ? $this->ok() : $this->json_response(['Could not find affiliation'],true,422);
     }
 
     public function update(Request $request, $orgId)
@@ -100,8 +109,8 @@ class OrganizationController extends Controller
         if ($request->type=='school') {
             $t = Organization::where('subdomain',$request->subdomin)->first();
             if ($t && ($o->id != $t->id)) {
-                return response()->json(
-                    ['subdomain' => ['The subdomain already exists for another organization.']], 422);
+                $this->json_response(
+                    ['subdomain' => ['The subdomain already exists for another organization.']],true,422);
             } 
         }
 
@@ -112,13 +121,18 @@ class OrganizationController extends Controller
         $o->modified_by = $user->id;
         $o->save();
 
-        return $o;
+        return $this->json_response($o);
     }
-
 
     public function destroy(Request $request, $orgId)
     {
-        $o = Organization::findOrFail($orgId);
-        $o->delete();
+        $i = Organization::find($orgId);
+        if (is_null($i)) {
+            $this->json_report(['Cannot find organization'], true);
+        } else {
+            $i->cleanUp();
+            $i->delete();
+            return $this->ok();
+        }
     }
 }

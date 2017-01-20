@@ -11,6 +11,6 @@ class BadgesTableSeeder extends Seeder
      */
     public function run()
     {
-        //
+        
     }
 }

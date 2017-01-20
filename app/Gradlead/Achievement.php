@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class Achievement extends Model
 {
-    protected $table = 'badges_achievements';
+    protected $table = 'users_achievements';
 
     protected $guarded = [];
 

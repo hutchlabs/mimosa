@@ -1,0 +1,153 @@
+<?php
+
+use Illuminate\Database\Seeder;
+
+class SystemLanguagesTableSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+		DB::table('system_languages')->insert(['name'=>"Abkhaz", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Adyghe", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Afrikaans", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Akan", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Albanian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"American Sign Language", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Amharic", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Arabic", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Aragonese", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Aramaic", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Armenian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Aymara", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Balinese", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Basque", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Betawi", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Bosnian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Breton", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Bulgarian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Cantonese", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Catalan", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Cherokee", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Chickasaw", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Chinese", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Coptic", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Cornish", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Corsican", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Crimean Tatar", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Croatian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Czech", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Danish", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Dutch", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Dawro", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"English", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Esperanto", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Estonian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Ewe", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Fiji Hindi", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Filipino", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Finnish", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"French", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Galician", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Georgian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"German", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Greek, Modern", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Ancient Greek", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Greenlandic", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Haitian Creole", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Hawaiian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Hebrew", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Hindi", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Hungarian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Icelandic", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Indonesian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Inuktitut", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Interlingua", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Irish", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Italian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Japanese", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Javanese", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Kabardian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Kalasha", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Kannada", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Kashubian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Khmer", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Kinyarwanda", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Korean", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Kurdish/Kurdî", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Ladin", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Latgalian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Latin", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Lingala", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Livonian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Lojban", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Lower Sorbian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Low German", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Macedonian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Malay", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Malayalam", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Mandarin", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Manx", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Maori", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Mauritian Creole", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Middle Low German", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Min Nan", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Mongolian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Norwegian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Old Armenian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Old English", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Old French", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Old Javanese", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Old Norse", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Old Prussian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Oriya", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Pangasinan", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Papiamentu", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Pashto", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Persian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Pitjantjatjara", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Polish", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Portuguese", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Proto-Slavic", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Quenya", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Rapa Nui", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Romanian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Russian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Sanskrit", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Scots", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Scottish Gaelic", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Serbian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Serbo-Croatian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Slovak", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Slovene", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Spanish", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Sinhalese", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Swahili", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Swedish", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Tagalog", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Tajik", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Tamil", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Tarantino", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Telugu", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Thai", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Tok Pisin", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Turkish", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Twi", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Ukrainian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Upper Sorbian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Urdu", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Uzbek", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Venetian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Vietnamese", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Vilamovian", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Volapük", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Võro", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Welsh", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Xhosa", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Yiddish", 'modified_by'=>1]);
+		DB::table('system_languages')->insert(['name'=>"Zazaki", 'modified_by'=>1]);
+    }
+}
