@@ -219,25 +219,28 @@ class UserController extends Controller
                                   ]
                                 );
 
-        $u = User::where('email',$request->email)->first();
+        // Add user
+        $u = new User();
+        $u->name = $request->name;
+        $u->email = $request->email;
+        $u->password = Hash::make($request->password);
+        $u->organization_id = $request->organization_id;
+        $u->role_id = $request->role_id;
+        $u->type = $request->type;
+        $u->modified_by = $user->id;
+        $u->save();
 
-        if(!$u) {
-            // Add user
-            $u = new User();
-            $u->name = $request->name;
-            $u->email = $request->email;
-            $u->password = Hash::make($request->password);
-            $u->organization_id = $request->organization_id;
-            $u->role_id = $request->role_id;
-            $u->type = $request->type;
-            $u->modified_by = $user->id;
-            $u->save();
-
-            return $this->json_response($u);
-
-        } else {
-            return $this->json_response(['email' => ['User with this email already exists.']], true, 422);
+        if ($u->isStudent()) {
+            $p = new Profile();
+            $p->user_id = $u->id;
+            $p->uuid = uniqid();
+            $p->modified_by = 1;
+            $p->save();
         }
+
+        $u = User::find($u->id); // add profile
+
+        return $this->json_response($u);
     }
 
     public function update(Request $request, $userId)
@@ -273,7 +276,7 @@ class UserController extends Controller
         $u->type = $request->type;
         $u->modified_by = $user->id;
         $u->save();
-
+        
         return $this->json_response($u);
     }
 

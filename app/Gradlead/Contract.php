@@ -16,7 +16,7 @@ class Contract extends Model
 
     public function plan()
     {
-        return $this->hasOne('\App\Gradlead\Plan', 'plan_id', 'id');
+        return $this->belongsTo('\App\Gradlead\Plan');
     }
 
     public function organization()
@@ -28,7 +28,7 @@ class Contract extends Model
     {
         return $query->whereRaw("NOW() BETWEEN start_date AND end_date")->get();
     }
-    
+
     public function isValid()
     {
         return ((strtotime($this->end_date) > strtotime()) &&

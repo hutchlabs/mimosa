@@ -17,7 +17,7 @@ class CreateProfilesCompaniesTable extends Migration
             $table->increments('id');
             $table->integer('organization_id');
             $table->string('summary');
-            $table->longText('description');
+            $table->longText('description')->nullable();
             $table->integer('num_employees')->nullable();
             $table->string('country');
             $table->string('city');

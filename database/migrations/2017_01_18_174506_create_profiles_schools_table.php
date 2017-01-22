@@ -17,9 +17,9 @@ class CreateProfilesSchoolsTable extends Migration
             $table->increments('id');
             $table->integer('organization_id');
             $table->string('summary');
-            $table->string('file_name');
-            $table->string('file_path')->unique();
-            $table->string('file_url');
+            $table->string('file_name')->nullable();
+            $table->string('file_path')->nullable();
+            $table->string('file_url')->nullable();
             $table->integer('modified_by');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();

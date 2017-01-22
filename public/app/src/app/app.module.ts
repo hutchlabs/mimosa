@@ -2,6 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { ModalModule } from 'angular2-modal';
+import { BootstrapModalModule } from 'angular2-modal/plugins/bootstrap';
 
 import { AppRoutingModule } from '../app/app-routing/app-routing.module';
 
@@ -55,6 +57,8 @@ import { StHomeComponent } from './pages/dash/student/st-home/st-home.component'
 import { StJobsComponent } from './pages/dash/student/st-jobs/st-jobs.component';
 import { StEmployerComponent } from './pages/dash/student/st-employer/st-employer.component';
 
+import { InAppModalModule } from './pages/main/common/modal-plugin/index';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -101,12 +105,15 @@ import { StEmployerComponent } from './pages/dash/student/st-employer/st-employe
     SchPricesComponent,
     StHomeComponent,
     StJobsComponent,
-    StEmployerComponent
+    StEmployerComponent,
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
+    ModalModule.forRoot(),
+    BootstrapModalModule,
+    InAppModalModule,
     AppRoutingModule
   ],
   providers: [AuthService],

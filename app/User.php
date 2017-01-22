@@ -81,6 +81,11 @@ class User extends Authenticatable
         return $this->role->name == 'Super Administrator'; 
     }
     
+    public function isStudent() 
+    {
+        return in_array($this->type, array('student','graduate')); 
+    }
+    
     public function cleanUp()
     {
         $this->address()->detach();

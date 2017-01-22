@@ -11,7 +11,7 @@ class JobController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth', ['except'=>'featured']);
     }
     
     public function apply(Request $request)
@@ -90,6 +90,12 @@ class JobController extends Controller
         // unless its Gradlead, then send all, or employer then send only their jobs
         $items = Job::all();
         //$items = Job::whereRaw('school_ids like "%,?,%"',$schoolId)->get();
+        return $this->json_response($items);
+    }
+
+    public function featured()
+    {
+        $items = Job::featured();
         return $this->json_response($items);
     }
     

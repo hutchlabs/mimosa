@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 use App\Gradlead\Permission;
+use App\Gradlead\Contract;
 
 class Organization extends Model
 {
@@ -15,7 +16,7 @@ class Organization extends Model
 
     protected $hidden = [];
 
-    protected $with = ['profile','contracts','jobs','permissions','events'];
+    protected $with = ['profile','contracts','permissions','events','jobs'];
 
     protected function getArrayableAppends()
     {
@@ -93,7 +94,14 @@ class Organization extends Model
     {
         return $query->where('type','employer')->get();
     }
-    
+
+    public static function featured()
+    {
+		return Organization::whereHas('contracts.plan', function($query) {
+    		$query->where('feature_company', '=', '1');
+        })->get();
+    }
+
     public static function updateApprovalStatus($approvalId, $userId)
     {
         $i = DB::table('organizations_employers')->select(DB::raw('approved'))->where('id',$approvalId)->first();

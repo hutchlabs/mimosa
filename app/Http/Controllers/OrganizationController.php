@@ -11,12 +11,18 @@ class OrganizationController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth', ['except'=>'featured']);
     }
 
     public function index()
     {
         $orgs = Organization::all();        
+        return $this->json_response($orgs);
+    }
+
+    public function featured()
+    {
+        $orgs = Organization::featured();        
         return $this->json_response($orgs);
     }
 

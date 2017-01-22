@@ -4,7 +4,7 @@ namespace App\Gradlead;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ProfileStudentSkill extends Model
+class ProfileStudentEducation extends Model
 {
     protected $table = 'profiles_student_education';
 

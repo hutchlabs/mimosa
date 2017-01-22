@@ -10,11 +10,16 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 Route::group(['middleware' => 'web'], function ($router) {
         Auth::routes();
 
-        $router->get('/',     'WelcomeController@index');
-        $router->get('/home', 'HomeController@index');
+        $router->get('/',           'WelcomeController@index');
+        $router->get('/home',       'HomeController@index');
+        $router->post('/flogin',    'ApiController@authenticate');
+        $router->post('/flogout',   'ApiController@logout');
+        $router->post('/fregister', 'ApiController@registeruser');
+
     
         // Search
         $router->post('search/jobs',        'SearchController@findJobs');
@@ -23,6 +28,7 @@ Route::group(['middleware' => 'web'], function ($router) {
   
         // Jobs & Applications
         $router->get('jobs',                     'JobController@index');
+        $router->get('jobs/featured',            'JobController@featured');
         $router->post('jobs',                    'JobController@store');
         $router->post('jobs/apply',              'JobController@apply');
         $router->put('jobs/{id}',                'JobController@update');
@@ -48,6 +54,7 @@ Route::group(['middleware' => 'web'], function ($router) {
 
         // Organizations
         $router->get('organizations',                       'OrganizationController@index');
+        $router->get('organizations/featured',              'OrganizationController@featured');
         $router->post('organizations',                      'OrganizationController@store');
         $router->post('organizations/addaffiliate',         'OrganizationController@storeAffiliate');
         $router->put('organizations/updateapproval/{id}',   'OrganizationController@updateAffiliateApproval');
@@ -149,3 +156,5 @@ Route::group(['middleware' => 'web'], function ($router) {
     
         $router->get('roles',  function() { return \App\Gradlead\Role::all(); });
 });
+
+

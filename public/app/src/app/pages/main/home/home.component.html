@@ -81,263 +81,48 @@
     </div><!--end of container-->
   </section>
 
-  <section class="side-image text-heavy clearfix" style="background: #a4a4a4;">
-
-    <div class="container">
-
+  <section class="duplicatable-content" style="background:#d4d4d4">
+    <div class="container">    
       <div class="row">
-        <h2 style="color: #ffffff;">Jobs In Ghana</h2>
-        <div class="col-md-4 col-sm-6 blog-masonry-item development card">
-          <div class="item-inner quote-post">
-            <div class="post-title">
-              <div class="row">
-                <div class="col-md-4"><img src="dist/assets/images/users/avatar-1.jpg" class="img-circle emp-logo"></div>
-                <div class="col-md-8">
-                  <h5 class="real-h5">Vodafon Ghana</h5>
-                  <h4>Telecom Industry</h4>
-                </div>
-              </div>
-              <h3>Sales Manager</h3>
-              <div class="post-meta">
-                <span class="sub alt-font">Ghana</span>
-              </div>
+            <div class="col-md-12 text-center">
+              <h1>Jobs In Ghana</h1>
             </div>
-          </div>
-        </div>
-
-        <div class="col-md-4 col-sm-6 blog-masonry-item development card">
+      </div>
+      
+      <div class="row">
+        
+         <div *ngFor="let job of featuredJobs" class="col-md-4 col-sm-6 blog-masonry-item development card">
           <div class="item-inner quote-post">
             <div class="post-title">
               <div class="row">
-                <div class="col-md-4"><img src="dist/assets/images/users/avatar-1.jpg" class="img-circle emp-logo"></div>
+                <div class="col-md-4">
+                    <img src="dist/assets/images/users/avatar-1.jpg" class="img-circle emp-logo">
+                </div>
                 <div class="col-md-8">
-                  <h5 class="real-h5">Vodafon Ghana</h5>
-                  <h4>Telecom Industry</h4>
+                  <h5 class="real-h5">{{ job.organization.name }}</h5>
+                  <h4>{{ job.organization.profile.industries}}</h4>
                 </div>
               </div>
-              <h3>Sales Manager</h3>
+              <h3>{{job.title}}</h3>
               <div class="post-meta">
-                <span class="sub alt-font">Ghana</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4 col-sm-6 blog-masonry-item development card">
-          <div class="item-inner quote-post">
-            <div class="post-title">
-              <div class="row">
-                <div class="col-md-4"><img src="dist/assets/images/users/avatar-1.jpg" class="img-circle emp-logo"></div>
-                <div class="col-md-8">
-                  <h5 class="real-h5">Vodafon Ghana</h5>
-                  <h4>Telecom Industry</h4>
-                </div>
-              </div>
-              <h3>Sales Manager</h3>
-              <div class="post-meta">
-                <span class="sub alt-font">Ghana</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4 col-sm-6 blog-masonry-item development card">
-          <div class="item-inner quote-post">
-            <div class="post-title">
-              <div class="row">
-                <div class="col-md-4"><img src="dist/assets/images/users/avatar-1.jpg" class="img-circle emp-logo"></div>
-                <div class="col-md-8">
-                  <h5 class="real-h5">Vodafon Ghana</h5>
-                  <h4>Telecom Industry</h4>
-                </div>
-              </div>
-              <h3>Sales Manager</h3>
-              <div class="post-meta">
-                <span class="sub alt-font">Ghana</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4 col-sm-6 blog-masonry-item development card">
-          <div class="item-inner quote-post">
-            <div class="post-title">
-              <div class="row">
-                <div class="col-md-4"><img src="dist/assets/images/users/avatar-1.jpg" class="img-circle emp-logo"></div>
-                <div class="col-md-8">
-                  <h5 class="real-h5">Vodafon Ghana</h5>
-                  <h4>Telecom Industry</h4>
-                </div>
-              </div>
-              <h3>Sales Manager</h3>
-              <div class="post-meta">
-                <span class="sub alt-font">Ghana</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4 col-sm-6 blog-masonry-item development card">
-          <div class="item-inner quote-post">
-            <div class="post-title">
-              <div class="row">
-                <div class="col-md-4"><img src="dist/assets/images/users/avatar-1.jpg" class="img-circle emp-logo"></div>
-                <div class="col-md-8">
-                  <h5 class="real-h5">Vodafon Ghana</h5>
-                  <h4>Telecom Industry</h4>
-                </div>
-              </div>
-              <h3>Sales Manager</h3>
-              <div class="post-meta">
-                <span class="sub alt-font">Ghana</span>
+                <span class="sub alt-font">{{job.country}}</span>
               </div>
             </div>
           </div>
         </div>
 
       </div>
-
     </div>
   </section>
-
-  <section class="duplicatable-content">
-
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12 text-center">
-          <h1>Showcase services in a<br>spacious &amp; clean manner</h1>
-        </div>
-      </div><!--end of row-->
-
-      <div class="row">
-        <div class="col-sm-6">
-          <div class="feature feature-icon-large">
-            <div class="pull-left">
-              <i class="icon icon-genius"></i>
-            </div>
-            <div class="pull-right">
-              <h5>Distinct Visual Style</h5>
-              <p>
-                Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus.
-              </p>
-            </div>
-          </div>
-        </div><!--end 6 col-->
-
-        <div class="col-sm-6">
-          <div class="feature feature-icon-large">
-            <div class="pull-left">
-              <i class="icon icon-linegraph"></i>
-            </div>
-            <div class="pull-right">
-              <h5>Multiple Demos</h5>
-              <p>
-                Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus.
-              </p>
-            </div>
-          </div>
-        </div><!--end 6 col-->
-
-        <div class="col-sm-6">
-          <div class="feature feature-icon-large">
-            <div class="pull-left">
-              <i class="icon icon-tools-2"></i>
-            </div>
-            <div class="pull-right">
-              <h5>Flexible Page Builder</h5>
-              <p>
-                Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus.
-              </p>
-            </div>
-          </div>
-        </div><!--end 6 col-->
-
-        <div class="col-sm-6">
-          <div class="feature feature-icon-large">
-            <div class="pull-left">
-              <i class="icon icon-desktop"></i>
-            </div>
-            <div class="pull-right">
-              <h5>Fully Responsive</h5>
-              <p>
-                Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus.
-              </p>
-            </div>
-          </div>
-        </div><!--end 6 col-->
-
-      </div><!--end of row-->
-    </div>
-
-  </section>
-
-  <section class="side-image text-heavy clearfix" style="background: #a4a4a4;">
-
-    <div class="container">
-
-      <div class="row">
-        <h2 style="color: #ffffff;">Featured Companies</h2>
-        <div class="col-md-4 col-sm-6 blog-masonry-item development card">
-          <div class="item-inner quote-post">
-            <div class="post-title">
-              <div class="row">
-                <div class="col-md-4"><img src="dist/assets/images/users/avatar-1.jpg" class="img-circle emp-logo"></div>
-                <div class="col-md-8">
-                  <h5 class="real-h5">Vodafon Ghana</h5>
-                  <h4>Telecom Industry</h4>
-                </div>
-              </div>
-              <h3>Sales Manager</h3>
-              <div class="post-meta">
-                <span class="sub alt-font">Ghana</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4 col-sm-6 blog-masonry-item development card">
-          <div class="item-inner quote-post">
-            <div class="post-title">
-              <div class="row">
-                <div class="col-md-4"><img src="dist/assets/images/users/avatar-1.jpg" class="img-circle emp-logo"></div>
-                <div class="col-md-8">
-                  <h5 class="real-h5">Huawei</h5>
-                  <h4>Telecom Industry</h4>
-                </div>
-              </div>
-              <h3>Sales Manager</h3>
-              <div class="post-meta">
-                <span class="sub alt-font">Ghana</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4 col-sm-6 blog-masonry-item development card">
-          <div class="item-inner quote-post">
-            <div class="post-title">
-              <div class="row">
-                <div class="col-md-4"><img src="dist/assets/images/users/avatar-1.jpg" class="img-circle emp-logo"></div>
-                <div class="col-md-8">
-                  <h5 class="real-h5">Bank of Africa</h5>
-                  <h4>Banking & Finance</h4>
-                </div>
-              </div>
-              <h3>Sales Manager</h3>
-              <div class="post-meta">
-                <span class="sub alt-font">Ghana</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-  </section>
-
+  
   <section class="clients-2">
     <div class="container">
+     <div class="row">
+        <div class="col-md-12 text-center">
+          <h1>Featured Companies</h1>
+        </div>
+      </div>
+     
       <div class="row">
         <div class="col-md-2 col-sm-4">
           <img alt="Client Logo" src="dist/assets/img/client1.png">
@@ -367,9 +152,9 @@
   </section>
 
 </div>
+
+
 <div class="footer-container">
-
-
   <footer class="short bg-secondary-1">
     <div class="container">
       <div class="row">

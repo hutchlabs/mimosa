@@ -21,7 +21,7 @@ class Job extends Model
 
     public function contract()
     {
-        return $this->hasOne('\App\Gradlead\Contract');
+        return $this->belongsTo('\App\Gradlead\Contract');
     }
     
     public function questionnaire()
@@ -32,6 +32,17 @@ class Job extends Model
     public function applications()
     {
         return $this->hasMany('\App\Gradlead\Application');
+    }
+
+    public function scopeWhereFeatured($query) {
+        return $query->whereHas('contract.plan', function($q) {
+    		    $q->where('feature_job', '=', '1');
+        });
+    }
+
+    public static function featured()
+    {
+		return Job::with('organization')->WhereFeatured()->get();
     }
      
     public function doPreselectEvaluation($user)
