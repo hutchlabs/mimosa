@@ -7,47 +7,49 @@ Vue.component('gradlead-badges-screen', {
     data: function() {
         return {
             badges: [],
+			files: [],
 
             editingBadge: {'name':'none'},
             removingBadgeId: null,
+            
+            nameError: false,
+            descError: false,
+
+            baseUrl: '/mimosa/api/',
 
             forms: {
-                addBadge: new SparkForm ({
+               updateBadge: new SparkForm ({
                     name: '',
                     description: '',
-                    uploaded_file: '',
-                }),
-
-                updateBadge: new SparkForm ({
-                    name: '',
-                    description: '',
-                    uploaded_file: '',
+                    image: '',
                 }),
             }
         };
     },
 
     events: {
-        'badgesUpdated': function(newusers) {
-            this.getBadges();
-         }
     },
 
     computed: {
+        everythingLoaded: function () {
+            return this.badges != null;
+        }
     },
 
     methods: {
-        addBadge: function () {
-            this.forms.addBadge.name = '';
-            this.forms.addBadge.description = '';
-            this.forms.addBadge.uploaded_file = '';
+        addBadge: function() {
+            this.nameError = false;
+            this.descError = false;
             $('#modal-add-badge').modal('show');
         },
+        
         editBadge: function (badge) {
             this.editingBadge = badge;
-            this.forms.updateBadge.name = badge.name;
-            this.forms.updateBadge.description = badge.description;
-            this.forms.updateBadge.uploaded_file = '';
+            this.nameError = false;
+            this.descError = false;
+            $('#uname').val(badge.name);
+            $('#udescription').val(badge.description);
+            $('#bid').val(badge.id);
             $('#modal-edit-badge').modal('show');
         },
 
@@ -60,30 +62,43 @@ Vue.component('gradlead-badges-screen', {
         },
 
         // Ajax calls
-        addNewBadge: function () {
+        getImage: function (b) {
+            if (b.id) {
+                return this.baseUrl + 'badges/image/' + b.id;
+            } else {
+                return this.baseUrl+'img/a0.jpg';
+            }
+        },
+           
+        addNewBadge: function (e) {
             var self = this;
-            Spark.post('/mimosa/api/badges', this.forms.addBadge)
-                .then(function () {
+            if($('#name').val()=='') { this.nameError = true; }
+            if ($('#description').val()=='') { this.descError = true; }
+            
+            if ( $('#name').val() != "" && $('#description').val()!='') {
                     $('#modal-add-badge').modal('hide');
-                    self.getBadges();
-                }, function(resp) {
-                    self.forms.addBadge.busy = false;
-                    NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
-                });
-        },
-        updateBadge: function () {
+            } else {
+                e.preventDefault();
+            }
+        },   
+            
+        updateBadge: function (e) {
             var self = this;
-            Spark.put('/mimosa/api/badges/' + this.editingBadge.id, this.forms.updateBadge)
-                .then(function () {
-                    self.getBadges();
+            if($('#uname').val()=='') { this.nameError = true; }
+            if ($('#udescription').val()=='') { this.descError = true; }
+            
+            if ( $('#uname').val() != "" && $('#udescription').val()!='') {
                     $('#modal-edit-badge').modal('hide');
-                });
+            } else {
+                e.preventDefault();
+            }
         },
+
         removeBadge: function (badge) {
             var self = this;
             self.removingBadgeId = badge.id;
 
-            this.$http.delete('/mimosa/api/badges/' + badge.id)
+            this.$http.delete(self.baseUrl + 'badges/' + badge.id)
                 .then(function () {
                     self.removingBadgeId = 0;
                     self.badges = self.removeFromList(this.badges, badge);
@@ -95,9 +110,9 @@ Vue.component('gradlead-badges-screen', {
         
         getBadges: function () {
             var self = this;
-            this.$http.get('/mimosa/api/badges')
+            this.$http.get(self.baseUrl + 'badges')
                 .then(function (resp) {
-                    self.badges = resp.data;
+                    self.badges = resp.data.data;
                 });
         },
     },

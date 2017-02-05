@@ -6,16 +6,14 @@ Vue.component('gradlead-orgs-screen', {
 
     data: function() {
         return {
+            baseUrl: '/mimosa/api/',
+
             organizations: [],
+            employers: [],
+            schools: [],
 
             editingOrganization: {'name':'none'},
             removingOrganizationId: null,
-
-            typeOptions: [
-                            {'text': 'Gradlead', 'value':'gradlead'},
-                            {'text': 'Employer', 'value':'employer'},
-                            {'text': 'School', 'value':'school'},
-                         ],
 
             forms: {
                 addOrganization: new SparkForm ({
@@ -34,27 +32,29 @@ Vue.component('gradlead-orgs-screen', {
     },
     
     events: {
-        'usersUpdated': function(newusers) {
-            this.getOrganizations();
-         }
     },
 
     computed: {
+        everythingLoaded: function() {
+            return this.organizations.length > 0;
+        }
     },
 
     methods: {
-        addOrganization: function () {
+        addOrganization: function (type) {
             this.forms.addOrganization.name = '';
-            this.forms.addOrganization.type = '';
-            this.forms.addOrganization.subdomain = '';
-            $('#modal-add-org').modal('show');
+            this.forms.addOrganization.type = type;
+            this.forms.addOrganization.subdomain = (type=='school')?'':'localhost';
+            this.forms.addOrganization.errors.forget();
+            $('#modal-add-'+type+'-org').modal('show');
         },
         editOrganization: function (org) {
             this.editingOrganization = org;
             this.forms.updateOrganization.name = org.name;
             this.forms.updateOrganization.type = org.type;
             this.forms.updateOrganization.subdomain = org.subdomain;
-            $('#modal-edit-org').modal('show');
+            this.forms.updateOrganization.errors.forget();
+            $('#modal-edit-'+org.type+'-org').modal('show');
         },
 
         removingOrganization: function(id) { return (this.removingOrganizationId == id); },
@@ -66,30 +66,30 @@ Vue.component('gradlead-orgs-screen', {
         },
 
         // Ajax calls
-        addNewOrganization: function () {
+        addNewOrganization: function (type) {
             var self = this;
-            Spark.post('/mimosa/api/organizations', this.forms.addOrganization)
+            Spark.post(self.baseUrl+'organizations', this.forms.addOrganization)
                 .then(function () {
-                    $('#modal-add-org').modal('hide');
+                    $('#modal-add-'+type+'-org').modal('hide');
                     self.getOrganizations();
                 }, function(resp) {
                     self.forms.addOrganization.busy = false;
                     NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
                 });
         },
-        updateOrganization: function () {
+        updateOrganization: function (type) {
             var self = this;
-            Spark.put('/mimosa/api/organizations/' + this.editingOrganization.id, this.forms.updateOrganization)
+            Spark.put(self.baseUrl+'organizations/' + this.editingOrganization.id, this.forms.updateOrganization)
                 .then(function () {
                     self.getOrganizations();
-                    $('#modal-edit-org').modal('hide');
+                    $('#modal-edit-'+type+'-org').modal('hide');
                 });
         },
         removeOrganization: function (org) {
             var self = this;
             self.removingOrganizationId = org.id;
 
-            this.$http.delete('/mimosa/api/organizations/' + org.id)
+            this.$http.delete(self.baseUrl+'organizations/' + org.id)
                 .then(function () {
                     self.removingOrganizationId = 0;
                     self.organizations = self.removeFromList(this.organizations, org);
@@ -101,9 +101,15 @@ Vue.component('gradlead-orgs-screen', {
         
         getOrganizations: function () {
             var self = this;
-            this.$http.get('/mimosa/api/organizations')
+            this.$http.get(self.baseUrl+'organizations')
                 .then(function (resp) {
-                    self.organizations = resp.data;
+                   self.schools = [];
+                   self.employers=[];
+                    self.organizations = resp.data.data;
+                    for(var i=0; i < self.organizations.length; i++) {
+                        if (self.organizations[i].type=='school') { self.schools.push(self.organizations[i]); }
+                        if (self.organizations[i].type=='employer') { self.employers.push(self.organizations[i]); }
+                    }
                 });
         },
     },

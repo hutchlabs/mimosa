@@ -16,7 +16,7 @@ class OrganizationController extends Controller
 
     public function index()
     {
-        $orgs = Organization::all();        
+        $orgs = Organization::orderBy('name')->get();        
         return $this->json_response($orgs);
     }
 
@@ -38,7 +38,7 @@ class OrganizationController extends Controller
                                 );
 
         if ($request->type=='school') {
-            $o = Organization::where('subdomain',$request->subdomin)->first();
+            $o = Organization::where('subdomain',$request->subdomain)->first();
             if ($o) {
                 return $this->json_response(['subdomain' => ['The subdomain already exists for another organization.']], true, 422);
             } 
@@ -55,8 +55,15 @@ class OrganizationController extends Controller
             $o->save();
         
             // Add permission record
-            $acl = new Plugin();
+            $acl = new Permission();
             $acl->organization_id = $o->id;
+            if ($request->type=='employer') {
+                $acl->preselect = 1;
+            }
+            if ($request->type=='school') {
+                $acl->events = 1;
+            }
+            $acl->modified_by = $user->id;
             $acl->save();
             
             return $this->json_response($o);

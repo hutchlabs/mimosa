@@ -2,6 +2,8 @@
 
 namespace App\Gradlead;
 
+use Illuminate\Support\Facades\DB;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Application extends Model
@@ -12,7 +14,33 @@ class Application extends Model
 
     protected $hidden = [];
 
-    protected $with = ['job','resume'];
+    protected $with = ['resume'];
+    
+    protected function getArrayableAppends()
+    {
+        $this->appends = array_merge($this->appends, ['applicant','jobname']);
+        return parent::getArrayableAppends();
+    }
+
+    public function getApplicantAttribute() 
+    {
+        $user = DB::table('users')
+                ->select(DB::raw('name'))
+                ->where('id',$this->user_id)
+                ->first(); 
+        return $user->name;
+    }
+    
+    public function getJobnameAttribute() 
+    {
+        $job = DB::table('jobs')
+                ->select(DB::raw('title'))
+                ->where('id',$this->job_id)
+                ->first(); 
+        return $job->title;
+    }
+
+
 
     public function user()
     {
@@ -26,7 +54,7 @@ class Application extends Model
 
     public function resume()
     {
-        return $this->hasOne('\App\Gradlead\Resume');
+        return $this->belongsTo('\App\Gradlead\ProfileStudentResume');
     }
     
     public static function isDuplicate($jobId, $userId) 

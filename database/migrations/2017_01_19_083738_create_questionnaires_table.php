@@ -17,7 +17,7 @@ class CreateQuestionnairesTable extends Migration
             $table->increments('id');
             $table->integer('organization_id');
             $table->string('name');
-            $table->string('passing_score');
+            $table->integer('passing_score');
             $table->boolean('send_auto_reply_more');
             $table->boolean('send_auto_reply_less');
             $table->longText('email_more');

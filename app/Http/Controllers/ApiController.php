@@ -13,7 +13,12 @@ class ApiController extends Controller
 {
     public function __construct()
     {
-        if (Auth::check()) { Auth::logout(); }
+    }
+    
+    public function authuser(Request $request)
+    {
+        $user = (Auth::guest()) ? null : Auth::user();
+        return response()->json($user);   
     }
 
     public function logout(Request $request) 
@@ -24,6 +29,23 @@ class ApiController extends Controller
     
     public function authenticate(Request $request)
     {
+
+        $validator = Validator::make($request->all(), 
+                                  ['email' => 'required|email|exists:users,email',
+                                    'password'=> 'required|min:3',
+                                  ]
+        );
+        
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            $resp = [];
+            if ($errors->has('email')) { $resp['email'] = [$errors->get('email')[0]]; }
+            if ($errors->has('password')) { $resp['password'] = [$errors->get('password')[0]]; }
+            return $this->json_response($resp, true, 422);
+        }
+        
+        if (Auth::check()) { Auth::logout(); }
+
         // grab credentials from the request
         $credentials = $request->only('email', 'password');
 
@@ -32,12 +54,20 @@ class ApiController extends Controller
             return $this->json_response($user);
         }
 
-        return $this->json_response(['Invalid credentials'], true, 401);
+        return $this->json_response(['email'=>['invalid credentials']], true, 401);
     }
 
     
     public function registeruser(Request $request)
     {
+        
+        /*$this->validate($request, ['email' => 'required|email|unique:users,email',
+                                   'name' => 'required|max:255',
+                                   'password'=> 'required|min:6',
+                                   'type' => 'required|in:employer,gradlead,graduate,school,student',
+                                  ]
+        );*/
+        
         $validator = Validator::make($request->all(), ['email' => 'required|email|unique:users,email',
                                    'name' => 'required|max:255',
                                    'password'=> 'required|min:6',
@@ -48,10 +78,10 @@ class ApiController extends Controller
         if ($validator->fails()) {
             $errors = $validator->errors();
             $resp = [];
-            if ($errors->has('email')) { $resp['email'] = $errors->get('email')[0]; }
-            if ($errors->has('name')) { $resp['name'] = $errors->get('name')[0]; }
-            if ($errors->has('password')) { $resp['password'] = $errors->get('password')[0]; }
-            if ($errors->has('type')) { $resp['type'] = $errors->get('type')[0]; }
+            if ($errors->has('email')) { $resp['email'] = [$errors->get('email')[0]]; }
+            if ($errors->has('name')) { $resp['name'] =[$errors->get('name')[0]]; }
+            if ($errors->has('password')) { $resp['password'] = [$errors->get('password')[0]]; }
+            if ($errors->has('type')) { $resp['type'] = [$errors->get('type')[0]]; }
 
             return $this->json_response($resp, true, 422);
         }

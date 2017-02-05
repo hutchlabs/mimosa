@@ -27,13 +27,14 @@ class PlanController extends Controller
         $this->validate($request, [
            'name' => 'required|max:255',
            'description' => 'required',
-           'num_posts' => 'required',
-           'num_notifications'=> 'required',
-           'feature_job' => 'required',
-           'feature_company' => 'required',
-           'duration' => 'required',
-           'start_date' => 'required',
-           'end_date' =>'required'
+           'cost' => 'required|numeric',
+           'num_posts' => 'required|numeric',
+           'num_notifications'=> 'required|numeric',
+           'feature_job' => 'required|boolean',
+           'feature_company' => 'required|boolean',
+           'duration' => 'required|numeric',
+           'start_date' => 'required|date',
+           'end_date' =>'required|date'
           ]
         );
 
@@ -46,8 +47,8 @@ class PlanController extends Controller
         $i->feature_job = $request->feature_job;
         $i->feature_company = $request->feature_company;
         $i->duration = $request->duration;
-        $i->start_date = $request->start_date;
-        $i->end_date = $request->end_date;
+        $i->start_date = date('Y-m-d', strtotime($request->start_date));
+        $i->end_date = date('Y-m-d',strtotime($request->end_date));
         $i->modified_by = $user->id;
         $i->save();
         
@@ -62,13 +63,13 @@ class PlanController extends Controller
            'id' => 'required|exists:plans,id',
            'name' => 'required|max:255',
            'description' => 'required',
-           'num_posts' => 'required',
-           'num_notifications'=> 'required',
-           'feature_job' => 'required',
-           'feature_company' => 'required',
-           'duration' => 'required',
-           'start_date' => 'required',
-           'end_date' =>'required'
+           'num_posts' => 'required|numeric',
+           'num_notifications'=> 'required|numeric',
+           'feature_job' => 'required|boolean',
+           'feature_company' => 'required|boolean',
+           'duration' => 'required|numeric',
+           'start_date' => 'required|date',
+           'end_date' =>'required|date'
           ]
         );
 
@@ -81,8 +82,8 @@ class PlanController extends Controller
         $i->feature_job = $request->feature_job;
         $i->feature_company = $request->feature_company;
         $i->duration = $request->duration;
-        $i->start_date = $request->start_date;
-        $i->end_date = $request->end_date;
+        $i->start_date = date('Y-m-d', strtotime($request->start_date));
+        $i->end_date = date('Y-m-d',strtotime($request->end_date));
         $i->modified_by = $user->id;
         $i->save();
         

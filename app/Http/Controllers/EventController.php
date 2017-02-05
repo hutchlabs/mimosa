@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use App\Gradlead\Event;
 
 class EventController extends Controller
@@ -24,20 +23,20 @@ class EventController extends Controller
         $user = $request->user();
 
         $this->validate($request, [
-           'organization_id' => 'required|exists:organizations,id',
+           //'organization_id' => 'required|exists:organizations,id',
            'name' => 'required|max:255',
            'description' => 'required|max:255',
-           'start_date' => 'present',
-           'end_date' =>'present'
+           'start_date' => 'required|date',
+           'end_date' =>'required|date'
           ]
         );
 
         $i = new Event();
-        $i->organization_id = $request->organization_id;
+        //$i->organization_id = $request->organization_id;
         $i->name = $request->name;
         $i->description = $request->description;
-        $i->start_date = $request->start_date;
-        $i->end_date = $request->end_date;
+        $i->start_date = date('Y-m=d', strtotime($request->start_date));
+        $i->end_date = date('Y-m-d', strtotime($request->end_date));
         $i->modified_by = $user->id;
         $i->save();
 
@@ -49,11 +48,11 @@ class EventController extends Controller
         $user = $request->user();
 
         $this->validate($request, [
-            'organization_id' => 'required|exists:organizations,id',
+            //'organization_id' => 'required|exists:organizations,id',
             'name' => 'required|max:255',
             'description' => 'required|max:255',
-            'start_date' => 'present',
-            'end_date' =>'present'
+            'start_date' => 'required|date',
+            'end_date' =>'required|date',
           ]
         );
         
@@ -63,9 +62,11 @@ class EventController extends Controller
             return $this->json_response(['Cannot find event to update'], true);    
         }
         
-        $i->organization_id = $request->organization_id;
+       // $i->organization_id = $request->organization_id;
         $i->name = $request->name;
         $i->description = $request->description;
+        $i->start_date = date('Y-m=d', strtotime($request->start_date));
+        $i->end_date = date('Y-m-d', strtotime($request->end_date));
         $i->modified_by = $user->id;
         $i->save();
 

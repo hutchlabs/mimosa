@@ -20,6 +20,11 @@ class Badge extends Model
     }
 
     public function getNumachievementsAttribute() {
-        return DB::table('badges_achievements')->select(DB::raw('id'))->where('badge_id',$this->id)->count(); 
+        return DB::table('users_achievements')->select(DB::raw('id'))->where('badge_id',$this->id)->count(); 
+    }
+    
+    public function removeAchievements()
+    {
+        //TODO: Remove achievements
     }
 }

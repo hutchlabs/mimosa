@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-use App\Gradlead\Test;
 
 class HomeController extends Controller
 {
@@ -25,7 +25,17 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $tenant = Test::first();        
-        return view('home', array('name'=>$tenant->organization->name));
+        $tenant = $this->getTenant();
+        
+        switch(Auth::user()->type) {
+            case 'employer': $view = 'dashboards.employer'; break;
+            case 'gradlead': $view = 'dashboards.gradlead'; break;
+            case 'school': $view = 'dashboards.school'; break;
+            case 'student':
+            case 'graduate': $view = 'dashboard.student'; break;
+            default: $view = 'welcome.index';
+        }
+            
+        return view($view, array('name'=>$tenant->name));
     }
 }

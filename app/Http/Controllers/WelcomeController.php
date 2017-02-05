@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Gradlead\Test;
 
 class WelcomeController extends Controller
 {
@@ -15,7 +14,7 @@ class WelcomeController extends Controller
      */
     public function index()
     {
-        $tenant = Test::first();        
-        return view('welcome', array('name'=>$tenant->organization->name));
+        $tenant = $this->getTenant();
+        return view('welcome.index', array('name'=>$tenant->name));
     }
 }

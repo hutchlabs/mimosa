@@ -18,4 +18,5 @@ class Test extends BaseModel
     {
         return $this->belongsTo('\App\Gradlead\Organization');
     }
+
 }

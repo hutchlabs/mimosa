@@ -15,12 +15,13 @@ Route::group(['middleware' => 'web'], function ($router) {
         Auth::routes();
 
         $router->get('/',           'WelcomeController@index');
+        $router->get('/login',     'WelcomeController@index');
         $router->get('/home',       'HomeController@index');
+        $router->get('/fauthuser',  'ApiController@authuser');
+        $router->get('/flogout',    'ApiController@logout');
         $router->post('/flogin',    'ApiController@authenticate');
-        $router->post('/flogout',   'ApiController@logout');
         $router->post('/fregister', 'ApiController@registeruser');
 
-    
         // Search
         $router->post('search/jobs',        'SearchController@findJobs');
         $router->post('search/users',       'SearchController@findCandidates');
@@ -29,9 +30,11 @@ Route::group(['middleware' => 'web'], function ($router) {
         // Jobs & Applications
         $router->get('jobs',                     'JobController@index');
         $router->get('jobs/featured',            'JobController@featured');
+        $router->get('jobs/applications',         'JobController@applications');
         $router->post('jobs',                    'JobController@store');
         $router->post('jobs/apply',              'JobController@apply');
         $router->put('jobs/{id}',                'JobController@update');
+        $router->put('jobs/{id}/changestatus',   'JobController@updateStatus');
         $router->put('jobs/application/update',  'JobController@updateApplication');
         $router->delete('jobs/{id}',             'JobController@destroy');
         $router->delete('jobs/application/{id}', 'JobController@unapply');
@@ -101,11 +104,23 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->put('plans/{id}',              'PlanController@update');
         $router->delete('plans/{id}',           'PlanController@destroy');
     
+        // Questionnaires
+        $router->get('questionnaires',          'QuestionnaireController@index');
+        $router->post('questionnaires',         'QuestionnaireController@store');
+        $router->put('questionnaires/{id}',     'QuestionnaireController@update');
+        $router->delete('questionnaires/{id}',  'QuestionnaireController@destroy');
+    
+        // Questions
+        $router->get('questionnaires/questions',            'QuestionnaireController@showQuestions');
+        $router->post('questionnaires/questions',           'QuestionnaireController@storeQuestion');
+        $router->put('questionnaires/questions/{id}',       'QuestionnaireController@updateQuestion');
+        $router->delete('questionnaires/questions/{id}',    'QuestionnaireController@destroyQuestion');
+    
         // Badges
         $router->get('badges',                  'BadgeController@index');
         $router->get('badges/image/{id}',       'BadgeController@badgeImage');
         $router->post('badges',                 'BadgeController@store');
-        $router->put('badges/{id}',             'BadgeController@update');
+        $router->put('badges',                  'BadgeController@update');
         $router->delete('badges/{id}',          'BadgeController@destroy');
 
         // Events

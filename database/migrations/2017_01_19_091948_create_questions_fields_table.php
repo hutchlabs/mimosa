@@ -17,7 +17,7 @@ class CreateQuestionsFieldsTable extends Migration
             $table->increments('id');
             $table->integer('question_id');
             $table->integer('order');
-            $table->integer('value');
+            $table->string('value');
             $table->integer('score');
             $table->integer('modified_by');
             $table->timestamp('created_at')->useCurrent();

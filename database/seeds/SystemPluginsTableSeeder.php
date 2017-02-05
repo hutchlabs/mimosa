@@ -35,6 +35,24 @@ class SystemPluginsTableSeeder extends Seeder
             'screening' => 0,
             'tracking' => 0,
             'badges' => 0,
+            'events' => 1,
+            'modified_by'=>1]);
+        
+        DB::table('system_permissions')->insert([
+            'organization_id' => 4,
+            'preselect' => 1,
+            'screening' => 0,
+            'tracking' => 0,
+            'badges' => 0,
+            'events' => 0,
+            'modified_by'=>1]);
+        
+        DB::table('system_permissions')->insert([
+            'organization_id' => 5,
+            'preselect' => 1,
+            'screening' => 0,
+            'tracking' => 0,
+            'badges' => 0,
             'events' => 0,
             'modified_by'=>1]);
     }

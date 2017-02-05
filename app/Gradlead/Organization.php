@@ -24,7 +24,8 @@ class Organization extends Model
         return parent::getArrayableAppends();
     }
 
-    public function getNumusersAttribute() {
+    public function getNumusersAttribute() 
+    {
       return DB::table('users')
                 ->select(DB::raw('id'))
                 ->where('organization_id',$this->id)
@@ -88,7 +89,6 @@ class Organization extends Model
     {
         return $this->belongsToMany('\App\Gradlead\Organization','organizations_employers','organization_id','employer_id');
     }  
-
 
     public static function scopeEmployers($query)
     {

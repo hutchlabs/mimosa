@@ -24,6 +24,11 @@ class Contract extends Model
         return $this->belongsTo('\App\Gradlead\Organization');
     }
     
+    public function scopeExpired($query) 
+    {
+        return $query->whereRaw("end_date BETWEEN start_date AND NOW()")->get();
+    }
+    
     public function scopeNotExpired($query) 
     {
         return $query->whereRaw("NOW() BETWEEN start_date AND end_date")->get();
@@ -51,7 +56,7 @@ class Contract extends Model
             $c->remaining_posts = $p->num_posts - 1;
             $c->remaining_notifications = $p->num_notifications;
             $c->start_date = date('Y-m-d');
-            $c->end_date = date('Y-m-d',strtotime($c->start_date,"+ ".$p->duration." days"));
+            $c->end_date = date('Y-m-d',strtotime($c->start_date." +".$p->duration." days"));
         
             //TODO: handle featured options
         

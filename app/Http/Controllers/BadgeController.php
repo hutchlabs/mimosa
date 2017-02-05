@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use App\Gradlead\Badge;
 
 class BadgeController extends Controller
@@ -51,26 +50,29 @@ class BadgeController extends Controller
             return $this->json_response(['image'=>$fileInfo], true, 422);
         }
 
-        return $this->json_response($b);
+        return redirect()->action('HomeController@index');
     }
 
-    public function update(Request $request, $badgeId)
+    public function update(Request $request)
     {
         $user = $request->user();
 
-        $b = Badge::findOrFail($badgeId);
 
         $this->validate($request, [
-           'name' => 'required|max:255|unique:badges,name,'.$b->id,
+           'id' => 'required|exists:badges,id',
+           'name' => 'required|max:255|unique:badges,name,'.$request->id,
            'description' => 'required|max:255',
-           'image' => 'present|image',
+           'image' => 'present',
           ]
         );
 
+        $b = Badge::findOrFail($request->id);
+
         // update badge
-        if ($request->file('image') <> '') {
+        if ($request->image <> '') {
             $fileInfo = $this->handleFileUpload($request, 'image', 'files/badges/');
             if (is_array($fileInfo)) {
+                $this->removeImageFile($b->path);
                 $b->file_name = $fileInfo['name'];
                 $b->file_path = $fileInfo['path'];
                 $b->file_url = $fileInfo['url'];
@@ -83,14 +85,19 @@ class BadgeController extends Controller
         $b->description = $request->description;
         $b->modified_by = $user->id;
         $b->save();
+        
+        return redirect()->action('HomeController@index');
 
-        return $this->json_response($b);
+
+        //return $this->json_response($b);
     }
 
     public function destroy(Request $request, $badgeId)
     {
+        // TODO: Remove file from disk
         $b = Badge::findOrFail($badgeId);
         $b->removeAchievements();
+        $this->removeImageFile($b->file_path);
         $b->delete();
         return $this->ok();
     }

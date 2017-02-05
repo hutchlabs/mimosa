@@ -12,14 +12,25 @@ require('./bootstrap');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+require('./components/Welcome.vue');
+require('./components/Home.vue');
+require('./components/Stats.vue');
 require('./components/Users.vue');
 require('./components/Organizations.vue');
+require('./components/Permissions.vue');
 require('./components/Badges.vue');
+require('./components/Plans.vue');
+require('./components/Screening.vue');
+require('./components/Events.vue');
+require('./components/Jobs.vue');
+
+window.bus = new Vue({});
 
 const app = new Vue({
     el: '#app',
 
     components: {
-        'notifications': Notifications
+        'notifications': Notification,
     },
 });
+

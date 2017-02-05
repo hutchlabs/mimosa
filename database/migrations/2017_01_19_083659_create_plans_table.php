@@ -17,6 +17,7 @@ class CreatePlansTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->longText('description');
+            $table->integer('cost')->default(0);
             $table->integer('num_posts');
             $table->boolean('num_notifications');
             $table->boolean('feature_job');

@@ -6,12 +6,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Gradlead\Job;
 use App\Gradlead\Application;
+use App\Gradlead\Test;
+
 
 class JobController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth', ['except'=>'featured']);
+    }
+    
+    public function applications(Request $request)
+    {
+        $items = Application::all();
+        return $this->json_response($items);
     }
     
     public function apply(Request $request)
@@ -86,10 +94,8 @@ class JobController extends Controller
     
     public function index()
     {
-        // TODO: Get current tenant id (org id) and check in school ids
-        // unless its Gradlead, then send all, or employer then send only their jobs
-        $items = Job::all();
-        //$items = Job::whereRaw('school_ids like "%,?,%"',$schoolId)->get();
+        $tenant = $this->getTenant();
+        $items = ($tenant->isGradlead()) ? Job::all() : Job::myJobs($tenant->id);
         return $this->json_response($items);
     }
 
@@ -151,8 +157,15 @@ class JobController extends Controller
 
             $i->start_date = $request->start_date;
             $i->end_date = $request->end_date;
+            
+            //TODO: task to check feature status
+            $i->featured = ($this->getTenant()->isGradlead()) ? $request->featured 
+                                                              : $i->getFeaturedStatus();
+            
+            //TODO: task to check and change job status
+            $i->setStatus();
+            
             $i->modified_by = $user->id;
-
             $i->save();
 
             // TODO: notify alerts
@@ -173,7 +186,6 @@ class JobController extends Controller
            'title'=> 'required|max:255',
            'teaser' => 'required|max:255',
            'description_text' => 'required',
-           'pdf' => 'present',
            'start_date' => 'present',
            'end_date' =>'present'
           ]
@@ -214,11 +226,34 @@ class JobController extends Controller
        
         $i->start_date = $request->start_date;
         $i->end_date = $request->end_date;
+        
+        $i->setStatus();
+        $i->featured = ($this->getTenant()->isGradlead()) ? $request->featured 
+                                                            : $i->getFeaturedStatus();
+        
         $i->modified_by = $user->id;
         $i->save();
         
         return $this->json_response($i);
     }
+    
+    public function updateStatus(Request $request, $itemId)
+    {
+        $user = $request->user();
+
+        $i = Job::find($itemId);
+
+        if (is_null($i)) {
+            return $this->json_response(['Cannot find job to update'], true);    
+        }
+        
+        $i->status = !$i->status;        
+        $i->modified_by = $user->id;
+        $i->save();
+        
+        return $this->json_response($i);
+    }
+
 
     public function destroy(Request $request, $itemId)
     {

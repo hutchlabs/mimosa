@@ -14,6 +14,8 @@ class VerifyCsrfToken extends BaseVerifier
     protected $except = [
         'flogin',
         'flogout',
-        'fregister'
+        'fregister',
+        'fauthuser',
+        'badges'
     ];
 }

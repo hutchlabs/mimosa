@@ -2,9 +2,9 @@
 
 namespace App\Gradlead;
 
-use App\Gradlead\BaseModel;
+use Illuminate\Database\Eloquent\Model;
 
-class QuestionField extends BaseModel
+class QuestionField extends Model
 {
     protected $table = 'questions_fields';
 

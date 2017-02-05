@@ -2,14 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Storage;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    
+    protected function getTenant()
+    {
+        $tenants = \Landlord::getTenants();
+        $tenant = \App\Gradlead\Organization::find($tenants['organization_id']);  
+        return $tenant;
+    }
     
     protected function ok()
     {
@@ -19,9 +28,9 @@ class Controller extends BaseController
     protected function json_response($val, $error=false, $code=200)
     {
         if ($error) {
-            $response = array('data'=>null, 'error'=>$val);
+            $response = array('data'=>null, 'errors'=>$val);
         } else {
-            $response = array('data'=>$val, 'error'=>null);
+            $response = array('data'=>$val, 'errors'=>null);
         }
 
         return response()->json($response, $code);
@@ -56,6 +65,11 @@ class Controller extends BaseController
         $mimetype = Storage::mimeType($path);
         
         return array('name'=>$name, 'path'=>$path, 'url'=>$url, 'size'=>$size, 'mimetype'=>$mimetype);
+    }
+    
+    protected function removeImageFile($path) 
+    {
+       Storage::delete($path);
     }
     
     protected function processDestroy($i) 
