@@ -10,7 +10,7 @@
 
                 <!-- Update Form -->
                 <form v-on:submit="updateBadge($event)" class="form-horizontal" 
-                      action="/mimosa/api/badges" method="post" enctype="multipart/form-data" id="myuform">
+                      action="/mimosa/badges" method="post" enctype="multipart/form-data" id="myuform">
                     <input type="hidden" name="_method" value="PUT" />
                     <input type="hidden" id="bid" name="id" value="" />
                     

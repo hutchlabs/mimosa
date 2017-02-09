@@ -18,14 +18,14 @@ Vue.component('gradlead-welcome-screen', {
 
     methods: {
         getFeaturedJobs: function () {
-            this.$http.get('/mimosa/api/jobs/featured')
+            this.$http.get('/mimosa/jobs/featured')
                 .then(function (resp) {
                     this.jobs = resp.data;
                 });
         },
         
         getFeaturedCompanies: function () {
-            this.$http.get('/mimosa/api/organizations/featured')
+            this.$http.get('/mimosa/organizations/featured')
                 .then(function (resp) {
                     this.companies = resp.data;
                 });

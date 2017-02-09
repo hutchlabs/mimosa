@@ -13,7 +13,7 @@ Vue.component('gradlead-permissions-screen', {
             tracking: [],
             events: [],
 
-            baseUrl: '/mimosa/api/',
+            baseUrl: '/mimosa/',
 
             forms: {
                 updatePermission: new SparkForm ({

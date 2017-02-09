@@ -6,7 +6,7 @@ Vue.component('gradlead-orgs-screen', {
 
     data: function() {
         return {
-            baseUrl: '/mimosa/api/',
+            baseUrl: '/mimosa/',
 
             organizations: [],
             employers: [],

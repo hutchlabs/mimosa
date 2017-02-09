@@ -15,7 +15,7 @@ Vue.component('gradlead-badges-screen', {
             nameError: false,
             descError: false,
 
-            baseUrl: '/mimosa/api/',
+            baseUrl: '/mimosa/',
 
             forms: {
                updateBadge: new SparkForm ({

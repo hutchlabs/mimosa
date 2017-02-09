@@ -38,7 +38,7 @@ Vue.component('gradlead-plans-screen', {
                             {'text': 'Unlimited', 'value':'0'},
                          ],
 
-            baseUrl: '/mimosa/api/',
+            baseUrl: '/mimosa/',
 
             forms: {
                 addPlan: new SparkForm ({

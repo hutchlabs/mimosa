@@ -26,7 +26,7 @@ Vue.component('gradlead-jobs-screen', {
 
     data: function() {
         return {
-            baseUrl: '/mimosa/api/',
+            baseUrl: '/mimosa/',
             
             user: null,
             

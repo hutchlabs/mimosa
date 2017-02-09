@@ -8,7 +8,7 @@ Vue.component('gradlead-screening-screen', {
 
     data: function () {
         return {
-            baseUrl: '/mimosa/api/',
+            baseUrl: '/mimosa/',
 
             user: null,
             questionnaires: [],
