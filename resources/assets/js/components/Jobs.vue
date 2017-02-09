@@ -1,7 +1,8 @@
 Vue.component('gradlead-jobs-screen', {
 
     components: {
-        Datepicker
+        Datepicker,
+        Multiselect
     },
 
     mounted: function() {
@@ -38,6 +39,11 @@ Vue.component('gradlead-jobs-screen', {
             jobTypes: [],
             skills: [],
 
+            addSkills:'',
+            myskills:'',
+            addJT:'',
+            sel:'',
+            
             steps: { percent:0, step1:true, step2:false, step3:false },
             
             step1Class: 'active',
@@ -207,6 +213,12 @@ Vue.component('gradlead-jobs-screen', {
         };
     },
     
+    watch: {
+        'addSkills': function(nw) {
+            console.log(nw);
+            this.myskills += nw.name;
+        },
+    },
     events: {
   
     },
@@ -232,6 +244,9 @@ Vue.component('gradlead-jobs-screen', {
             this.apps = job.applications;
         },
         
+        updateAddSkills: function (newSelected) { this.addSkills = newSelected; console.log(this.addSkills); },
+        updateAddJT (newSelected) { this.addJT = newSelected; },
+
         
         getJobName: function() {
             return (this.apps.length>0) ? this.apps[0].jobname : '';
@@ -431,49 +446,36 @@ Vue.component('gradlead-jobs-screen', {
         // Add functionality
         addJob: function () {
             var self = this;
-            var formData = new FormData($('#addForm')[0]);
-            
-            if (!this.formHasErrors()) {
-                self.$http.post(self.baseUrl+'jobs', formData).then(function(resp) { 
-                    console.log(resp);
+            var formData = new FormData($('#addJobForm')[0]);
+
+            if (this.validForm('jobAddForm', true)) {
+                self.$http.post(self.baseUrl + 'jobs', formData).then(function (resp) {
+                    self.getJobs();
+                    var back = self.$refs.backtoJobs;
+                    back.click();
+                }, function (resp) {
+                    self.highlightErrors('jobAddForm', resp.data);
                 });
             }
         },
         
-        // Edit functionality 
-        editJob: function (job) {
+        // Update functionality 
+        updateJob: function (job) {
+             var self = this;
+                var formData = new FormData($('#updateJobForm')[0]);
 
-        },
-
-
-        // Ajax calls
-        addNewJob: function () {
-            var self = this;
-            Spark.post(self.baseUrl+'jobs', this.forms.addJob)
-                .then(function () {
-                    $('#modal-add-job').modal('hide');
-                    self.getJobs();
-                }, function(resp) {
-                    self.forms.addJob.busy = false;
-                    NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
-                });
-        },
-        updateJob: function () {
-            var self = this;
-            Spark.put(self.baseUrl+'jobs/' + this.editingJob.id, this.forms.updateJob)
-                .then(function () {
-                    self.getJobs();
-                    $('#modal-edit-job').modal('hide');
-                });
+                if (this.validForm('jobUpdateForm', true)) {
+                    self.$http.post(self.baseUrl + 'jobs/'+job.id,formData).then(function (resp) {
+                        self.getJobs();
+                        var back = self.$refs.backtoJobs;
+                        back.click();
+                    }, function (resp) {
+                        self.highlightErrors('jobUpdateForm', resp.data);
+                    });
+                }
         },
         
-        setStatus: function (job) {
-            var self = this;
-            job.status = !job.status;
-            this.$http.put(self.baseUrl+'jobs/' + job.id + '/changestatus')
-                .then(function () {  self.getJobs(); });
-        },
-        
+        // Remove functionality
         removeJob: function (job) {
             var self = this;
             self.removingJobId = job.id;
@@ -484,8 +486,16 @@ Vue.component('gradlead-jobs-screen', {
                     self.jobs = self.removeFromList(this.jobs, job);
                 }, function(resp) {
                     self.removingJobId = 0;
-                    NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
+                    console.log(resp);
                 });
+        },
+
+
+        // Ajax calls
+        setStatus: function (job) {
+            var self = this;
+            job.status = !job.status;
+            this.$http.put(self.baseUrl+'jobs/' + job.id + '/changestatus').then(function () {  self.getJobs(); });
         },
 
         getJobs: function () {
@@ -495,6 +505,7 @@ Vue.component('gradlead-jobs-screen', {
                     self.jobs = resp.data.data;
                 });
 		},
+       
         getPlans: function () {
             var self = this;
             this.$http.get(self.baseUrl+'plans')
@@ -502,12 +513,14 @@ Vue.component('gradlead-jobs-screen', {
                     self.plans = resp.data.data;
                 });
 		},
+       
         getJobTypes: function () {
             var self = this;
             this.$http.get(self.baseUrl+'jobtypes').then(function (resp) {
                     self.jobTypes = resp.data.data;
             });
 		},
+        
         getSkills: function () {
             var self = this;
             this.$http.get(self.baseUrl+'skills').then(function (resp) {

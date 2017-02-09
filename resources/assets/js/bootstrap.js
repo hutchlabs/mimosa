@@ -35,6 +35,9 @@ Vue.http.interceptors.push((request, next) => {
 import Datepicker from 'vuejs-datepicker';
 window.Datepicker = Datepicker;
 
+import Multiselect from 'vue-multiselect'
+window.Multiselect = Multiselect;
+
 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening

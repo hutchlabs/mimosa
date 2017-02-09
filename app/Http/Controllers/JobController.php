@@ -117,7 +117,7 @@ class JobController extends Controller
            'title'=> 'required|max:255',
            'teaser' => 'required|max:255',
            'description_text' => 'required',
-           'pdf' => 'present',
+           'pdf' => 'nullable',
            'start_date' => 'present',
            'end_date' =>'present'
           ]

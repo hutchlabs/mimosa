@@ -105,20 +105,35 @@
                                             <div class="panel-body">
                                                 <div class="form-group">
                                                     <label class="control-label">Job Type</label>
-                                                    <select id="jobtypes" name="jobtypes" class="form-control">
-                                                        <option v-for="jt in jobTypes" :value="jt.id">
-                                                            @{{ jt.name }}
-                                                        </option>
-                                                    </select>
+                                                    <multiselect
+                                                            :options="jobTypes"
+                                                            :multiple="true"
+                                                            :close-on-select="true"
+                                                            :hide-selected="true"
+                                                            @update="updateAddJT"
+                                                            placeholder="Select Job types"
+                                                            v-model="addJT"
+                                                            label="name"
+                                                            key="id" >
+                                                        </multiselect>
+                                                    <input type="hidden" name="jobtypes" id="jobtypes" :value="addJT"/>
                                                 </div>
 
                                                <div class="form-group">
-                                                    <label class="control-label">Skills</label>
-                                                    <select id="positions" name="skills" class="form-control" multiple>
-                                                        <option v-for="s in skills" :value="s.id">
-                                                            @{{ s.name }}
-                                                        </option>
-                                                    </select>
+                                                    <label class="control-label">Positions</label>
+                                                    <multiselect
+                                                            :options="skills"
+                                                            :multiple="true"
+                                                            :hide-selected="true"
+                                                            :selected="sel"
+                                                            :close-on-select="true"
+                                                            @update="updateAddSkills"
+                                                            placeholder="Required skills.."
+                                                            v-model="addSkills"
+                                                            label="name"
+                                                            key="id" >
+                                                        </multiselect>
+                                                    <input type="hidden" name="positions" id="positions" :value="myskills"/>    
                                                 </div>
                                                 
                                                 <div class="form-group">
