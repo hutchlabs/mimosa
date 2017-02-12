@@ -47,7 +47,7 @@
         <a href="#/" class="navbar-brand text-lt">
           <i class="fa fa-graduation-cap"></i>
           <img src="img/logo.png" alt="." class="hide">
-          <span class="hidden-folded m-l-xs">{{ $name }}</span>
+          <span class="hidden-folded m-l-xs">{{ strtok($name," ") }}</span>
         </a>
         <!-- / brand -->
       </div>

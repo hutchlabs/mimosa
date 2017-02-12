@@ -29,6 +29,7 @@ class ApiController extends Controller
     
     public function authenticate(Request $request)
     {
+        if (Auth::check()) { Auth::logout(); }
 
         $validator = Validator::make($request->all(), 
                                   ['email' => 'required|email|exists:users,email',
@@ -44,29 +45,27 @@ class ApiController extends Controller
             return $this->json_response($resp, true, 422);
         }
         
-        if (Auth::check()) { Auth::logout(); }
+        $ot = json_decode(\Landlord::getTenants());
 
         // grab credentials from the request
         $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            return $this->json_response($user);
-        }
-
-        return $this->json_response(['email'=>['invalid credentials']], true, 401);
+        
+        // HACK: find user attached to email and then use that to set the reset the tenant
+        if ($this->userExistsForTenant($request->email,$ot->organization_id)) {
+            if (Auth::attempt($credentials)) {
+                $user = Auth::user();
+                return $this->json_response($user);
+            }
+        } 
+       
+        $tenants = \Landlord::getTenants();
+        return $this->json_response(['email'=>['Invalid credentials'],
+                                     'tenants'=>$tenants, 'ot'=>$ot], true, 401);
     }
 
     
     public function registeruser(Request $request)
     {
-        
-        /*$this->validate($request, ['email' => 'required|email|unique:users,email',
-                                   'name' => 'required|max:255',
-                                   'password'=> 'required|min:6',
-                                   'type' => 'required|in:employer,gradlead,graduate,school,student',
-                                  ]
-        );*/
         
         $validator = Validator::make($request->all(), ['email' => 'required|email|unique:users,email',
                                    'name' => 'required|max:255',
@@ -106,5 +105,15 @@ class ApiController extends Controller
         $u = User::find($u->id); // add profile
 
         return $this->json_response($u);
+    }
+
+    private function userExistsForTenant($email, $tenant) 
+    {
+        $user = User::where('email',$email)->first();
+        if ($user) {
+            \Landlord::addTenant('organization_id',$user->organization_id);
+            return true;
+        }
+        return false;
     }
 }

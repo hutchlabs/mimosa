@@ -5,6 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 
 use App\Gradlead\Organization;
+use App\User;
+use Illuminate\Support\Facades\Auth;
 
 class SetTenant
 {
@@ -17,15 +19,19 @@ class SetTenant
      */
     public function handle($request, Closure $next)
     {
-        // get subdomain
-        $parsedUrl =  parse_url($_SERVER['HTTP_HOST']);
-        $idx = (isset($parsedUrl['path'])) ? 'path' : 'host';
-        $host = explode('.', $parsedUrl[$idx]);
-        $subdomain = $host[0];
-
-        // get tenant info
-        $tenant = Organization::where('subdomain','=',$subdomain)->first(); 
-        $tenantId = (is_null($tenant)) ? 1 : $tenant->id;
+        $tenantId = 1;
+        
+        if (Auth::check()) { 
+            $tenantId = Auth::user()->organization_id;
+        } else {
+            // get subdomain
+            $parsedUrl =  parse_url($_SERVER['HTTP_HOST']);
+            $idx = (isset($parsedUrl['path'])) ? 'path' : 'host';
+            $host = explode('.', $parsedUrl[$idx]);
+            $subdomain = $host[0];        
+            $tenant = Organization::where('subdomain','=',$subdomain)->first(); 
+            $tenantId = (is_null($tenant)) ? 1 : $tenant->id;
+        }
 
         // set tenant 
         \Landlord::addTenant('organization_id',$tenantId);

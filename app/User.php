@@ -8,7 +8,7 @@ use HipsterJazzbo\Landlord\BelongsToTenants;
 
 class User extends Authenticatable
 {
-    use Notifiable, BelongsToTenants;
+    use Notifiable;//, BelongsToTenants;
 
     /**
      * The attributes that are mass assignable.

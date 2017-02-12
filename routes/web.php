@@ -15,7 +15,7 @@ Route::group(['middleware' => 'web'], function ($router) {
         Auth::routes();
 
         $router->get('/',           'WelcomeController@index');
-        $router->get('/login',     'WelcomeController@index');
+        $router->get('/login',      'WelcomeController@index');
         $router->get('/home',       'HomeController@index');
         $router->get('/fauthuser',  'ApiController@authuser');
         $router->get('/flogout',    'ApiController@logout');
