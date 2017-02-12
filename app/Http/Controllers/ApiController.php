@@ -45,22 +45,16 @@ class ApiController extends Controller
             return $this->json_response($resp, true, 422);
         }
         
-        $ot = json_decode(\Landlord::getTenants());
-
         // grab credentials from the request
         $credentials = $request->only('email', 'password');
         
-        // HACK: find user attached to email and then use that to set the reset the tenant
-        if ($this->userExistsForTenant($request->email,$ot->organization_id)) {
-            if (Auth::attempt($credentials)) {
-                $user = Auth::user();
-                return $this->json_response($user);
-            }
-        } 
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            return $this->json_response($user);
+        }
        
         $tenants = \Landlord::getTenants();
-        return $this->json_response(['email'=>['Invalid credentials'],
-                                     'tenants'=>$tenants, 'ot'=>$ot], true, 401);
+        return $this->json_response(['email'=>['Invalid credentials']], true, 401);
     }
 
     
@@ -105,15 +99,5 @@ class ApiController extends Controller
         $u = User::find($u->id); // add profile
 
         return $this->json_response($u);
-    }
-
-    private function userExistsForTenant($email, $tenant) 
-    {
-        $user = User::where('email',$email)->first();
-        if ($user) {
-            \Landlord::addTenant('organization_id',$user->organization_id);
-            return true;
-        }
-        return false;
     }
 }

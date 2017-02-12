@@ -41208,7 +41208,7 @@ Vue.component('gradlead-orgs-screen', {
         addOrganization: function (type) {
             this.forms.addOrganization.name = '';
             this.forms.addOrganization.type = type;
-            this.forms.addOrganization.subdomain = (type=='school')?'':'localhost';
+            this.forms.addOrganization.subdomain = (type!='gradlead')?'':'localhost';
             this.forms.addOrganization.errors.forget();
             $('#modal-add-'+type+'-org').modal('show');
         },

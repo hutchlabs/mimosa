@@ -17,6 +17,9 @@
 
                             <spark-text :display="'Name*'" :form="forms.addOrganization" :name="'name'" :input="forms.addOrganization.name">
                             </spark-text>
+                            
+                            <spark-text :display="'Sub Domain*'" :form="forms.addOrganization" :name="'subdomain'" :input="forms.addOrganization.subdomain">
+                            </spark-text>
 
                         </div>
                     </div>
