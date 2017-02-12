@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Gradlead\Job;
 use App\Gradlead\Application;
-use App\Gradlead\Test;
+use App\Gradlead\Contract;
 
 
 class JobController extends Controller
@@ -101,7 +101,7 @@ class JobController extends Controller
 
     public function featured()
     {
-        $items = Job::featured();
+        $items = Job::featuredJobs();
         return $this->json_response($items);
     }
     
@@ -124,7 +124,7 @@ class JobController extends Controller
         );
     
         // Validate contract
-        if(($contract_id = Contract::checkContract($request->organization_id, $request->plan_id))!==false) {
+        if(($contract_id = Contract::checkContract($request->organization_id, $request->plan_id, $user->id))!==false) {
              // 1. Create Job
             $i = new Job();
             $i->organization_id = $request->organization_id;
@@ -146,21 +146,20 @@ class JobController extends Controller
             $i->positions = (isset($request->positions)) ?$request->positions:'';
             $i->country = (isset($request->country)) ? $request->country:'';
             $i->city = (isset($request->city)) ? $request->city:'';
-            $i->remote = (isset($request->remote)) ? $request->remote:0;
+            $i->remote = (isset($request->remote) && $request->remote=='on') ? 1: 0;
             $i->send_via_email = (isset($request->send_via_email)) ? $request->send_via_email:'';
-            $i->video_title = (isset($request->send_via_url)) ? $request->send_via_url:'';
-            $i->video_url = (isset($request->send_via_url)) ? $request->send_via_url:'';
+            $i->send_via_url = (isset($request->send_via_url)) ? $request->send_via_url:'';
+            $i->video_title = (isset($request->video_title)) ? $request->video_title:'';
+            $i->video_url = (isset($request->video_url)) ? $request->video_url:'';
 
-            $i->preselect = (isset($request->preselect) && sizeof($request->preselect)>0) ? json_encode($request->preselect):null;
-            $i->questionnaire_id = $request->questionnaire_id;
-            $i->questionnaire_values = (isset($request->screening) && sizeof($request->screening)>0) ? json_encode($request->screening):null;
+            $i->preselect = (isset($request->preselect) && sizeof($request->preselect)>0) ? $request->preselect:'';
+            $i->questionnaire_id = ($request->questionnaire_id=='') ? 0 : $request->questionnaire_id;
 
-            $i->start_date = $request->start_date;
-            $i->end_date = $request->end_date;
+            $i->start_date = date("Y-m-d", strtotime($request->start_date));
+            $i->end_date = date("Y-m-d", strtotime($request->end_date));
             
             //TODO: task to check feature status
-            $i->featured = ($this->getTenant()->isGradlead()) ? $request->featured 
-                                                              : $i->getFeaturedStatus();
+            $i->featured = ($this->getTenant()->isGradlead()) ? ((isset($request->featured)) ? 1:0) : $i->getFeaturedStatus();
             
             //TODO: task to check and change job status
             $i->setStatus();
@@ -215,21 +214,21 @@ class JobController extends Controller
         $i->positions = (isset($request->positions)) ?$request->positions:'';
         $i->country = (isset($request->country)) ? $request->country:'';
         $i->city = (isset($request->city)) ? $request->city:'';
-        $i->remote = (isset($request->remote)) ? $request->remote:0;
+        $i->remote = (isset($request->remote) && $request->remote=='on') ? 1: 0;
+
         $i->send_via_email = (isset($request->send_via_email)) ? $request->send_via_email:'';
-        $i->video_title = (isset($request->send_via_url)) ? $request->send_via_url:'';
-        $i->video_url = (isset($request->send_via_url)) ? $request->send_via_url:'';
+        $i->send_via_url = (isset($request->send_via_url)) ? $request->send_via_url:'';
+        $i->video_title = (isset($request->video_title)) ? $request->video_title:'';
+        $i->video_url = (isset($request->video_url)) ? $request->video_url:'';
         
-        $i->preselect = (isset($request->preselect) && sizeof($request->preselect)>0) ? json_encode($request->preselect):null;
-        $i->questionnaire_id = $request->questionnaire_id;
-        $i->questionnaire_values = (isset($request->screening) && sizeof($request->screening)>0) ? json_encode($request->screening):null;
+        $i->preselect = (isset($request->preselect) && sizeof($request->preselect)>0) ? $request->preselect:'';
+        $i->questionnaire_id = ($request->questionnaire_id=='') ? 0 : $request->questionnaire_id;
        
-        $i->start_date = $request->start_date;
-        $i->end_date = $request->end_date;
+        $i->start_date = date("Y-m-d", strtotime($request->start_date));
+        $i->end_date = date("Y-m-d", strtotime($request->end_date));
         
         $i->setStatus();
-        $i->featured = ($this->getTenant()->isGradlead()) ? $request->featured 
-                                                            : $i->getFeaturedStatus();
+        $i->featured = ($this->getTenant()->isGradlead()) ? ((isset($request->featured)) ? 1:0) : $i->getFeaturedStatus();
         
         $i->modified_by = $user->id;
         $i->save();

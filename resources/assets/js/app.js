@@ -32,5 +32,9 @@ const app = new Vue({
     components: {
         'notifications': Notification,
     },
+
+    data: {
+
+    }
 });
 

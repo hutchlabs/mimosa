@@ -31,7 +31,7 @@
                     </div>
                     
                     <div role="tabpanel" class="tab-pane" id="editjob">
-                        Edit a Job
+                        @include('dashboards.jobs.jobs-edit')    
                     </div>
                 </div>
 

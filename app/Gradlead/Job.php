@@ -73,7 +73,7 @@ class Job extends Model
         return $query->where('status',1)->get();
     }
 
-    public static function featured()
+    public static function featuredJobs()
     {
 		//return Job::with('organization')->WhereFeatured()->get();
         return Job::with('organization')->Featured()->get();

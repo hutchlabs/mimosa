@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 use App\Gradlead\Plan;
+use App\Gradlead\Contract;
+
 
 class PlanController extends Controller
 {
@@ -17,6 +19,12 @@ class PlanController extends Controller
     public function index()
     {
         $items = Plan::all();
+        return $this->json_response($items);
+    }
+    
+    public function contracts()
+    {
+        $items = Contract::all();
         return $this->json_response($items);
     }
     

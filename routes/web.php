@@ -98,8 +98,9 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->delete('profiles/users/resume/{id}',       'ProfileController@destroyUserResume');   
         $router->delete('profiles/users/skill/{id}',        'ProfileController@destroyUserSkill');   
 
-        // Plans
+        // Plans & Contracts
         $router->get('plans',                   'PlanController@index');
+        $router->get('contracts',               'PlanController@contracts');
         $router->post('plans',                  'PlanController@store');
         $router->put('plans/{id}',              'PlanController@update');
         $router->delete('plans/{id}',           'PlanController@destroy');

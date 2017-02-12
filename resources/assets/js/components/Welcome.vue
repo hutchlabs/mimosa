@@ -7,25 +7,25 @@ Vue.component('gradlead-welcome-screen', {
         return {
             jobs: [],
             companies: [],
+            baseUrl: '/mimosa/',
         };
     },
     
     events: {
     },
 
-    computed: {
-    },
+    computed: { },
 
     methods: {
         getFeaturedJobs: function () {
-            this.$http.get('/mimosa/jobs/featured')
+            this.$http.get(self.baseUrl+'jobs/featured')
                 .then(function (resp) {
                     this.jobs = resp.data;
                 });
         },
         
         getFeaturedCompanies: function () {
-            this.$http.get('/mimosa/organizations/featured')
+            this.$http.get(self.baseUrl+'organizations/featured')
                 .then(function (resp) {
                     this.companies = resp.data;
                 });

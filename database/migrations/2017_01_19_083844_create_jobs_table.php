@@ -33,9 +33,8 @@ class CreateJobsTable extends Migration
             $table->string('send_via_url')->nullable();
             $table->string('video_title')->nullable();
             $table->string('video_url')->nullable();
-            $table->boolean('preselect')->default(0);
+            $table->longText('preselect')->nullable();
             $table->integer('questionnaire_id')->nullable();
-            $table->longText('questionnaire_values')->nullable(); 
             $table->date('start_date');
             $table->date('end_date');
             $table->boolean('status')->default(0);

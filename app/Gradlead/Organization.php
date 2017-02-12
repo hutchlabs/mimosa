@@ -20,7 +20,10 @@ class Organization extends Model
 
     protected function getArrayableAppends()
     {
-        $this->appends = array_merge($this->appends, ['numusers','numschools','numrecruiters']);
+        $appends = ($this->isCompany()) ? ['numusers','numschools','numrecruiters','schools']
+                                      : ['numusers','numschools','numrecruiters'];
+        $this->appends = array_merge($this->appends, $appends);
+
         return parent::getArrayableAppends();
     }
 
@@ -30,6 +33,13 @@ class Organization extends Model
                 ->select(DB::raw('id'))
                 ->where('organization_id',$this->id)
                 ->count(); 
+    }
+
+    public function getSchoolsAttribute() {
+      return DB::table('organizations_employers')
+                ->select(DB::raw('organization_id'))
+                ->where('employer_id',$this->id)
+                ->get()->pluck('organization_id'); 
     }
 
     public function getNumschoolsAttribute() {

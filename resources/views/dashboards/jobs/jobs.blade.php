@@ -61,8 +61,10 @@
 
                             <td class="spark-table-pad">
 
-                                <button class="btn btn-info btn-sm" @click="setJob(j)" @mouseover="clearFields('jobUpdateForm')">
-                                    <i class="fa fa-pencil"></i> </button>
+                                <a class="btn btn-info btn-sm"  href="#editjob" aria-controls="editjob" role="tab" data-toggle="tab"
+                                        @mouseover="clearFields('jobUpdateForm'); setJob(j)">
+                                    <i class="fa fa-pencil"></i> 
+                                </a>
 
                                 <button class="btn btn-danger  btn-sm" @click.prevent="removeJob(j)" :disabled="removingJob(j.id)">
                                     <span v-if="removingJob(j.id)"><i class="fa fa-spinner fa-spin"></i> 

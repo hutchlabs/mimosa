@@ -4,7 +4,7 @@ Vue.component('spark-featured-jobs', {
     // TODO: Finish avatar load and onclick 
     template: '<div> \
         <div v-for="job in jobs" class="col-md-4 col-sm-6 blog-masonry-item development card">\
-          <div class="item-inner quote-post">\
+          <div v-if="job.organization.profile!=null" class="item-inner quote-post">\
             <div class="post-title">\
               <div class="row">\
                 <div class="col-md-4">\

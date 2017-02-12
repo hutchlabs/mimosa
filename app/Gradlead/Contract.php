@@ -3,6 +3,8 @@
 namespace App\Gradlead;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+
 
 class Contract extends Model
 {
@@ -13,6 +15,18 @@ class Contract extends Model
     protected $hidden = [];
 
     protected $with = ['plan'];
+    
+    protected function getArrayableAppends()
+    {
+        $appends = ['expired'];
+        $this->appends = array_merge($this->appends, $appends);
+        return parent::getArrayableAppends();
+    }
+
+    public function getExpiredAttribute() 
+    {
+      return (!$this->isValid() || !$this->hasPosts());
+    }
 
     public function plan()
     {
@@ -34,14 +48,19 @@ class Contract extends Model
         return $query->whereRaw("NOW() BETWEEN start_date AND end_date")->get();
     }
 
-    public function isValid()
+    public function hasPosts()
     {
-        return ((strtotime($this->end_date) > strtotime()) &&
-                (strtotime() >= strtotime($this->start_date)));
+        return ($this->remaining_posts>0);
     }
     
-    public static function checkContract($orgId, $planId)
-    {         
+    public function isValid()
+    {
+        return ((strtotime($this->end_date) > strtotime(date('Y-m-d'))) && 
+                (strtotime(date('Y-m-d')) >= strtotime($this->start_date)));
+    }
+    
+    public static function checkContract($orgId, $planId, $userId)
+    {        
         $c = Contract::whereRaw('organization_id=? and plan_id=? and NOW() BETWEEN start_date AND end_date',
                                 array($orgId,$planId))->first();
      
@@ -58,16 +77,21 @@ class Contract extends Model
             $c->start_date = date('Y-m-d');
             $c->end_date = date('Y-m-d',strtotime($c->start_date." +".$p->duration." days"));
         
-            //TODO: handle featured options
-        
+            // TODO: handle featured options   
+            // TODO: raise invoice to Employer?
+
         } else {
-            if ($c->remaining_posts>0) { $c->remaining_posts--; }
-            if ($c->remaining_notifications>0) {
-                // TODO: implement notifications
-                $c->remaining_notifications = 0;
+            if ($planId!=1) {
+                if ($c->remaining_posts>0) { $c->remaining_posts--; }
+            
+                if ($c->remaining_notifications>0) {
+                    // TODO: implement notifications
+                    $c->remaining_notifications = 0;
+                }                
             }
         }
         
+        $c->modified_by = $userId;
         $c->save();
 
         return $c->id;
