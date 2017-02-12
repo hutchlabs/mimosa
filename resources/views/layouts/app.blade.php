@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}" type="text/css" />
     <link href="{{ asset('css/jquery.filer.css') }}" type="text/css" rel="stylesheet" />
     <link href="{{ asset('css/themes/jquery.filer-dragdropbox-theme.css') }}" type="text/css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}" type="text/css" />
 
     <!-- Scripts -->
     <script>

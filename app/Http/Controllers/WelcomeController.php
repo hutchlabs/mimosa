@@ -15,6 +15,18 @@ class WelcomeController extends Controller
     public function index()
     {
         $tenant = $this->getTenant();
-        return view('welcome.index', array('name'=>$tenant->name));
+        return view('welcome.index', array('name'=>$tenant->name,'link'=>'home'));
+    }
+    
+    public function schools()
+    {
+        $tenant = $this->getTenant();
+        return view('welcome.index', array('name'=>$tenant->name,'link'=>'schools'));
+    }
+    
+    public function contact()
+    {
+        $tenant = $this->getTenant();
+        return view('welcome.index', array('name'=>$tenant->name,'link'=>'contact'));
     }
 }
