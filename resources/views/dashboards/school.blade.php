@@ -30,6 +30,7 @@
                     <span>Job Postings</span>
                 </a>
               </li>
+<!--
               <li>
                 <a href="#applications" aria-controls="applications" role="tab" data-toggle="tab">
                     <i class="icon icon-envelope-letter"></i>
@@ -42,6 +43,7 @@
                     <span>Job Seekers</span>
                 </a>
               </li>
+-->
               <li v-if="canEdit">
                     <a href="#employers" aria-controls="employers" role="tab" data-toggle="tab">
                         <i class="glyphicon glyphicon-home icon"></i>

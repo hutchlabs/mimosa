@@ -36,6 +36,6 @@ class HomeController extends Controller
             default: $view = 'welcome.index';
         }
             
-        return view($view, array('name'=>$tenant->name));
+        return view($view, array('name'=>Auth::user()->organization->name));
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 use App\Gradlead\Theme;
 
@@ -12,7 +13,8 @@ class WelcomeController extends Controller
     
     public function __construct()
     {
-        $items = Theme::withoutGlobalScope('organization_id')->find($this->getTenant()->id);
+        $tid = (Auth::check()) ? Auth::user()->organization_id : $this->getTenant()->id;
+        $items = Theme::withoutGlobalScope('organization_id')->find($tid);
         if (!$items) {
             $items = Theme::withoutGlobalScope('organization_id')->find(1);
         }

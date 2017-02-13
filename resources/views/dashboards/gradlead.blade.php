@@ -38,6 +38,7 @@
                         <span>Job Postings</span>
                     </a>
                   </li>
+<!--
                   <li>
                     <a href="#applications" aria-controls="applications" role="tab" data-toggle="tab">
                         <span>Applications</span>
@@ -48,6 +49,7 @@
                         <span>Job Seekers</span>
                     </a>
                   </li>
+-->
                 </ul>
               </li>
 
