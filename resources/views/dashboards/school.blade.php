@@ -51,8 +51,15 @@
 
               <li v-if="canEdit" class="line dk"></li>
 
-              <li v-if="canEdit && canDoEvents" class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+              <li v-if="canEdit" class="hidden-folded padder m-t m-b-sm text-muted text-xs">
                 <span>Content</span>
+              </li>
+
+              <li v-if="canEdit">
+                <a href="#theme" aria-controls="theme" role="tab" data-toggle="tab">
+                  <i class="glyphicon glyphicon-picture icon"></i>
+                  <span class="font-bold">Theme</span>
+                </a>
               </li>
 
               <li v-if="canEdit && canDoEvents">
@@ -129,6 +136,10 @@
 
             <div v-if="canEdit" role="tabpanel" class="tab-pane" id="employers">
                 @include('dashboards.organizations.employers')
+            </div>
+
+            <div v-if="canEdit" role="tabpanel" class="tab-pane" id="theme">
+                @include('dashboards.themes.index')
             </div>
 
             <div v-if="canEdit && canDoEvents" role="tabpanel" class="tab-pane" id="events">
