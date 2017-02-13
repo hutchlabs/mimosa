@@ -1,20 +1,28 @@
 Vue.component('gradlead-welcome-screen', {
 
     mounted: function() {
+        this.getAuthUser();
     },
 
     data: function() {
         return {
+            baseUrl: '/mimosa/',
+            user: null,
+            loggedIn: false,
+            
             jobs: [],
             companies: [],
-            baseUrl: '/mimosa/',
         };
     },
     
     events: {
     },
 
-    computed: { },
+    computed: { 
+        canEdit: function() {
+             return (self.user==null) ? false : ((self.user.role.name=='Member') ? false : true);
+        },
+    },
 
     methods: {
         getFeaturedJobs: function () {
@@ -30,8 +38,16 @@ Vue.component('gradlead-welcome-screen', {
                     this.companies = resp.data;
                 });
         },
+        
+        getAuthUser: function () {
+            var self = this;
+            this.$http.get(self.baseUrl+'fauthuser')
+                .then(function (user) {
+                    self.user = user.data; 
+                    self.loggedIn = (self.user.name) ? true : false;
+                });
+        },
     },
 
-    filters: {
-    },
+    filters: { },
 });

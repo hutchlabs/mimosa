@@ -29,6 +29,65 @@ Vue.component('spark-text', {
     }
 });
 
+Vue.component('spark-text2', {
+    props: ['display', 'form', 'name', 'input'],
+
+    template: '<div class="form-group" :class="{\'has-error\': form.errors.has(name)}">\
+    <label class="control-label">{{ display }}</label>\
+        <input type="text" class="form-control spark-first-field" v-model="fieldValue">\
+        <span class="help-block" v-show="form.errors.has(name)">\
+            <strong>{{ form.errors.get(name) }}</strong>\
+        </span>\
+</div>',
+
+    watch: {
+        'fieldValue': function (v) {
+            this.form[this.name] = v;
+        },
+        'input': function (v) {
+            this.fieldValue = this.input;
+        }
+    },
+    mounted: function () {
+        this.fieldValue = this.input;
+    },
+    data: function () {
+        return {
+            fieldValue: ''
+        }
+    }
+});
+
+Vue.component('spark-textarea', {
+    props: ['display', 'form', 'name', 'input'],
+
+    template: '<div class="form-group" :class="{\'has-error\': form.errors.has(name)}">\
+    <label class="control-label">{{ display }}</label>\
+        <textarea class="form-control spark-first-field" v-model="fieldValue" style="height:120px"></textarea>\
+        <span class="help-block" v-show="form.errors.has(name)">\
+            <strong>{{ form.errors.get(name) }}</strong>\
+        </span>\
+</div>',
+
+    watch: {
+        'fieldValue': function (v) {
+            this.form[this.name] = v;
+        },
+        'input': function (v) {
+            this.fieldValue = this.input;
+        }
+    },
+    mounted: function () {
+        this.fieldValue = this.input;
+    },
+    data: function () {
+        return {
+            fieldValue: ''
+        }
+    }
+});
+
+
 Vue.component('spark-hidden', {
     props: ['display', 'form', 'name', 'input'],
     template: '<input type="hidden" class="form-control" v-model="fieldValue" />',

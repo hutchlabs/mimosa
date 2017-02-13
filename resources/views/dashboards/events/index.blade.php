@@ -9,7 +9,7 @@
       <div class="row">
         <div class="col-sm-6 col-xs-12">
           <h1 class="m-n font-thin h3 text-black">Events</h1>
-          <small class="text-muted">{{$name}} eevents</small>
+          <small class="text-muted">{{$name}} events</small>
         </div>
       </div>
     </div>

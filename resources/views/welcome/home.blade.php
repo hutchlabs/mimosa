@@ -6,8 +6,9 @@
     <div class="container">
       <div class="row">
         <div class="col-md-10 col-md-offset-1 col-sm-12 text-center">
-          <h2 class="text-white">Kick-start your career on Gradlead, the preferred career network for students and graduates.
-            Jobs, internships, and graduate programmes, it’s all there.</h2>
+          <h2 class="text-white" style="padding-bottom: 20px;">
+                   {{ $theme->home_header }}
+           </h2>
         </div>
       </div>
 
@@ -45,9 +46,9 @@
         <div class="col-md-4 col-sm-6 clearfix">
           <div class="feature feature-icon-small">
             <i class="icon icon-document"></i>
-            <h6 class="text-white">Fully Documented</h6>
+            <h6 class="text-white">{{ $theme->home_first_title }}</h6>
             <p class="text-white">
-              Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labor.
+                 {{ $theme->home_first }}
             </p>
           </div><!--end of feature-->
         </div>
@@ -55,9 +56,10 @@
         <div class="col-md-4 col-sm-6 clearfix">
           <div class="feature feature-icon-small">
             <i class="icon icon-linegraph"></i>
-            <h6 class="text-white">Flexible &amp; Modular</h6>
+             <h6 class="text-white">{{ $theme->home_second_title }}</h6>
             <p class="text-white">
-              Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labor.
+             {{ $theme->home_second }}
+
             </p>
           </div><!--end of feature-->
         </div>
@@ -65,9 +67,9 @@
         <div class="col-md-4 col-sm-6 clearfix">
           <div class="feature feature-icon-small">
             <i class="icon icon-target"></i>
-            <h6 class="text-white">Super Sleek Icons</h6>
+             <h6 class="text-white">{{ $theme->home_third_title }}</h6>
             <p class="text-white">
-              Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labor.
+              {{ $theme->home_third }}
             </p>
           </div><!--end of feature-->
         </div>
@@ -104,4 +106,3 @@
       </div>
     </div>
   </section>
-

@@ -22,6 +22,7 @@ require('./components/Badges.vue');
 require('./components/Plans.vue');
 require('./components/Screening.vue');
 require('./components/Events.vue');
+require('./components/Themes.vue');
 require('./components/Jobs.vue');
 
 window.bus = new Vue({});

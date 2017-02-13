@@ -39757,6 +39757,7 @@ require('./components/Badges.vue');
 require('./components/Plans.vue');
 require('./components/Screening.vue');
 require('./components/Events.vue');
+require('./components/Themes.vue');
 require('./components/Jobs.vue');
 
 window.bus = new Vue({});
@@ -39771,7 +39772,7 @@ var app = new Vue({
   data: {}
 });
 
-},{"./bootstrap":9,"./components/Badges.vue":10,"./components/Events.vue":11,"./components/Home.vue":12,"./components/Jobs.vue":13,"./components/Organizations.vue":14,"./components/Permissions.vue":15,"./components/Plans.vue":16,"./components/Screening.vue":17,"./components/Stats.vue":18,"./components/Users.vue":19,"./components/Welcome.vue":20}],9:[function(require,module,exports){
+},{"./bootstrap":9,"./components/Badges.vue":10,"./components/Events.vue":11,"./components/Home.vue":12,"./components/Jobs.vue":13,"./components/Organizations.vue":14,"./components/Permissions.vue":15,"./components/Plans.vue":16,"./components/Screening.vue":17,"./components/Stats.vue":18,"./components/Themes.vue":19,"./components/Users.vue":20,"./components/Welcome.vue":21}],9:[function(require,module,exports){
 'use strict';
 
 var _vuejsDatepicker = require('vuejs-datepicker');
@@ -39801,7 +39802,6 @@ require('bootstrap-sass');
  * and simple, leaving you to focus on building your next great project.
  */
 
-//window.Vue = require('vue');
 window.Vue = require('vue/dist/vue.js');
 require('vue-resource');
 
@@ -39837,7 +39837,7 @@ window.Multiselect = _vueMultiselect2.default;
 require('./widgets/bootstrap');
 require('./forms/bootstrap');
 
-},{"./forms/bootstrap":21,"./widgets/bootstrap":27,"bootstrap-sass":1,"jquery":2,"lodash":3,"vue-multiselect":4,"vue-resource":5,"vue/dist/vue.js":6,"vuejs-datepicker":7}],10:[function(require,module,exports){
+},{"./forms/bootstrap":22,"./widgets/bootstrap":28,"bootstrap-sass":1,"jquery":2,"lodash":3,"vue-multiselect":4,"vue-resource":5,"vue/dist/vue.js":6,"vuejs-datepicker":7}],10:[function(require,module,exports){
 Vue.component('gradlead-badges-screen', {
 
     mounted: function() {
@@ -42290,6 +42290,113 @@ Vue.component('gradlead-stats-screen', {
 });
 
 },{}],19:[function(require,module,exports){
+Vue.component('gradlead-themes-screen', {
+
+    mounted: function() {
+        this.getThemes();
+    },
+
+    data: function() {
+        return {
+            baseUrl: '/mimosa/',
+
+            theme: null,
+
+            forms: {
+                updateTheme: new SparkForm ({
+                    id: '',
+					home_header: '',
+           			schools_header: '',
+		           	contact_header: '',
+		           	home_first_title: '',
+		           	home_second_title: '',
+		           	home_third_title: '',
+		           	home_first: '',
+		           	home_second: '',
+		           	home_third: '',
+                    schools_first_title: '',
+		           	schools_second_title: '',
+		           	schools_third_title: '',
+		           	schools_first: '',
+		           	schools_second: '',
+		           	schools_third: '',
+                    contact_first_title: '',
+		            contact_second_title: '',
+		           	contact_third_title: '',
+		           	contact_first: '',
+		           	contact_second: '',
+		           	contact_third: '',
+		           	home_hero: '',
+		           	schools_hero: '',
+		           	contact_hero: '',
+                }),
+            }
+        };
+    },
+    
+    events: {
+    },
+
+    computed: {
+        everythingLoaded: function () {
+            return this.theme != null;
+        }
+    },
+
+    methods: {
+        // Ajax calls
+        updateTheme: function () {
+            var self = this;
+            $('#modal-edit-theme').modal('show');
+
+            Spark.put(self.baseUrl+'themes/' + this.forms.updateTheme.id, this.forms.updateTheme)
+                .then(function () {
+                    self.getThemes();
+                    $('#modal-edit-theme').modal('hide');
+            });
+        },
+
+        getThemes: function () {
+            var self = this;
+            this.$http.get(self.baseUrl+'themes')
+                .then(function (resp) {
+                    self.theme = resp.data.data[0];
+					self.forms.updateTheme.id = self.theme.id;
+					self.forms.updateTheme.home_header = self.theme.home_header;
+					self.forms.updateTheme.schools_header = self.theme.schools_header;
+					self.forms.updateTheme.contact_header = self.theme.contact_header;
+					self.forms.updateTheme.home_first_title = self.theme.home_first_title;
+					self.forms.updateTheme.home_second_title = self.theme.home_second_title;
+					self.forms.updateTheme.home_third_title = self.theme.home_third_title;
+					self.forms.updateTheme.home_first = self.theme.home_first;
+					self.forms.updateTheme.home_second = self.theme.home_second;
+					self.forms.updateTheme.home_third = self.theme.home_third;
+                    
+                    self.forms.updateTheme.schools_first_title = self.theme.schools_first_title;
+					self.forms.updateTheme.schools_second_title = self.theme.schools_second_title;
+					self.forms.updateTheme.schools_third_title = self.theme.schools_third_title;
+					self.forms.updateTheme.schools_first = self.theme.schools_first;
+					self.forms.updateTheme.schools_second = self.theme.schools_second;
+					self.forms.updateTheme.schools_third = self.theme.schools_third;
+                
+                    self.forms.updateTheme.contact_first_title = self.theme.contact_first_title;
+					self.forms.updateTheme.contact_second_title = self.theme.contact_second_title;
+					self.forms.updateTheme.contact_third_title = self.theme.contact_third_title;
+					self.forms.updateTheme.contact_first = self.theme.contact_first;
+					self.forms.updateTheme.contact_second = self.theme.contact_second;
+					self.forms.updateTheme.contact_third = self.theme.contact_third;
+                
+					self.forms.updateTheme.home_hero = self.theme.home_hero;
+					self.forms.updateTheme.schools_hero = self.theme.schools_hero;
+					self.forms.updateTheme.contact_hero = self.theme.contact_hero;
+             });
+		},
+    },
+
+    filters: { },
+});
+
+},{}],20:[function(require,module,exports){
 Vue.component('gradlead-users-screen', {
 
     mounted: function() {
@@ -42512,24 +42619,32 @@ Vue.component('gradlead-users-screen', {
     },
 });
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 Vue.component('gradlead-welcome-screen', {
 
     mounted: function() {
+        this.getAuthUser();
     },
 
     data: function() {
         return {
+            baseUrl: '/mimosa/',
+            user: null,
+            loggedIn: false,
+            
             jobs: [],
             companies: [],
-            baseUrl: '/mimosa/',
         };
     },
     
     events: {
     },
 
-    computed: { },
+    computed: { 
+        canEdit: function() {
+             return (self.user==null) ? false : ((self.user.role.name=='Member') ? false : true);
+        },
+    },
 
     methods: {
         getFeaturedJobs: function () {
@@ -42545,13 +42660,21 @@ Vue.component('gradlead-welcome-screen', {
                     this.companies = resp.data;
                 });
         },
+        
+        getAuthUser: function () {
+            var self = this;
+            this.$http.get(self.baseUrl+'fauthuser')
+                .then(function (user) {
+                    self.user = user.data; 
+                    self.loggedIn = (self.user.name) ? true : false;
+                });
+        },
     },
 
-    filters: {
-    },
+    filters: { },
 });
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 'use strict';
 
 /**
@@ -42574,7 +42697,7 @@ $.extend(Spark, require('./http'));
  */
 require('./components');
 
-},{"./components":22,"./errors":23,"./http":24,"./instance":25}],22:[function(require,module,exports){
+},{"./components":23,"./errors":24,"./http":25,"./instance":26}],23:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-text', {
@@ -42588,6 +42711,64 @@ Vue.component('spark-text', {
             <strong>{{ form.errors.get(name) }}</strong>\
         </span>\
     </div>\
+</div>',
+
+    watch: {
+        'fieldValue': function fieldValue(v) {
+            this.form[this.name] = v;
+        },
+        'input': function input(v) {
+            this.fieldValue = this.input;
+        }
+    },
+    mounted: function mounted() {
+        this.fieldValue = this.input;
+    },
+    data: function data() {
+        return {
+            fieldValue: ''
+        };
+    }
+});
+
+Vue.component('spark-text2', {
+    props: ['display', 'form', 'name', 'input'],
+
+    template: '<div class="form-group" :class="{\'has-error\': form.errors.has(name)}">\
+    <label class="control-label">{{ display }}</label>\
+        <input type="text" class="form-control spark-first-field" v-model="fieldValue">\
+        <span class="help-block" v-show="form.errors.has(name)">\
+            <strong>{{ form.errors.get(name) }}</strong>\
+        </span>\
+</div>',
+
+    watch: {
+        'fieldValue': function fieldValue(v) {
+            this.form[this.name] = v;
+        },
+        'input': function input(v) {
+            this.fieldValue = this.input;
+        }
+    },
+    mounted: function mounted() {
+        this.fieldValue = this.input;
+    },
+    data: function data() {
+        return {
+            fieldValue: ''
+        };
+    }
+});
+
+Vue.component('spark-textarea', {
+    props: ['display', 'form', 'name', 'input'],
+
+    template: '<div class="form-group" :class="{\'has-error\': form.errors.has(name)}">\
+    <label class="control-label">{{ display }}</label>\
+        <textarea class="form-control spark-first-field" v-model="fieldValue" style="height:120px"></textarea>\
+        <span class="help-block" v-show="form.errors.has(name)">\
+            <strong>{{ form.errors.get(name) }}</strong>\
+        </span>\
 </div>',
 
     watch: {
@@ -42873,7 +43054,7 @@ Vue.component('spark-progressbar', {
     }
 });
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -42940,7 +43121,7 @@ window.SparkFormErrors = function () {
     };
 };
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -42980,7 +43161,7 @@ module.exports = {
     }
 };
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 /**
@@ -43007,7 +43188,7 @@ window.SparkForm = function (data) {
     };
 };
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-authenticate', {
@@ -43173,7 +43354,7 @@ Vue.component('spark-authenticate', {
 				}
 });
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 require('./notifications');
@@ -43182,7 +43363,7 @@ require('./components');
 require('./features');
 require('./authenticate');
 
-},{"./authenticate":26,"./components":28,"./errors":29,"./features":30,"./notifications":31}],28:[function(require,module,exports){
+},{"./authenticate":27,"./components":29,"./errors":30,"./features":31,"./notifications":32}],29:[function(require,module,exports){
 'use strict';
 
 Vue.component('gradlead-sparkline-bar', {
@@ -43228,7 +43409,7 @@ Vue.component('gradlead-plot', {
     }
 });
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 /*
@@ -43255,7 +43436,7 @@ Vue.component('spark-error-alert', {
             </div></div>"
 });
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-featured-jobs', {
@@ -43330,7 +43511,7 @@ Vue.component('spark-featured-employers', {
     }
 });
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 window.NotificationStore = {

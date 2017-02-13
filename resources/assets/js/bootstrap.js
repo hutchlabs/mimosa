@@ -16,7 +16,6 @@ require('bootstrap-sass');
  * and simple, leaving you to focus on building your next great project.
  */
 
-//window.Vue = require('vue');
 window.Vue = require('vue/dist/vue.js') 
 require('vue-resource');
 
@@ -37,8 +36,7 @@ window.Datepicker = Datepicker;
 
 import Multiselect from 'vue-multiselect'
 window.Multiselect = Multiselect;
-
-
+ 
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting

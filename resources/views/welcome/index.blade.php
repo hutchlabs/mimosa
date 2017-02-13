@@ -12,6 +12,8 @@
     <link href="{{ asset('dist/assets/css/elegant-icons.min.css') }}" rel="stylesheet" type="text/css" media="all"/>
     <link href="{{ asset('dist/assets/css/lightbox.min.css') }}" rel="stylesheet" type="text/css" media="all"/>
     <link href="{{ asset('dist/assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" media="all"/>
+    <link href="{{ asset('dist/assets/css/bootstrap-editable.css') }}" rel="stylesheet" type="text/css" media="all"/>
+
     <link href="{{ asset('dist/assets/css/theme-aquatica.css') }}" rel="stylesheet" type="text/css" media="all"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}" type="text/css" />
@@ -40,11 +42,11 @@
 <div class="main-container">
 
  @if($link=='home')
-    @include('welcome.home')
+    @include('welcome.home', array('tid'=>$tid,'theme'=>$theme))
  @elseif($link=='schools')
-    @include('welcome.schools')
+    @include('welcome.schools', array('tid'=>$tid,'theme'=>$theme))
  @else
-    @include('welcome.contact')
+    @include('welcome.contact', array('tid'=>$tid,'theme'=>$theme))
  @endif
 
 </div>
@@ -92,7 +94,7 @@
 
 <!-- / CONTENT -->
 
-<script src="{{ asset('dist/assets/js/jquery.min.js') }}"></script>
+<script src="{{ asset('js/vendors/jquery.min.js') }}"></script>
 <script src="{{ asset('dist/assets/js/jquery.plugin.min.js') }}"></script>
 <script src="{{ asset('dist/assets/js/bootstrap.min.js') }}"></script>
 <script src="{{ asset('dist/assets/js/jquery.flexslider-min.js') }}"></script>
@@ -105,8 +107,10 @@
 <script src="{{ asset('dist/assets/js/lightbox.min.js') }}"></script>
 <script src="{{ asset('dist/assets/js/jquery.countdown.min.js') }}"></script>
 <script src="{{ asset('js/app.js') }}"></script>
+<script src="{{ asset('js/vendors/bootstrap-editable.js') }}"></script>
 
+
+ @yield('script')
 
 </body>
-
 </html>

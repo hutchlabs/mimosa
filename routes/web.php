@@ -132,6 +132,13 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->put('events/{id}',             'EventController@update');
         $router->delete('events/{id}',          'EventController@destroy');
     
+        // Themes
+        $router->get('themes',                  'ThemeController@index');
+        $router->get('themes/default',          'ThemeController@defaultTheme');
+        $router->post('themes/editable',        'ThemeController@editable');
+        $router->post('themes',                 'ThemeController@store');
+        $router->put('themes/{id}',              'ThemeController@update');
+    
         // System Methods
         $router->get('degrees',                 'SystemController@degrees');
         $router->post('degrees',                'SystemController@storeDegree');
