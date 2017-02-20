@@ -6,7 +6,7 @@ Vue.component('gradlead-badges-screen', {
 
     data: function() {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Badges',
             
             badges: [],

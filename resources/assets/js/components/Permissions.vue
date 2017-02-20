@@ -6,7 +6,7 @@ Vue.component('gradlead-permissions-screen', {
 
     data: function() {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Permissions',
             
             organizations: null,

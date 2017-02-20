@@ -8,7 +8,7 @@ Vue.component('gradlead-seekers-screen', {
 
     data: function () {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Seekers',
 
             roles: [],

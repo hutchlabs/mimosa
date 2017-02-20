@@ -9,7 +9,7 @@ Vue.component('gradlead-applications-screen', {
 
     data: function () {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Applications',
             
             apps: [],

@@ -100,7 +100,7 @@ Vue.component('gradlead-stats-screen', {
         // Ajax calls
         getStatus: function () {
             var self = this;
-            this.$http.get('/mimosa/badges')
+            this.$http.get('/badges')
                 .then(function (resp) {
                     self.badges = resp.data;
                 });

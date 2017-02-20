@@ -6,7 +6,7 @@ Vue.component('gradlead-welcome-screen', {
 
     data: function() {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             user: null,
             loggedIn: false,
             

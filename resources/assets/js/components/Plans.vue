@@ -10,7 +10,7 @@ Vue.component('gradlead-plans-screen', {
 
     data: function() {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Plans',
             
             plans: [],

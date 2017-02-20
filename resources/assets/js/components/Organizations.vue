@@ -7,7 +7,7 @@ Vue.component('gradlead-orgs-screen', {
     
     data: function() {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Organizations',
             
             organizations: [],

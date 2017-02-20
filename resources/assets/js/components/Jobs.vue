@@ -22,7 +22,7 @@ Vue.component('gradlead-jobs-screen', {
 
     data: function () {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Jobs',
 
             apps: [],

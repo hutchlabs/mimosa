@@ -8,7 +8,7 @@
 
             <div class="modal-body">
               <!-- Add Form -->
-                <form v-on:submit="addNewBadge($event)" class="form-horizontal" action="/mimosa/badges" method="post" enctype="multipart/form-data" id="myform">
+                <form v-on:submit="addNewBadge($event)" class="form-horizontal" action="/badges" method="post" enctype="multipart/form-data" id="myform">
 
                     <div class="row">
                         <div class="col-md-12">

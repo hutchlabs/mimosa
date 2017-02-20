@@ -10,7 +10,7 @@ Vue.component('gradlead-events-screen', {
 
     data: function() {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Events',
             
             events: [],

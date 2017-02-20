@@ -39852,7 +39852,7 @@ Vue.component('gradlead-applications-screen', {
 
     data: function () {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Applications',
             
             apps: [],
@@ -40068,7 +40068,7 @@ Vue.component('gradlead-badges-screen', {
 
     data: function() {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Badges',
             
             badges: [],
@@ -40205,7 +40205,7 @@ Vue.component('gradlead-events-screen', {
 
     data: function() {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Events',
             
             events: [],
@@ -40331,7 +40331,7 @@ Vue.component('gradlead-home-screen', {
 
     data: function() {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Home',
             
             authUser: null,
@@ -40532,7 +40532,7 @@ Vue.component('gradlead-jobs-screen', {
 
     data: function () {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Jobs',
 
             apps: [],
@@ -41537,7 +41537,7 @@ Vue.component('gradlead-orgs-screen', {
     
     data: function() {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Organizations',
             
             organizations: [],
@@ -41662,7 +41662,7 @@ Vue.component('gradlead-permissions-screen', {
 
     data: function() {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Permissions',
             
             organizations: null,
@@ -41756,7 +41756,7 @@ Vue.component('gradlead-plans-screen', {
 
     data: function() {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Plans',
             
             plans: [],
@@ -41940,7 +41940,7 @@ Vue.component('gradlead-screening-screen', {
 
     data: function () {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Screening',
             
             questionnaires: [],
@@ -42558,7 +42558,7 @@ Vue.component('gradlead-seekers-screen', {
 
     data: function () {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Seekers',
 
             roles: [],
@@ -42920,7 +42920,7 @@ Vue.component('gradlead-stats-screen', {
         // Ajax calls
         getStatus: function () {
             var self = this;
-            this.$http.get('/mimosa/badges')
+            this.$http.get('/badges')
                 .then(function (resp) {
                     self.badges = resp.data;
                 });
@@ -42943,7 +42943,7 @@ Vue.component('gradlead-themes-screen', {
 
     data: function() {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Themes',
             
             theme: null,
@@ -43053,7 +43053,7 @@ Vue.component('gradlead-users-screen', {
 
     data: function () {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Users',
 
             roles: [],
@@ -43309,7 +43309,7 @@ Vue.component('gradlead-welcome-screen', {
 
     data: function() {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             user: null,
             loggedIn: false,
             
@@ -43954,7 +43954,7 @@ Vue.component('spark-authenticate', {
 								return {
 												user: null,
 												loggedIn: false,
-												baseUrl: '/mimosa/',
+												baseUrl: '/',
 
 												typeOptions: [{ 'text': 'Current Student', 'value': 'student' }, { 'text': 'Graduate', 'value': 'graduate' }],
 
@@ -44157,7 +44157,7 @@ Vue.component('spark-featured-jobs', {
 
     methods: {
         getFeaturedJobs: function getFeaturedJobs() {
-            this.$http.get('/mimosa/jobs/featured').then(function (resp) {
+            this.$http.get('/jobs/featured').then(function (resp) {
                 this.jobs = resp.data.data;
             });
         }
@@ -44170,7 +44170,7 @@ Vue.component('spark-featured-employers', {
     // TODO: Finish logo load and onclick 
     template: '<div> \
                 <div class="col-md-2 col-sm-4">\
-                    <img alt="Client Logo" src="http://localhost/mimosa/dist/assets/img/client1.png">\
+                    <img alt="Client Logo" src="http://app.gradlead.com/dist/assets/img/client1.png">\
                 </div>\
             </div>',
 
@@ -44185,7 +44185,7 @@ Vue.component('spark-featured-employers', {
 
     methods: {
         getFeaturedEmployers: function getFeaturedEmployers() {
-            this.$http.get('/mimosa/organizations/featured').then(function (resp) {
+            this.$http.get('/organizations/featured').then(function (resp) {
                 this.orgs = resp.data.data;
             });
         }

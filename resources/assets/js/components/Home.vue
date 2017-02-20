@@ -8,7 +8,7 @@ Vue.component('gradlead-home-screen', {
 
     data: function() {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Home',
             
             authUser: null,

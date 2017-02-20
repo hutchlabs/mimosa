@@ -35,7 +35,7 @@ Vue.component('spark-featured-jobs', {
 
     methods: {
         getFeaturedJobs: function () {
-            this.$http.get('/mimosa/jobs/featured')
+            this.$http.get('/jobs/featured')
                 .then(function (resp) {
                     this.jobs = resp.data.data;
                 });
@@ -49,7 +49,7 @@ Vue.component('spark-featured-employers', {
     // TODO: Finish logo load and onclick 
     template: '<div> \
                 <div class="col-md-2 col-sm-4">\
-                    <img alt="Client Logo" src="http://localhost/mimosa/dist/assets/img/client1.png">\
+                    <img alt="Client Logo" src="http://app.gradlead.com/dist/assets/img/client1.png">\
                 </div>\
             </div>',
  
@@ -64,7 +64,7 @@ Vue.component('spark-featured-employers', {
 
     methods: {
         getFeaturedEmployers: function () {
-            this.$http.get('/mimosa/organizations/featured')
+            this.$http.get('/organizations/featured')
                 .then(function (resp) {
                     this.orgs = resp.data.data;
                 });

@@ -80,7 +80,7 @@ Vue.component('spark-authenticate', {
         return {
             user: null,
             loggedIn: false,
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
 
 			typeOptions: [
                             {'text': 'Current Student', 'value':'student'},

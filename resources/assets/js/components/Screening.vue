@@ -6,7 +6,7 @@ Vue.component('gradlead-screening-screen', {
 
     data: function () {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Screening',
             
             questionnaires: [],

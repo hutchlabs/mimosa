@@ -8,7 +8,7 @@ Vue.component('gradlead-users-screen', {
 
     data: function () {
         return {
-            baseUrl: '/mimosa/',
+            baseUrl: '/',
             modname: 'Users',
 
             roles: [],
