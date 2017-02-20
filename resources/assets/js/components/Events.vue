@@ -5,13 +5,14 @@ Vue.component('gradlead-events-screen', {
     },
 
     mounted: function() {
-        this.getEvents();
+        this.setupListeners();
     },
 
     data: function() {
         return {
             baseUrl: '/mimosa/',
-
+            modname: 'Events',
+            
             events: [],
 
             editingEvent: {'name':'none'},
@@ -80,7 +81,7 @@ Vue.component('gradlead-events-screen', {
             Spark.post(self.baseUrl+'events', this.forms.addEvent)
                 .then(function () {
                     $('#modal-add-event').modal('hide');
-                    self.getEvents();
+                    bus.$emit('updateEvents');
                 }, function(resp) {
                     self.forms.addEvent.busy = false;
                     NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
@@ -90,7 +91,7 @@ Vue.component('gradlead-events-screen', {
             var self = this;
             Spark.put(self.baseUrl+'events/' + this.editingEvent.id, this.forms.updateEvent)
                 .then(function () {
-                    self.getEvents();
+                    bus.$emit('updateEvents');
                     $('#modal-edit-event').modal('hide');
                 });
         },
@@ -102,19 +103,22 @@ Vue.component('gradlead-events-screen', {
                 .then(function () {
                     self.removingEventId = 0;
                     self.events = self.removeFromList(this.events, event);
+                    bus.$emit('updateEvents');
                 }, function(resp) {
                     self.removingEventId = 0;
                     NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
                 });
         },
-
-        getEvents: function () {
+        
+        setupListeners: function () {
             var self = this;
-            this.$http.get(self.baseUrl+'events')
-                .then(function (resp) {
-                    self.events = resp.data.data;
-                });
-		},
+            bus.$on('eventsSet', function (items) {
+                console.log("Got events in "+ self.modname);
+                self.events = items;
+            });
+            
+            bus.$emit('screenLoaded',self.modname);
+        },
     },
 
     filters: {

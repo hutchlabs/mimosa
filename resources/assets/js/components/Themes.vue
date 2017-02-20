@@ -7,7 +7,8 @@ Vue.component('gradlead-themes-screen', {
     data: function() {
         return {
             baseUrl: '/mimosa/',
-
+            modname: 'Themes',
+            
             theme: null,
 
             forms: {

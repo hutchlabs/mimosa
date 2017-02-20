@@ -250,8 +250,8 @@
         </div>
     </div>
     <!-- / Update Theme -->
+    @include('dashboards.themes.edit')
 </div>
 
-        @include('dashboards.themes.edit')
 </gradlead-themes-screen>
 

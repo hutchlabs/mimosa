@@ -47,6 +47,8 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
+            $tenantId = Auth::user()->organization_id;
+            \Landlord::addTenant('organization_id',$tenantId);
             return response()->json($user);
         }
 

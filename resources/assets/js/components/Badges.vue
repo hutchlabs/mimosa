@@ -1,11 +1,14 @@
 Vue.component('gradlead-badges-screen', {
 
     mounted: function() {
-        this.getBadges();
+        this.setupListeners();
     },
 
     data: function() {
         return {
+            baseUrl: '/mimosa/',
+            modname: 'Badges',
+            
             badges: [],
 			files: [],
 
@@ -14,8 +17,6 @@ Vue.component('gradlead-badges-screen', {
             
             nameError: false,
             descError: false,
-
-            baseUrl: '/mimosa/',
 
             forms: {
                updateBadge: new SparkForm ({
@@ -102,19 +103,24 @@ Vue.component('gradlead-badges-screen', {
                 .then(function () {
                     self.removingBadgeId = 0;
                     self.badges = self.removeFromList(this.badges, badge);
+                    bus.$emit('updateBadges');
                 }, function(resp) {
                     self.removingBadgeId = 0;
                     NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
                 });
         },
         
-        getBadges: function () {
+        setupListeners: function () {
             var self = this;
-            this.$http.get(self.baseUrl + 'badges')
-                .then(function (resp) {
-                    self.badges = resp.data.data;
-                });
+            bus.$on('badgesSet', function (items) {
+                //console.log("Got badges in "+ self.modname);
+                self.badges = items;
+            });
+            
+            bus.$emit('screenLoaded',self.modname);
         },
+
+  
     },
 
     filters: {

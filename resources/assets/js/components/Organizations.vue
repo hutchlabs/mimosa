@@ -1,13 +1,15 @@
 Vue.component('gradlead-orgs-screen', {
 
-    mounted: function() {
-        this.getOrganizations();
-    },
 
+    mounted: function() {
+        this.setupListeners();
+    },
+    
     data: function() {
         return {
             baseUrl: '/mimosa/',
-
+            modname: 'Organizations',
+            
             organizations: [],
             employers: [],
             schools: [],
@@ -71,7 +73,7 @@ Vue.component('gradlead-orgs-screen', {
             Spark.post(self.baseUrl+'organizations', this.forms.addOrganization)
                 .then(function () {
                     $('#modal-add-'+type+'-org').modal('hide');
-                    self.getOrganizations();
+                    bus.$emit('updateOrganizations');
                 }, function(resp) {
                     self.forms.addOrganization.busy = false;
                     NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
@@ -81,7 +83,7 @@ Vue.component('gradlead-orgs-screen', {
             var self = this;
             Spark.put(self.baseUrl+'organizations/' + this.editingOrganization.id, this.forms.updateOrganization)
                 .then(function () {
-                    self.getOrganizations();
+                    bus.$emit('updateOrganizations');
                     $('#modal-edit-'+type+'-org').modal('hide');
                 });
         },
@@ -93,24 +95,21 @@ Vue.component('gradlead-orgs-screen', {
                 .then(function () {
                     self.removingOrganizationId = 0;
                     self.organizations = self.removeFromList(this.organizations, org);
+                    bus.$emit('updateOrganizations');
                 }, function(resp) {
                     self.removingOrganizationId = 0;
                     NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
                 });
         },
         
-        getOrganizations: function () {
+        setupListeners: function () {
             var self = this;
-            this.$http.get(self.baseUrl+'organizations')
-                .then(function (resp) {
-                   self.schools = [];
-                   self.employers=[];
-                    self.organizations = resp.data.data;
-                    for(var i=0; i < self.organizations.length; i++) {
-                        if (self.organizations[i].type=='school') { self.schools.push(self.organizations[i]); }
-                        if (self.organizations[i].type=='employer') { self.employers.push(self.organizations[i]); }
-                    }
-                });
+            bus.$on('organizationsSet', function (orgs) {
+                self.organizations = orgs[0];
+                self.employers = orgs[1];
+                self.schools = orgs[2];
+            });
+            bus.$emit('screenLoaded',self.modname);
         },
     },
 

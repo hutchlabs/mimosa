@@ -22,7 +22,7 @@
                                 </a>
                             </li>
 
-                            <li v-show="canDoPreselect" role="presentation" :class="(steps.step2)? step2Class :'disabled'">
+                            <li v-show="permissions.canDoPreselect" role="presentation" :class="(steps.step2)? step2Class :'disabled'">
                                 <div v-if="steps.step2">
                                     <a href="#jcriteria" aria-controls="jcriteria" role="tab" data-toggle="tab">
                                         <b class="badge bg-info">2</b>&nbsp;Job Criteria
@@ -57,7 +57,7 @@
                                             <div class="panel-heading">Basic details (Required)</div>
                                             <div class="panel-body">
 
-                                                <div v-if="isGradlead" class="form-group">
+                                                <div v-if="usertype.isGradlead" class="form-group">
                                                     <label class="control-label">Organization</label>
                                                     <select id="organization_id" name="organization_id" class="form-control">
                                                         <option v-for="o in organizations" :value="o.id" :selected="o.id==1">
@@ -66,7 +66,7 @@
                                                     </select>
                                                 </div>
                                                 <div v-else>
-                                                    <input type="hidden" name="organization_id" :value="user.organization_id" />
+                                                    <input type="hidden" name="organization_id" :value="authUser.organization_id" />
                                                 </div>
 
                                                 <div class="form-group">
@@ -123,7 +123,7 @@
                                                                 </label>
                                                             </div>
                                                         </div>
-                                                        <div class="col-sm-6" v-show="isGradlead">
+                                                        <div class="col-sm-6" v-show="usertype.isGradlead">
                                                             <div class="checkbox">
                                                                 <label class="i-checks">
                                                                     <input type="checkbox" id="featured" name="featured" class="form-control"><i></i> Featured?
@@ -176,13 +176,9 @@
                                                     </span>
                                                 </div>
 
-                                                <div v-show="canDoScreening" class="form-group">
+                                                <div v-show="permissions.canDoScreening" class="form-group">
                                                     <label class="control-label">Questionnaire</label>
                                                     <select id="questionnaire_id" name="questionnaire_id" class="form-control" placeholder="Select Questionnaire">
-                                                        <option value=''>None</option>
-                                                        <option v-for="q in questionnaires" :value="q.id">
-                                                            @{{ q.name }}
-                                                        </option>
                                                     </select>
                                                 </div>
 
@@ -210,7 +206,7 @@
                                     </div>
                                 </div>
 
-                                <div class="row" v-if="isCompany">
+                                <div class="row" v-if="usertype.isCompany">
                                     <div class="col-sm-12">
 
                                         <div class="panel panel-default">
@@ -238,9 +234,9 @@
                                 <div class="m-t m-b modal-footer">
                                     <a class="btn btn-default pull-left" href="#vjobs" aria-controls="vjobs" role="tab" data-toggle="tab">Cancel</a>
 
-                                    <a v-show="canDoPreselect" href="#jcriteria" aria-controls="jcriteria" role="tab" data-toggle="tab" :disabled="!validStep('jobAddForm','step1')" class="btn btn-info btn-rounded pull-right" @click="steps.step2=true;setStepClass('step2');">Next</a>
+                                    <a v-show="permissions.canDoPreselect" href="#jcriteria" aria-controls="jcriteria" role="tab" data-toggle="tab" :disabled="!validStep('jobAddForm','step1')" class="btn btn-info btn-rounded pull-right" @click="steps.step2=true;setStepClass('step2');">Next</a>
 
-                                    <div v-show="!canDoPreselect" class="pull-right">
+                                    <div v-show="!permissions.canDoPreselect" class="pull-right">
                                         <button v-if="jobAddForm.valid" type="submit" class="btn btn-success btn-addon">
                                             <i class="fa fa-btn fa-save"></i> Add Job
                                         </button>

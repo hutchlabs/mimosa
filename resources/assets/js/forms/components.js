@@ -6,7 +6,7 @@ Vue.component('spark-text', {
     <div class="col-md-6">\
         <input type="text" class="form-control spark-first-field" v-model="fieldValue">\
         <span class="help-block" v-show="form.errors.has(name)">\
-            <strong>{{ form.errors.get(name) }}</strong>\
+            <small>{{ form.errors.get(name) }}</small>\
         </span>\
     </div>\
 </div>',
@@ -36,7 +36,7 @@ Vue.component('spark-text2', {
     <label class="control-label">{{ display }}</label>\
         <input type="text" class="form-control spark-first-field" v-model="fieldValue">\
         <span class="help-block" v-show="form.errors.has(name)">\
-            <strong>{{ form.errors.get(name) }}</strong>\
+            <small>{{ form.errors.get(name) }}</small>\
         </span>\
 </div>',
 
@@ -65,7 +65,7 @@ Vue.component('spark-textarea', {
     <label class="control-label">{{ display }}</label>\
         <textarea class="form-control spark-first-field" v-model="fieldValue" style="height:120px"></textarea>\
         <span class="help-block" v-show="form.errors.has(name)">\
-            <strong>{{ form.errors.get(name) }}</strong>\
+            <small>{{ form.errors.get(name) }}</small>\
         </span>\
 </div>',
 
@@ -117,7 +117,7 @@ Vue.component('spark-email', {
     <div class="col-md-6">\
         <input type="email" class="form-control spark-first-field" v-model="fieldValue">\
         <span class="help-block" v-show="form.errors.has(name)"> \
-            <strong>{{ form.errors.get(name) }}</strong>\
+            <small>{{ form.errors.get(name) }}</small>\
         </span>\
     </div>\
 </div>',
@@ -148,7 +148,7 @@ Vue.component('spark-file-simple', {
         <input type="file" data-edit="insertImage" class="form-control spark-first-field" v-on:change="updateFile">\
         <p class="help-block"><span style="color: red">{{ warning }}</span> </p>\
         <span class="help-block" v-show="form.errors.has(name)">\
-            <strong>{{ form.errors.get(name) }}</strong>\
+            <small>{{ form.errors.get(name) }}</small>\
         </span>\
     </div>\
 </div>',
@@ -173,7 +173,7 @@ Vue.component('spark-file', {
         <input type="file" class="form-control spark-first-field" @change="onFileChange">\
         <p class="help-block"><span style="color: red">{{ warning }}</span> </p>\
         <span class="help-block" v-show="form.errors.has(name)">\
-            <strong>{{ form.errors.get(name) }}</strong>\
+            <small>{{ form.errors.get(name) }}</small>\
         </span>\
     </div>\
 </div>',
@@ -220,7 +220,7 @@ Vue.component('spark-password', {
     <div class="col-md-6">\
         <input type="password" class="form-control spark-first-field" v-model="fieldValue">\
         <span class="help-block" v-show="form.errors.has(name)">\
-            <strong>{{ form.errors.get(name) }}</strong>\
+            <small>{{ form.errors.get(name) }}</small>\
         </span>\
     </div>\
 </div>',
@@ -254,7 +254,7 @@ Vue.component('spark-select', {
             </option>\
         </select>\
         <span class="help-block" v-show="form.errors.has(name)">\
-            <strong>{{ form.errors.get(name) }}</strong>\
+            <small>{{ form.errors.get(name) }}</small>\
         </span>\
     </div>\
 </div>',
@@ -289,7 +289,7 @@ Vue.component('spark-date', {
           <div class="col-md-6">\
             <datepicker v-model="fieldValue" :input-class="\'form-control\'"></datepicker>\
         	<span class="help-block" v-show="form.errors.has(name)">\
-            	<strong>{{ form.errors.get(name) }}</strong>\
+            	<small>{{ form.errors.get(name) }}</small>\
         	</span>\
           </div>\
         </div>',

@@ -1,5 +1,7 @@
 Vue.component('gradlead-stats-screen', {
 
+    props: ['authUser', 'usertype', 'permissions'],
+
     mounted: function() {
 		for (var i = 0; i < 20; ++i) {
       		this.d2.push([i, Math.sin(i)]);

@@ -23,7 +23,10 @@ require('./components/Plans.vue');
 require('./components/Screening.vue');
 require('./components/Events.vue');
 require('./components/Themes.vue');
+
 require('./components/Jobs.vue');
+require('./components/Applications.vue');
+require('./components/Seekers.vue');
 
 window.bus = new Vue({});
 
@@ -34,8 +37,6 @@ const app = new Vue({
         'notifications': Notification,
     },
 
-    data: {
-
-    }
+    data: { }
 });
 

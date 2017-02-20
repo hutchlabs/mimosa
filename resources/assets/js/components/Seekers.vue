@@ -1,4 +1,4 @@
-Vue.component('gradlead-users-screen', {
+Vue.component('gradlead-seekers-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
 
@@ -9,7 +9,7 @@ Vue.component('gradlead-users-screen', {
     data: function () {
         return {
             baseUrl: '/mimosa/',
-            modname: 'Users',
+            modname: 'Seekers',
 
             roles: [],
             users: [],
@@ -88,13 +88,12 @@ Vue.component('gradlead-users-screen', {
         };
     },
 
-    events: {
-    },
+    events: { },
 
     computed: {
         everythingLoaded: function () {
             return this.roles.length > 0 && this.organizations.length > 0 && this.users.length > 0;
-        }
+        },
     },
 
     methods: {
@@ -132,9 +131,15 @@ Vue.component('gradlead-users-screen', {
         },
 
         getTypeOptions: function () {
-            if (this.usertype.isGradlead) { return this.allTypeOptions; }
-            if (this.usertype.isSchool) { return this.schoolTypeOptions; }
-            if (this.usertype.isCompany) { return this.employerTypeOptions; }
+            if (this.authUser.organization.type == 'gradlead') {
+                return this.allTypeOptions;
+            }
+            if (this.authUser.organization.type == 'school') {
+                return this.schoolTypeOptions;
+            }
+            if (this.authUser.organization.type == 'employer') {
+                return this.employerTypeOptions;
+            }
             return this.allTypeOptions;
         },
 
@@ -203,7 +208,14 @@ Vue.component('gradlead-users-screen', {
             var self = this;
 
             bus.$on('usersSet', function (users) {
-                self.users = users;
+                if (users.length) {
+                    self.users = [];
+                    $.each(users, function(idx, u) {
+                        if (u.type=='student' || u.type=='graduate') {
+                            self.users.push(u);
+                        }
+                    });
+                }
             });
 
             bus.$on('rolesSet', function (roles) {
@@ -222,7 +234,7 @@ Vue.component('gradlead-users-screen', {
             bus.$on('organizationsSet', function (orgs) {
                 self.organizations = [];
                 
-                if (self.usertype.isGradlead) {
+                if (self.authUser.organization_id == 1) {
                     self.organizations = orgs[0];
                 } else {
                     var orgs = orgs[0];

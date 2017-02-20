@@ -1,4 +1,4 @@
-<gradlead-stats-screen inline-template>
+<gradlead-stats-screen v-bind:auth-user="authUser" v-bind:permissions="permissions" v-bind:usertype="usertype" inline-template>
 
 <div class="hbox hbox-auto-xs hbox-auto-sm">
   <!-- main -->

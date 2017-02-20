@@ -14,6 +14,11 @@
 Route::group(['middleware' => 'web'], function ($router) {
         Auth::routes();
 
+        $router->get('/start', function() {
+            return response()->json('ok',200);
+        });
+
+    
         $router->get('/',           'WelcomeController@index');
         $router->get('/schools',    'WelcomeController@schools');
         $router->get('/contact',    'WelcomeController@contact');
@@ -30,16 +35,17 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->post('search/employers',   'SearchController@findEmployers');
   
         // Jobs & Applications
-        $router->get('jobs',                     'JobController@index');
-        $router->get('jobs/featured',            'JobController@featured');
-        $router->get('jobs/applications',         'JobController@applications');
-        $router->post('jobs',                    'JobController@store');
-        $router->post('jobs/apply',              'JobController@apply');
-        $router->put('jobs/{id}',                'JobController@update');
-        $router->put('jobs/{id}/changestatus',   'JobController@updateStatus');
-        $router->put('jobs/application/update',  'JobController@updateApplication');
-        $router->delete('jobs/{id}',             'JobController@destroy');
-        $router->delete('jobs/application/{id}', 'JobController@unapply');
+        $router->get('jobs',                                'JobController@index');
+        $router->get('jobs/featured',                       'JobController@featured');
+        $router->get('jobs/applications',                   'JobController@applications');
+        $router->get('jobs/applications/{id}/status/{s}',   'JobController@updateAppStatus');
+        $router->post('jobs',                               'JobController@store');
+        $router->post('jobs/apply',                         'JobController@apply');
+        $router->put('jobs/{id}',                           'JobController@update');
+        $router->put('jobs/{id}/changestatus',              'JobController@updateStatus');
+        $router->put('jobs/application/update',             'JobController@updateApplication');
+        $router->delete('jobs/{id}',                        'JobController@destroy');
+        $router->delete('jobs/application/{id}',            'JobController@unapply');
       
         // Users
         $router->get('users',                              'UserController@index');

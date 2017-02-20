@@ -5,11 +5,14 @@ Vue.component('gradlead-plans-screen', {
     },
 
     mounted: function() {
-        this.getPlans();
+        this.setupListeners();
     },
 
     data: function() {
         return {
+            baseUrl: '/mimosa/',
+            modname: 'Plans',
+            
             plans: [],
 
             editingPlan: {'name':'none'},
@@ -38,7 +41,6 @@ Vue.component('gradlead-plans-screen', {
                             {'text': 'Unlimited', 'value':'0'},
                          ],
 
-            baseUrl: '/mimosa/',
 
             forms: {
                 addPlan: new SparkForm ({
@@ -126,8 +128,8 @@ Vue.component('gradlead-plans-screen', {
             Spark.post(self.baseUrl+'plans', this.forms.addPlan)
                 .then(function () {
                     $('#modal-add-plan').modal('hide');
-                    self.getPlans();
-                }, function(resp) {
+                    bus.$emit('updatePlans');
+            }, function(resp) {
                     self.forms.addPlan.busy = false;
                     NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
                 });
@@ -136,7 +138,7 @@ Vue.component('gradlead-plans-screen', {
             var self = this;
             Spark.put(self.baseUrl+'plans/' + this.editingPlan.id, this.forms.updatePlan)
                 .then(function () {
-                    self.getPlans();
+                    bus.$emit('updatePlans');
                     $('#modal-edit-plan').modal('hide');
                 });
         },
@@ -148,19 +150,23 @@ Vue.component('gradlead-plans-screen', {
                 .then(function () {
                     self.removingPlanId = 0;
                     self.plans = self.removeFromList(this.plans, plan);
+                    bus.$emit('updatePlans');
                 }, function(resp) {
                     self.removingPlanId = 0;
                     NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
                 });
         },
 
-        getPlans: function () {
+        setupListeners: function () {
             var self = this;
-            this.$http.get(self.baseUrl+'plans')
-                .then(function (resp) {
-                    self.plans = resp.data.data;
-                });
-		},
+            bus.$on('plansSet', function (items) {
+                //console.log("Got plans in "+ self.modname);
+                self.plans = items;
+            });
+            bus.$emit('screenLoaded',self.modname);
+
+        },
+
     },
 
     filters: {

@@ -1,16 +1,14 @@
 Vue.component('gradlead-screening-screen', {
 
     mounted: function () {
-        var self = this;
-        this.getAuthUser();
-        this.getQuestionnaires();
+        this.setupListeners();
     },
 
     data: function () {
         return {
             baseUrl: '/mimosa/',
-
-            user: null,
+            modname: 'Screening',
+            
             questionnaires: [],
             questions: [],
 
@@ -312,13 +310,11 @@ Vue.component('gradlead-screening-screen', {
         };
     },
 
-    events: {
-
-    },
+    events: {},
 
     computed: {
         everythingLoaded: function () {
-            return this.user != null;
+            return true; 
         },
     },
 
@@ -495,7 +491,7 @@ Vue.component('gradlead-screening-screen', {
 
             if (this.validForm('qnAddForm', true)) {
                 self.$http.post(self.baseUrl + 'questionnaires', formData).then(function (resp) {
-                    self.getQuestionnaires();
+                    bus.$emit('updateQuestionnaires', [null, null]);
                     var back = self.$refs.backtoQuestionnaire;
                     back.click();
                 }, function (resp) {
@@ -511,7 +507,7 @@ Vue.component('gradlead-screening-screen', {
             if (this.validForm('qAddForm', true)) {
                 self.$http.post(self.baseUrl + 'questionnaires/questions', formData).then(function (resp) {
                     var data = resp.data.data;
-                    self.getQuestionnaires(true, data);   
+                    bus.$emit('updateQuestionnaires', [true, data]);
                     var back = self.$refs.backtoQuestions;
                     back.click();
                 }, function (resp) {
@@ -528,7 +524,7 @@ Vue.component('gradlead-screening-screen', {
 
             if (this.validForm('qnUpdateForm', true)) {
                 self.$http.post(self.baseUrl + 'questionnaires/'+questionnaire.id,formData).then(function (resp) {
-                    self.getQuestionnaires();
+                    bus.$emit('updateQuestionnaires', [null, null]);
                     var back = self.$refs.backtoQuestionnaire;
                     back.click();
                 }, function (resp) {
@@ -543,7 +539,7 @@ Vue.component('gradlead-screening-screen', {
 
             if (this.validForm('qUpdateForm', true)) {
                 self.$http.post(self.baseUrl+'questionnaires/questions/'+question.id,formData).then(function (resp) {
-                    self.getQuestionnaires(true,resp.data.data);
+                    bus.$emit('updateQuestionnaires', [true, resp.data.data]);
                     var back = self.$refs.backtoQuestions;
                     back.click();
                 }, function (resp) {
@@ -559,6 +555,7 @@ Vue.component('gradlead-screening-screen', {
             self.$http.delete(self.baseUrl + 'questionnaires/' + questionnaire.id)
                 .then(function () {
                     self.questionnaires = self.removeFromList(this.questionnaires, questionnaire);
+                    bus.$emit('updateQuestionnaires', [null, null]);
                 }, function (resp) {
                     console.log(resp);
                 });
@@ -575,29 +572,27 @@ Vue.component('gradlead-screening-screen', {
         },
 
 
-        // Start up calls
-        getAuthUser: function () {
+        // Start up calls        
+        setupListeners: function () {
             var self = this;
-            this.$http.get(self.baseUrl + 'fauthuser')
-                .then(function (user) {
-                    self.user = user.data;
-                });
-        },
+       
+            bus.$on('questionnairesSet', function (items) {
+                //console.log("Got questionnaires in "+ self.modname);
+                self.questionnaires = items[0];
+                var loadq = (typeof items[1] !== 'undefined' && items[1]==null) ? true: false;
+                var nd = (typeof items[2] !== 'undefined' && items[2]==null) ? true: false;
 
-        getQuestionnaires: function (loadq,nd) {
-            var self = this;
-            var loadq = (typeof loadq !== 'undefined') ? true: false;
-            this.$http.get(self.baseUrl + 'questionnaires')
-                .then(function (resp) {
-                    self.questionnaires = resp.data.data;
-                    if (loadq) {
-                        for(x in self.questionnaires) {
-                            if (self.questionnaires[x]['id']==nd.questionnaire_id) {
-                                self.setQuestionnaire(self.questionnaires[x]);
-                            }
+                if (loadq && nd) {
+                    for(x in self.questionnaires) {
+                        if (self.questionnaires[x]['id']==nd.questionnaire_id) {
+                            self.setQuestionnaire(self.questionnaires[x]);
                         }
                     }
-                });
+                }
+            });
+            
+            bus.$emit('screenLoaded',self.modname);
+
         },
     },
 

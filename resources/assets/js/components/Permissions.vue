@@ -1,19 +1,21 @@
 Vue.component('gradlead-permissions-screen', {
 
     mounted: function() {
-        this.getOrganizations();
-   
+        this.setupListeners();
     },
 
     data: function() {
         return {
+            baseUrl: '/mimosa/',
+            modname: 'Permissions',
+            
             organizations: null,
+
             preselect: [],
             screening: [],
             tracking: [],
             events: [],
 
-            baseUrl: '/mimosa/',
 
             forms: {
                 updatePermission: new SparkForm ({
@@ -54,26 +56,31 @@ Vue.component('gradlead-permissions-screen', {
             this.forms.updatePermission.events = this.events[org.id]; 
 
             Spark.put(self.baseUrl+'permissions/' + org.permissions.id,         this.forms.updatePermission).then(function(resp) {
-                self.getOrganizations();  
+                bus.$emit('updateOrganizations');
             });
         },
         
-        getOrganizations: function () {
+        setupListeners: function () {
             var self = this;
-            this.$http.get(self.baseUrl + 'organizations').then(function (resp) {
-                    self.organizations = [];
-                    for(var i=0; i < resp.data.data.length; i++) {
-                        // only schools and employers 
-                        if (resp.data.data[i].type!='gradlead') { 
-                            self.organizations.push(resp.data.data[i]); 
-                            self.preselect[resp.data.data[i].id] = resp.data.data[i].permissions.preselect; 
-                            self.screening[resp.data.data[i].id] = resp.data.data[i].permissions.screening; 
-                            self.tracking[resp.data.data[i].id] = resp.data.data[i].permissions.tracking; 
-                            self.events[resp.data.data[i].id] = resp.data.data[i].permissions.events; 
-                        }
+
+            bus.$on('organizationsSet', function (orgs) {
+                var orgs = orgs[0];
+                self.organizations = [];
+                for(var i=0; i < orgs.length; i++) {
+                    // only schools and employers 
+                    if (orgs[i].type!='gradlead') { 
+                        self.organizations.push(orgs[i]); 
+                        self.preselect[orgs[i].id] = orgs[i].permissions.preselect; 
+                        self.screening[orgs[i].id] = orgs[i].permissions.screening; 
+                        self.tracking[orgs[i].id] = orgs[i].permissions.tracking; 
+                        self.events[orgs[i].id] = orgs[i].permissions.events; 
                     }
+                }
             });
+            
+            bus.$emit('screenLoaded',self.modname);
         },
+        
     },
 
     filters: {

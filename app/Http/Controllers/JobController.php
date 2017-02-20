@@ -61,6 +61,17 @@ class JobController extends Controller
         
         return $this->json_response($i);
     }
+   
+    public function updateAppStatus(Request $request, $appId, $status)
+    {
+        $user = $request->user();
+        $a = Application::find($appId);
+        if ($a) {
+            $a->status = $status;
+            $a->save();
+        }
+        return $this->ok();
+    }
     
     public function updateApplication(Request $request)
     {
@@ -68,7 +79,7 @@ class JobController extends Controller
         
         $this->validate($request, [
            'application_id' => 'required|exists:jobs_applications,id',
-           'status' => 'required|in:Pending,Rejected,Approved,Interviewed,Hired'
+           'status' => 'required|in:Pending,Rejected,Approved,Interviewed,Hired,Failed'
           ]
         );
         

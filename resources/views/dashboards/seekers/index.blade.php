@@ -1,4 +1,4 @@
-<gradlead-users-screen v-bind:auth-user="authUser" v-bind:permissions="permissions" v-bind:usertype="usertype" inline-template>
+<gradlead-seekers-screen v-bind:auth-user="authUser" v-bind:usertype="usertype" v-bind:permissions="permissions" inline-template>
 
 <div class="hbox hbox-auto-xs hbox-auto-sm" v-if="everythingLoaded">
   <!-- main -->
@@ -7,9 +7,13 @@
     <!-- main header -->
     <div class="bg-light lter b-b wrapper-md">
       <div class="row">
-        <div class="col-sm-6 col-xs-12">
-          <h1 class="m-n font-thin h3 text-black">Users</h1>
-          <small class="text-muted">{{$name}} Users</small>
+        <div v-if="usertype.isGradlead" class="col-sm-6 col-xs-12">
+          <h1 class="m-n font-thin h3 text-black">Job Seekers</h1>
+          <small class="text-muted">{{$name}} Job Seekers</small>
+        </div>
+        <div v-else class="col-sm-6 col-xs-12">
+          <h1 class="m-n font-thin h3 text-black">Students</h1>
+          <small class="text-muted">{{$name}} Students</small>
         </div>
       </div>
     </div>
@@ -18,7 +22,11 @@
     <div class="col wrapper-md">
       <div class="clearfix m-b">
             <button class="btn btn-info btn-addon" @click.prevent="addUser()">
-                <i class="fa fa-plus"></i> Add User
+                <i class="fa fa-plus"></i> Add 
+            </button>
+
+            <button class="btn btn-info btn-addon pull-right" @click.prevent="addUserBulk()">
+                <i class="fa fa-plus"></i> Bulk Upload 
             </button>
       </div>
   
@@ -81,4 +89,4 @@
   <!-- / main -->
 </div>
 
-</gradlead-users-screen>
+</gradlead-seekers-screen>
