@@ -41672,8 +41672,8 @@ Vue.component('gradlead-lists-screen', {
                 var seen = [];
                 $.each(self.majors, function(idx, m) {
                     if (! self.isInArray(m.category, seen)) {
-                        self.categoryOptions.push({'text':self.ucwords(m.category), 'value':m.category  });
-                        seen.push(self.category);
+                        self.categoryOptions.push({'text':m.category, 'value':m.category  });
+                        seen.push(m.category);
                     }
                 });
                 var seen = [];
