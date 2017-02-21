@@ -21,6 +21,7 @@ require('./components/Permissions.vue');
 require('./components/Badges.vue');
 require('./components/Plans.vue');
 require('./components/Screening.vue');
+require('./components/Lists.vue');
 require('./components/Events.vue');
 require('./components/Themes.vue');
 

@@ -39756,6 +39756,7 @@ require('./components/Permissions.vue');
 require('./components/Badges.vue');
 require('./components/Plans.vue');
 require('./components/Screening.vue');
+require('./components/Lists.vue');
 require('./components/Events.vue');
 require('./components/Themes.vue');
 
@@ -39775,7 +39776,7 @@ var app = new Vue({
   data: {}
 });
 
-},{"./bootstrap":9,"./components/Applications.vue":10,"./components/Badges.vue":11,"./components/Events.vue":12,"./components/Home.vue":13,"./components/Jobs.vue":14,"./components/Organizations.vue":15,"./components/Permissions.vue":16,"./components/Plans.vue":17,"./components/Screening.vue":18,"./components/Seekers.vue":19,"./components/Stats.vue":20,"./components/Themes.vue":21,"./components/Users.vue":22,"./components/Welcome.vue":23}],9:[function(require,module,exports){
+},{"./bootstrap":9,"./components/Applications.vue":10,"./components/Badges.vue":11,"./components/Events.vue":12,"./components/Home.vue":13,"./components/Jobs.vue":14,"./components/Lists.vue":15,"./components/Organizations.vue":16,"./components/Permissions.vue":17,"./components/Plans.vue":18,"./components/Screening.vue":19,"./components/Seekers.vue":20,"./components/Stats.vue":21,"./components/Themes.vue":22,"./components/Users.vue":23,"./components/Welcome.vue":24}],9:[function(require,module,exports){
 'use strict';
 
 var _vuejsDatepicker = require('vuejs-datepicker');
@@ -39840,7 +39841,7 @@ window.Multiselect = _vueMultiselect2.default;
 require('./widgets/bootstrap');
 require('./forms/bootstrap');
 
-},{"./forms/bootstrap":24,"./widgets/bootstrap":30,"bootstrap-sass":1,"jquery":2,"lodash":3,"vue-multiselect":4,"vue-resource":5,"vue/dist/vue.js":6,"vuejs-datepicker":7}],10:[function(require,module,exports){
+},{"./forms/bootstrap":25,"./widgets/bootstrap":31,"bootstrap-sass":1,"jquery":2,"lodash":3,"vue-multiselect":4,"vue-resource":5,"vue/dist/vue.js":6,"vuejs-datepicker":7}],10:[function(require,module,exports){
 Vue.component('gradlead-applications-screen', {
     
     props: ['authUser', 'usertype', 'permissions'],
@@ -40339,7 +40340,7 @@ Vue.component('gradlead-home-screen', {
             permissions: {'canDoEvents': false, 'canDoScreening':false, 'canDoPreselect': false, 'canDoTracking':false},
             
             loadedScreens: 0,
-            expectedScreens: 12,
+            expectedScreens: 19,
         };
     },
     
@@ -40374,7 +40375,7 @@ Vue.component('gradlead-home-screen', {
                     self.permissions.canDoScreening = self.authUser.organization.permissions.screening;
                     self.permissions.canDoPreselect = self.authUser.organization.permissions.preselect;
                     self.permissions.canDoTracking = self.authUser.organization.permissions.tracking;
-                    self.expectedScreens = (self.usertype.isGradlead) ? 12 : ((self.usertype.isCompany) ? 12 : 7); 
+                    self.expectedScreens = (self.usertype.isGradlead) ? 19 : ((self.usertype.isCompany) ? 19 : 7); 
                 });
         },
     
@@ -40394,6 +40395,7 @@ Vue.component('gradlead-home-screen', {
             this.getMajors();
             this.getIndustries();
             this.getSkills();
+            this.getUniversities();
 
             this.getBadges();
         },
@@ -40439,6 +40441,10 @@ Vue.component('gradlead-home-screen', {
         
         getMajors: function () {
             this.$http.get(this.baseUrl+'majors').then(function (resp) { bus.$emit('majorsSet', resp.data.data); });
+		},
+
+        getUniversities: function () {
+            this.$http.get(this.baseUrl+'universities').then(function(resp) {bus.$emit('universitiesSet',resp.data.data);});
 		},
         
         getDegrees: function () {
@@ -40494,6 +40500,7 @@ Vue.component('gradlead-home-screen', {
             bus.$on('updateEvents', function () { self.getEvents(); });
             bus.$on('updateUsers', function () { self.getUsers(); });
             bus.$on('updateRoles', function () { self.getRoles(); });
+            bus.$on('updateUniversities', function () { self.getUniversities(); });
             
             bus.$on('screenLoaded', function(name) {
                 self.loadedScreens += 1;
@@ -41528,6 +41535,207 @@ Vue.component('gradlead-jobs-screen', {
 });
 
 },{}],15:[function(require,module,exports){
+Vue.component('gradlead-lists-screen', {
+
+    props: ['list','authUser', 'usertype', 'permissions'],
+
+    components: {
+        'notifications': Notification,
+    },
+
+    mounted: function () {        
+        this.setupListeners();
+    },
+
+    data: function () {
+        return {
+            baseUrl: '/',
+            modname: 'Lists',
+
+            degrees: [],
+            industries: [],
+            jobTypes: [],
+            languages: [],
+            majors: [],
+            skills: [],
+            universities: [],
+
+            editingItem: '',
+            categoryOptions: [],
+
+            // forms
+            forms: {
+                addForm: new SparkForm ({
+                    name: '',
+                    website: '',
+                    country: '',
+                    category: '',
+                }),
+
+                updateForm: new SparkForm ({
+                    id: '',
+                    name: '',
+                    website: '',
+                    country: '',
+                    category: '',
+                }),
+            },
+        };
+    },
+
+    watch: { },
+
+    events: {},
+
+    computed: {
+        everythingLoaded: function () {
+            return this.authUser != null && this.list!='' && this.universities.length > 0; 
+        },
+        isMajor: function() { return this.list=='Majors'; },
+        isUniversity: function() { return this.list=='Universities'; },
+    },
+
+    methods: {
+        // List and applications
+        addList: function () {
+            this.forms.addForm.name = '';
+            this.forms.addForm.webiste = '';
+            this.forms.addForm.country = ''; 
+            this.forms.addForm.category = '';
+            this.forms.addForm.errors.forget();
+        },
+        editList: function (item) {
+            this.editingItem = item;
+            this.forms.updateForm.id = item.id
+            this.forms.updateForm.name = item.name
+            this.forms.updateForm.country = item.country;
+            this.forms.updateForm.website = item.website;
+            this.forms.updateForm.category = item.category;
+            this.forms.updateForm.errors.forget();
+        },
+
+        // Ajax calls
+        addNewListItem: function () {
+            var self = this;
+            var path = this.getPath();
+
+            if (path != null) {
+               Spark.post(self.baseUrl+path, this.forms.addForm)
+                    .then(function () {
+                        bus.$emit('update'+self.list);
+                        var closeAddButton = self.$refs.closeAddItem;
+                        closeAddButton.click();
+                    }, function(resp) {
+                        self.forms.addForm.busy = false;
+                        NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
+                    });
+            }
+        },
+        updateListItem: function () {
+            var self = this;
+            var path = this.getPath();
+
+            if (path != null) {
+                Spark.put(self.baseUrl+path+'/' + this.editingItem.id, this.forms.updateForm)
+                    .then(function () {
+                        bus.$emit('update'+self.list);
+                        var closeEditButton = self.$refs.closeEditItem;
+                        closeEditButton.click();
+                    });
+            }
+        },
+        removeListItem: function (item) {
+            var self = this;
+            var path = this.getPath();
+
+            if (path != null) {
+                this.$http.delete(self.baseUrl+path+'/' + item.id)
+                    .then(function () {
+                        self.removeItem(item);
+                        bus.$emit('update'+self.list);
+                    }, function(resp) {
+                        NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
+                    });
+            }
+        },
+
+        // Ajax calls
+        setupListeners: function () {
+            var self = this;
+            bus.$on('degreesSet', function (items) { self.degrees = items; });
+            bus.$on('industriesSet', function (items) { self.industries = items; });
+            bus.$on('jobTypesSet', function (items) { self.jobTypes = items; });
+            bus.$on('languagesSet', function (items) { self.languages = items; });
+            bus.$on('majorsSet', function (items) { 
+                self.majors = items; 
+                self.categoryOptions = [];
+                $.each(self.majors, function(idx, m) {
+                    self.categoryOptions.push({'text':self.ucwords(m.category), 'value':m.category  });
+                });
+            });
+            bus.$on('skillsSet', function (items) { self.skills = items; });
+            bus.$on('universitiesSet', function (items) { self.universities = items; });
+            bus.$emit('screenLoaded',self.modname);
+         },
+
+        // Helpers
+        getList: function() {
+            if (this.list=='Degrees') { return this.degrees; }
+            if (this.list=='Industries') { return this.industries; }
+            if (this.list=='JobTypes') { return this.jobTypes; }
+            if (this.list=='Languages') { return this.languages; }
+            if (this.list=='Majors') { return this.majors; }
+            if (this.list=='Skills') { return this.skills; }
+            if (this.list=='Universities') { return this.universities; }
+            return [];
+        },
+
+        getPath: function() {
+            var path = null;
+            switch (this.list) {
+                case 'Degrees': path='degrees'; break;
+                case 'Industries': path='industries'; break;
+                case 'JobTypes': path='jobtypes'; break;
+                case 'Languages': path='languages'; break;
+                case 'Majors': path='majors'; break;
+                case 'Skills': path='skills'; break;
+                case 'Universities': path='universities'; break;
+                default: path= null;
+            }
+            return path;
+        },
+
+        removeItem: function(item) {
+            if (this.list=='Degrees') { this.degrees = this.removeFromList(this.degrees, item); }
+            if (this.list=='Industries') { this.industries = this.removeFromList(this.industries, item); }
+            if (this.list=='JobTypes') { this.jobTypes = this.removeFromList(this.jobTypes, item); }
+            if (this.list=='Languages') { this.languages = this.removeFromList(this.languages, item); }
+            if (this.list=='Majors') { this.majors = this.removeFromList(this.majors, item); }
+            if (this.list=='Skills') { this.skills = this.removeFromList(this.skills, item); }
+            if (this.list=='Universities') { this.universities = this.removeFromList(this.universities, item); }
+        },
+
+        removeFromList: function (list, item) {
+            return _.reject(list, function (i) {
+                return i.id === item.id;
+            });
+        },
+
+        isInArray: function (item, array) {
+            return !!~$.inArray(item, array);
+        },
+
+        ucwords: function (str) {
+            return str.toLowerCase().replace(/\b[a-z]/g, function (letter) {
+                return letter.toUpperCase();
+            });
+        },
+    },
+
+    filters: { },
+});
+
+},{}],16:[function(require,module,exports){
 Vue.component('gradlead-orgs-screen', {
 
 
@@ -41653,7 +41861,7 @@ Vue.component('gradlead-orgs-screen', {
     },
 });
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 Vue.component('gradlead-permissions-screen', {
 
     mounted: function() {
@@ -41743,7 +41951,7 @@ Vue.component('gradlead-permissions-screen', {
     },
 });
 
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 Vue.component('gradlead-plans-screen', {
 
     components: {
@@ -41931,7 +42139,7 @@ Vue.component('gradlead-plans-screen', {
     },
 });
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 Vue.component('gradlead-screening-screen', {
 
     mounted: function () {
@@ -42547,7 +42755,7 @@ Vue.component('gradlead-screening-screen', {
     },
 });
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 Vue.component('gradlead-seekers-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
@@ -42817,7 +43025,7 @@ Vue.component('gradlead-seekers-screen', {
     },
 });
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 Vue.component('gradlead-stats-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
@@ -42934,7 +43142,7 @@ Vue.component('gradlead-stats-screen', {
     },
 });
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 Vue.component('gradlead-themes-screen', {
 
     mounted: function() {
@@ -43042,7 +43250,7 @@ Vue.component('gradlead-themes-screen', {
     filters: { },
 });
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 Vue.component('gradlead-users-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
@@ -43300,7 +43508,7 @@ Vue.component('gradlead-users-screen', {
     },
 });
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 Vue.component('gradlead-welcome-screen', {
 
     mounted: function() {
@@ -43355,7 +43563,7 @@ Vue.component('gradlead-welcome-screen', {
     filters: { },
 });
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 /**
@@ -43378,7 +43586,7 @@ $.extend(Spark, require('./http'));
  */
 require('./components');
 
-},{"./components":25,"./errors":26,"./http":27,"./instance":28}],25:[function(require,module,exports){
+},{"./components":26,"./errors":27,"./http":28,"./instance":29}],26:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-text', {
@@ -43735,7 +43943,7 @@ Vue.component('spark-progressbar', {
     }
 });
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -43802,7 +44010,7 @@ window.SparkFormErrors = function () {
     };
 };
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -43842,7 +44050,7 @@ module.exports = {
     }
 };
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 "use strict";
 
 /**
@@ -43869,7 +44077,7 @@ window.SparkForm = function (data) {
     };
 };
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-authenticate', {
@@ -44035,7 +44243,7 @@ Vue.component('spark-authenticate', {
 				}
 });
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 require('./notifications');
@@ -44044,7 +44252,7 @@ require('./components');
 require('./features');
 require('./authenticate');
 
-},{"./authenticate":29,"./components":31,"./errors":32,"./features":33,"./notifications":34}],31:[function(require,module,exports){
+},{"./authenticate":30,"./components":32,"./errors":33,"./features":34,"./notifications":35}],32:[function(require,module,exports){
 'use strict';
 
 Vue.component('gradlead-sparkline-bar', {
@@ -44090,7 +44298,7 @@ Vue.component('gradlead-plot', {
     }
 });
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 /*
@@ -44117,7 +44325,7 @@ Vue.component('spark-error-alert', {
             </div></div>"
 });
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-featured-jobs', {
@@ -44192,7 +44400,7 @@ Vue.component('spark-featured-employers', {
     }
 });
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 window.NotificationStore = {

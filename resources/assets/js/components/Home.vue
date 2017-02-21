@@ -16,7 +16,7 @@ Vue.component('gradlead-home-screen', {
             permissions: {'canDoEvents': false, 'canDoScreening':false, 'canDoPreselect': false, 'canDoTracking':false},
             
             loadedScreens: 0,
-            expectedScreens: 12,
+            expectedScreens: 19,
         };
     },
     
@@ -51,7 +51,7 @@ Vue.component('gradlead-home-screen', {
                     self.permissions.canDoScreening = self.authUser.organization.permissions.screening;
                     self.permissions.canDoPreselect = self.authUser.organization.permissions.preselect;
                     self.permissions.canDoTracking = self.authUser.organization.permissions.tracking;
-                    self.expectedScreens = (self.usertype.isGradlead) ? 12 : ((self.usertype.isCompany) ? 12 : 7); 
+                    self.expectedScreens = (self.usertype.isGradlead) ? 19 : ((self.usertype.isCompany) ? 19 : 7); 
                 });
         },
     
@@ -71,6 +71,7 @@ Vue.component('gradlead-home-screen', {
             this.getMajors();
             this.getIndustries();
             this.getSkills();
+            this.getUniversities();
 
             this.getBadges();
         },
@@ -116,6 +117,10 @@ Vue.component('gradlead-home-screen', {
         
         getMajors: function () {
             this.$http.get(this.baseUrl+'majors').then(function (resp) { bus.$emit('majorsSet', resp.data.data); });
+		},
+
+        getUniversities: function () {
+            this.$http.get(this.baseUrl+'universities').then(function(resp) {bus.$emit('universitiesSet',resp.data.data);});
 		},
         
         getDegrees: function () {
@@ -171,6 +176,7 @@ Vue.component('gradlead-home-screen', {
             bus.$on('updateEvents', function () { self.getEvents(); });
             bus.$on('updateUsers', function () { self.getUsers(); });
             bus.$on('updateRoles', function () { self.getRoles(); });
+            bus.$on('updateUniversities', function () { self.getUniversities(); });
             
             bus.$on('screenLoaded', function(name) {
                 self.loadedScreens += 1;
