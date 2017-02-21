@@ -132,9 +132,14 @@ Vue.component('gradlead-lists-screen', {
             bus.$on('majorsSet', function (items) { 
                 self.majors = items; 
                 self.categoryOptions = [];
+                var seen = [];
                 $.each(self.majors, function(idx, m) {
-                    self.categoryOptions.push({'text':self.ucwords(m.category), 'value':m.category  });
+                    if (! self.isInArray(m.category, seen)) {
+                        self.categoryOptions.push({'text':self.ucwords(m.category), 'value':m.category  });
+                        seen.push(self.category);
+                    }
                 });
+                var seen = [];
             });
             bus.$on('skillsSet', function (items) { self.skills = items; });
             bus.$on('universitiesSet', function (items) { self.universities = items; });
@@ -195,5 +200,11 @@ Vue.component('gradlead-lists-screen', {
         },
     },
 
-    filters: { },
+    filters: { 
+        ucw: function(str) {
+            return str.toLowerCase().replace(/\b[a-z]/g, function (letter) {
+                return letter.toUpperCase();
+            });
+        },
+    },
 });

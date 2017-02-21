@@ -26,7 +26,7 @@
                     <tbody>
                         <tr v-for="i in getList()">
                             <td v-show="isMajor" class="spark-table-pad"> @{{ i.category }} </td>
-                            <td class="spark-table-pad"> @{{ i.name }} </td>
+                            <td class="spark-table-pad"> @{{ i.name | ucw }} </td>
                             <td v-show="isUniversity" class="spark-table-pad"> @{{ i.country }} </td>
                             <td v-show="isUniversity" class="spark-table-pad"> @{{ i.website }} </td>
                             <td class="spark-table-pad">
