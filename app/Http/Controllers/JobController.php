@@ -170,7 +170,8 @@ class JobController extends Controller
             $i->end_date = date("Y-m-d", strtotime($request->end_date));
             
             //TODO: task to check feature status
-            $i->featured = ($this->getTenant()->isGradlead()) ? ((isset($request->featured)) ? 1:0) : $i->getFeaturedStatus();
+            $i->featured = ($this->getTenant()->isGradlead()) 
+                         ? ((isset($request->featured)) ? 1:0) : $i->getFeaturedStatus();
             
             //TODO: task to check and change job status
             $i->setStatus();
@@ -263,6 +264,24 @@ class JobController extends Controller
         
         return $this->json_response($i);
     }
+    
+    public function updateFeature(Request $request, $itemId)
+    {
+        $user = $request->user();
+
+        $i = Job::find($itemId);
+
+        if (is_null($i)) {
+            return $this->json_response(['Cannot find job to update'], true);    
+        }
+        
+        $i->featured = !$i->featured;        
+        $i->modified_by = $user->id;
+        $i->save();
+        
+        return $this->json_response($i);
+    }
+
 
 
     public function destroy(Request $request, $itemId)

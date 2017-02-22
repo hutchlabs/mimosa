@@ -82,7 +82,7 @@
                                                     <label class="control-label">Teaser</label>
                                                     <input type="text" id="teaser" name="teaser" class="form-control" placeholder="Teaser..." @blur="validateField('jobUpdateForm','teaser')">
                                                     <span class="help-block" v-show="fieldHasErrors('jobUpdateForm','teaser')">
-            	                                        <span style="color:red">Teaser is required</span>
+            	                                        <span style="color:red">Teaser is required and has to be less than 225 characters</span>
                                                     </span>
                                                 </div>
 
@@ -98,7 +98,7 @@
                                                     <div class="row">
                                                         <div class="col-sm-6">
                                                             <label class="control-label">Start Date</label>
-                                                            <datepicker :value="startDate_val" v-model="startDate" :format="'dd-M-yyyy'" :input-class="'form-control'"></datepicker>
+                                                            <datepicker :value="startDate_val" v-model="startDate" :disabled="sdisabled" :format="'dd-M-yyyy'" :input-class="'form-control'"></datepicker>
                                                             <input type="hidden" id="start_date" name="start_date" />
                                                             <span class="help-block " v-show="fieldHasErrors('jobUpdateForm','start_date')">
                                                             <span style="color:red">Start date is required.</span>
@@ -106,7 +106,7 @@
                                                         </div>
                                                         <div class="col-sm-6">
                                                             <label class="control-label">End Date</label>
-                                                            <datepicker :value="endDate_val" v-model="endDate" :format="'dd-M-yyyy'" :input-class="'form-control'"></datepicker>
+                                                            <datepicker :value="endDate_val" v-model="endDate" :disabled="edisabled" :format="'dd-M-yyyy'" :input-class="'form-control'"></datepicker>
                                                             <input type="hidden" id="end_date" name="end_date" />
                                                             <span class="help-block " v-show="fieldHasErrors('jobUpdateForm','end_date')">
                                                             <span style="color:red">End date is required.</span>
@@ -178,7 +178,7 @@
                                                 </div>
 
                                                 <div v-show="permissions.canDoScreening" class="form-group">
-                                                    <label class="control-label">Questionnaire</label>
+                                                    <label class="control-label">Screening Questionnaire</label>
                                                     <select id="questionnaire_id" name="questionnaire_id" class="form-control" placeholder="Select Questionnaire">
                                                         <option value=''>None</option>
                                                         <option v-for="q in questionnaires" :value="q.id">
@@ -301,6 +301,7 @@
                                                         <div class="form-group">
                                                             <label class="control-label">Graduation Year</label>
                                                             <select id="gradyear" name="gradyear" class="form-control">
+                                                                <option value="0">None</option>
                                                                 <option v-for="y in years" :value="y">@{{ y }}</option>
                                                             </select>
                                                         </div>

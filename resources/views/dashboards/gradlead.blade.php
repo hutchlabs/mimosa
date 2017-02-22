@@ -283,13 +283,12 @@
 
 
         <div role="tabpanel" class="tab-pane" id="yourprofile">
-            Your profile
+            @include('dashboards.profiles.userprofile')
         </div>
 
         <div v-if="usertype.canEdit" role="tabpanel" class="tab-pane" id="orgprofile">
-            Org profile
+            @include('dashboards.profiles.orgprofile')
         </div>
-
     </div>
 </div>
 <!-- /content -->

@@ -83,7 +83,7 @@
               <li class="dropdown">
                 <a href="#" data-toggle="dropdown" class="dropdown-toggle clear" data-toggle="dropdown">
                   <span class="thumb-sm avatar pull-right m-t-n-sm m-b-n-sm m-l-sm">
-                    <img src="img/a0.jpg" alt="...">
+                    <img v-bind:src="avatar" />
                     <i class="on md b-white bottom"></i>
                   </span>
                   <span class="hidden-sm hidden-md">{{ Auth::user()->name }}</span> <b class="caret"></b>

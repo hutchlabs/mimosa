@@ -18,12 +18,14 @@ class Organization extends Model
 
     protected $hidden = [];
 
-    protected $with = ['profile','contracts','permissions','events','jobs'];
+    protected $with = ['contracts','permissions','events','jobs'];
 
     protected function getArrayableAppends()
     {
-        $appends = ($this->isCompany()) ? ['numusers','numschools','numrecruiters','schools','theme']
-                                        : ['numusers','numschools','numrecruiters','theme'];
+        $appends = ['numusers','numschools','numrecruiters','theme','profile','logo_url'];
+        
+        if ($this->isCompany()) { array_push($appends,'schools'); } 
+        
         $this->appends = array_merge($this->appends, $appends);
 
         return parent::getArrayableAppends();
@@ -31,7 +33,7 @@ class Organization extends Model
 
     public function getThemeAttribute() 
     {
-      // HACK: to create new theme for organization based on Gradlead default
+      // Create new theme for organization based on Gradlead default
       $theme =  DB::table('themes')->select(DB::raw('*'))->where('organization_id',$this->id)->first(); 
       if (is_null($theme)) {
         $request =  DB::table('themes')->select(DB::raw('*'))->where('organization_id',1)->first(); 
@@ -96,13 +98,40 @@ class Organization extends Model
                 ->count(); 
     }
 
-    public function profile()
+    public function getProfileAttribute()
     {
+        $profile = null;
         if ($this->isSchool() || $this->isGradlead()) {
-          return $this->hasOne('\App\Gradlead\ProfileSchool', 'organization_id', 'id');
+            $profile = DB::table('profiles_schools')->select(DB::raw('*'))->where('organization_id',$this->id)->first(); 
+            if (is_null($profile)) {
+                $profile = new ProfileSchool();
+                $profile->organization_id = $this->id;
+                $profile->summary = "This is the default profile text. Please update your profile.";
+                $profile->modified_by = 1;
+                $profile->save();
+            }
         } else {
-          return $this->hasOne('\App\Gradlead\ProfileCompany', 'organization_id', 'id');
+            $profile = DB::table('profiles_companies')->select(DB::raw('*'))
+                                ->where('organization_id',$this->id)->first(); 
+            if (is_null($profile)) {
+                $profile = new ProfileCompany();
+                $profile->organization_id = $this->id;
+                $profile->summary = "This is the default profile text. Please update your profile.";
+                $profile->modified_by = 1;
+                $profile->save();
+            }
         }
+        return $profile;
+    }
+    
+    public function getLogourlAttribute() 
+    {
+        $logo = 'img/a0.jpg';
+        $path = ($this->isSchool() || $this->isGradlead()) ? 'crest' : 'logo';
+        if (!is_null($this->profile) && $this->profile->file_name<>'') {
+            $logo = '/profiles/'.$path.'/'.$this->profile->id.'?'.date('Y-m-d');
+        }
+        return $logo;
     }
 
     public function mytheme()
@@ -171,7 +200,7 @@ class Organization extends Model
     
     public function isSchool() 
     {
-        return ($this->type=='school');
+        return ($this->type=='school') ? true : false;
     }
 
     public function isCompany() 

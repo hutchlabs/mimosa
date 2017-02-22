@@ -1,5 +1,5 @@
 Vue.component('spark-text', {
-    props: ['display', 'form', 'name', 'input'],
+    props: ['display', 'form', 'name', 'input','maxlength'],
 
     template: '<div class="form-group" :class="{\'has-error\': form.errors.has(name)}">\
     <label class="col-md-4 control-label">{{ display }}</label>\
@@ -13,7 +13,11 @@ Vue.component('spark-text', {
 
     watch: {
         'fieldValue': function (v) {
-            this.form[this.name] = v;
+            if (v.length > this.textLength) {
+                this.form.set(this.textError); 
+            } else {
+                this.form[this.name] = v;
+            }
         },
         'input': function (v) {
             this.fieldValue = this.input;
@@ -21,10 +25,14 @@ Vue.component('spark-text', {
     },
     mounted: function () {
         this.fieldValue = this.input;
+        this.textLength = (typeof this.maxlength != 'Undefined') ? this.maxlength : this.textLength;
+        this.textError[this.name] = ['Value cannot be longer than '+this.textLength+' characters'];
     },
     data: function () {
         return {
-            fieldValue: ''
+            fieldValue: '',
+            textLength: 255,
+            textError: {},
         }
     }
 });
@@ -157,15 +165,13 @@ Vue.component('spark-file-simple', {
     data: function () { return { } },
     methods: { 
         updateFile: function(file) {
-            console.log(file);
-            console.log(file.target.files[0]);
             this.form[this.name] = file.target.files[0];
         },
     },
 });
 
 Vue.component('spark-file', {
-    props: ['display', 'form', 'name', 'input', 'warning'],
+    props: ['display', 'form', 'name', 'input','filename', 'warning'],
 
     template: '<div class="form-group" :class="{\'has-error\': form.errors.has(name)}">\
     <label class="col-md-4 control-label">{{ display }}</label>\
@@ -181,16 +187,21 @@ Vue.component('spark-file', {
         'fieldValue': function (v) {
             this.form[this.name] = v;
         },
+        'fieldName': function (v) {
+            this.$emit('updated',v);
+        },
         'input': function (v) {
             this.fieldValue = this.input;
         }
     },
     mounted: function () {
         this.fieldValue = this.input;
+		this.fieldName = this.filename;
     },
     data: function () {
         return {
-            fieldValue: ''
+            fieldValue: '',
+			fieldName: ''
         }
     },
 
@@ -204,6 +215,7 @@ Vue.component('spark-file', {
             createFile(file) {
                 var reader = new FileReader();
                 var vm = this;
+				this.fieldName = file.name;
                 reader.onload = (e) => {
                     vm.fieldValue = e.target.result
                 };

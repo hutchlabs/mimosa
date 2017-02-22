@@ -20,31 +20,31 @@ class ProfileController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth',['except'=>['avatar','pic','logo','crest']]);
     }
     
     public function avatar(Request $request, $profileId) 
     {
         $b = Profile::findOrFail($profileId);
-        return $this->display_image($b->file_path);
+        return $this->display_image_new($b->file_path);
     }
     
     public function pic(Request $request, $profileId) 
     {
         $b = ProfileCompany::findOrFail($profileId);
-        return $this->display_image($b->pic_path);
+        return $this->display_image_new($b->pic_path);
     }
     
     public function logo(Request $request, $profileId) 
     {
         $b = ProfileCompany::findOrFail($profileId);
-        return $this->display_image($b->file_path);
+        return $this->display_image_new($b->file_path);
     }
     
     public function crest(Request $request, $profileId) 
     {
         $b = ProfileSchool::findOrFail($profileId);
-        return $this->display_image($b->file_path);
+        return $this->display_image_new($b->file_path);
     }
 
     
@@ -73,14 +73,6 @@ class ProfileController extends Controller
         $this->validate($request, [ 
             'organization_id' => 'required|exists:organizations,id', 
             'summary' => 'required', 
-            'description' => 'required', 
-            'country' => 'required|max:255',
-            'city' => 'required',
-            'address' => 'required', 
-            'jobtypes' => 'required',
-            'industries' => 'required',
-            'logo' => 'image',
-            'pic' => 'image'
         ]);
 
         $i = new ProfileCompany();
@@ -123,22 +115,29 @@ class ProfileController extends Controller
         $this->validate($request, [ 
             'organization_id' => 'required|exists:organizations,id', 
             'summary' => 'required', 
-            'logo' => 'image'
+            'file_name' => 'string',
+            'icon_file' => 'string'
         ]);
 
-        $i = new ProfileSchool();
-        $i->organization_id = $request->organization_id;
-        $i->summary = $request->summary;
-      
-        if ($request->logo <> '') { 
-            $fInfo = $this->handleFileUpload($request, 'logo', 'files/logos/');
-            $i->file_name = $fInfo['name'];
-            $i->file_path = $fInfo['path'];
-            $i->file_url = $fInfo['url'];
+		$i = new ProfileSchool();
+
+ 		if ($request->icon_file<>'') {
+            $fInfo = $this->handleNewFileUpload($request, 'files/logos/');
+            if (is_array($fInfo)) {
+                $i->file_name = $fInfo['name'];
+                $i->file_path = $fInfo['path'];
+                $i->file_url = $fInfo['url'];
+            } else {
+                return $this->json_response (
+                    ['icon_file' => ['The file size cannot exceed 20MB.']],true, 422
+                );
+            }
         }
-               
-        $i->modified_by = $user->id;
-        $i->save();
+
+       	$i->organization_id = $request->organization_id;
+       	$i->summary = $request->summary;
+       	$i->modified_by = $user->id;
+       	$i->save();
 
         return $this->json_response($i);
     }
@@ -150,7 +149,8 @@ class ProfileController extends Controller
         $this->validate($request, [ 
             'user_id' => 'required|exists:users,id', 
             'summary' => 'required', 
-            'avatar' => 'image'
+            'file_name' => 'string',
+            'icon_file' => 'string'
         ]);
 
         $i = new Profile();
@@ -158,11 +158,17 @@ class ProfileController extends Controller
         $i->uuid = md5($request->user_id.time());
         $i->summary = $request->summary;
 
-        if ($request->avatar <> '') { 
-            $fInfo = $this->handleFileUpload($request, 'avatar', 'files/avatars/');
-            $i->file_name = $fInfo['name'];
-            $i->file_path = $fInfo['path'];
-            $i->file_url = $fInfo['url'];
+        if ($request->icon_file<>'') {
+            $fInfo = $this->handleNewFileUpload($request, 'files/avatars/');
+            if (is_array($fInfo)) {
+                $i->file_name = $fInfo['name'];
+                $i->file_path = $fInfo['path'];
+                $i->file_url = $fInfo['url'];
+            } else {
+                return $this->json_response (
+                    ['icon_file' => ['The file size cannot exceed 20MB.']],true, 422
+                );
+            }
         }
 
         $i->modified_by = $user->id;
@@ -397,21 +403,28 @@ class ProfileController extends Controller
             'id' => 'required|exists:profiles_schools,id', 
             'organization_id' => 'required|exists:organizations,id', 
             'summary' => 'required', 
-            'logo' => 'image'
+            'file_name' => 'string',
+            'icon_file' => 'string'
         ]);
 
         $i = ProfileSchool::find($request->id);
         $i->organization_id = $request->organization_id;
         $i->summary = $request->summary;
        
-        if ($request->logo <> '') { 
+ 		if ($request->icon_file<>'') {
             Storage::delete($i->file_path);
-            $fInfo = $this->handleFileUpload($request, 'logo', 'files/logos/');
-            $i->file_name = $fInfo['name'];
-            $i->file_path = $fInfo['path'];
-            $i->file_url = $fInfo['url'];
+           $fInfo = $this->handleNewFileUpload($request, 'files/logos/');
+            if (is_array($fInfo)) {
+                $i->file_name = $fInfo['name'];
+                $i->file_path = $fInfo['path'];
+                $i->file_url = $fInfo['url'];
+            } else {
+                return $this->json_response (
+                    ['icon_file' => ['The file size cannot exceed 20MB.']],true, 422
+                );
+            }
         }
-          
+
         $i->modified_by = $user->id;
         $i->save();
 
@@ -426,8 +439,8 @@ class ProfileController extends Controller
             'id' => 'required|exists:profiles_users,id',
             'user_id' => 'required|exists:users,id', 
             'uuid' => 'required|max:255',
-            'summary' => 'required', 
-            'avatar' => 'image'
+            'file_name' => 'string',
+            'icon_file' => 'string'
         ]);
 
         $i = Profile::find($request->id);
@@ -435,12 +448,18 @@ class ProfileController extends Controller
         $i->uuid = $request->uuid;
         $i->summary = $request->summary;
 
-        if ($request->avatar <> '') { 
+ 		if ($request->icon_file<>'') {
             Storage::delete($i->file_path);
-            $fInfo = $this->handleFileUpload($request, 'avatar', 'files/avatars/');
-            $i->file_name = $fInfo['name'];
-            $i->file_path = $fInfo['path'];
-            $i->file_url = $fInfo['url'];
+           $fInfo = $this->handleNewFileUpload($request, 'files/avatars/');
+            if (is_array($fInfo)) {
+                $i->file_name = $fInfo['name'];
+                $i->file_path = $fInfo['path'];
+                $i->file_url = $fInfo['url'];
+            } else {
+                return $this->json_response (
+                    ['icon_file' => ['The file size cannot exceed 20MB.']],true, 422
+                );
+            }
         }
 
         $i->modified_by = $user->id;

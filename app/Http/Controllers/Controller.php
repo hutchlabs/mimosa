@@ -70,6 +70,47 @@ class Controller extends BaseController
         
         return array('name'=>$name, 'path'=>$path, 'url'=>$url, 'size'=>$size, 'mimetype'=>$mimetype);
     }
+
+    public function display_image_new($file_path)
+    {
+        if ($file_path) {
+            $file_path = preg_replace('/storage\/app\/public\//','',$file_path);
+            $contents = Storage::get($file_path);
+
+            if (preg_match('/data:/',$contents)) {
+                $mime = mime_content_type($contents);
+                $contents = base64_decode(preg_replace('/data:\w+\/\w+;base64,/','',$contents));
+            } else {
+                $mime = Storage::mimeType($file_path);
+            }
+            header("Content-Type: ".$mime);
+            header("Content-Length: " . strlen($contents));
+            echo $contents;
+        }
+        exit;
+    }
+ 
+    protected function handleNewFileUpload(Request $request, $storage_path, $fileSizeLimit=20)
+    {
+        $ONE_MEGA_BYTE = 1048576;
+
+        // save file
+  		$name = uniqid().'_'.$request->file_name;
+        Storage::put($storage_path.$name, $request->icon_file);
+
+        $path = $storage_path.$name;
+        $size = Storage::size($path);
+
+        if ($size > ($fileSizeLimit * $ONE_MEGA_BYTE)) {
+            Storage::delete($path);
+            return "File size exceeds {$fileSizeLimit}MB";
+        }
+        
+        $url = Storage::url($path);
+        $mimetype = Storage::mimeType($path);
+        
+        return array('name'=>$name, 'path'=>$path, 'url'=>$url, 'size'=>$size, 'mimetype'=>$mimetype);
+    }    
     
     protected function removeImageFile($path) 
     {

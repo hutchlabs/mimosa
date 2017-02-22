@@ -1,23 +1,22 @@
 Vue.component('spark-featured-jobs', {
     props: [],
 
-    // TODO: Finish avatar load and onclick 
+    // TODO: Finish onclick 
     template: '<div> \
-        <div v-for="job in jobs" class="col-md-4 col-sm-6 blog-masonry-item development card">\
+        <div v-for="job in jobs" class="col-md-4 col-sm-6 blog-masonry-item development card" style="cursor:pointer">\
           <div v-if="job.organization.profile!=null" class="item-inner quote-post">\
             <div class="post-title">\
               <div class="row">\
                 <div class="col-md-4">\
-                    <img src="" class="img-circle emp-logo">\
+                    <img :src="job.orglogo" class="img-circle emp-logo">\
                 </div>\
                 <div class="col-md-8">\
                   <h5 class="real-h5"> {{ job.organization.name }}</h5\>\
-                  <h4> {{ job.organization.profile.industries }}</h4>\
+                  <h3>{{job.title}}</h3>\
+                  <div class="post-meta">\
+                    <span class="sub alt-font"></span>\
+                  </div>\
                 </div>\
-              </div>\
-              <h3>{{job.title}}</h3>\
-              <div class="post-meta">\
-                <span class="sub alt-font">{{job.country}}</span>\
               </div>\
             </div>\
           </div>\
@@ -46,10 +45,10 @@ Vue.component('spark-featured-jobs', {
 Vue.component('spark-featured-employers', {
     props: [],
 
-    // TODO: Finish logo load and onclick 
+    // TODO: Finish onclick 
     template: '<div> \
-                <div class="col-md-2 col-sm-4">\
-                    <img alt="Client Logo" src="http://app.gradlead.com/dist/assets/img/client1.png">\
+                <div v-for="o in orgs" class="col-md-2 col-sm-4" style="cursor:pointer">\
+                    <img alt="Client Logo" :src="o.logo_url">\
                 </div>\
             </div>',
  

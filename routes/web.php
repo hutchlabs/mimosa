@@ -43,6 +43,7 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->post('jobs/apply',                         'JobController@apply');
         $router->put('jobs/{id}',                           'JobController@update');
         $router->put('jobs/{id}/changestatus',              'JobController@updateStatus');
+        $router->put('jobs/{id}/changefeature',              'JobController@updateFeature');
         $router->put('jobs/application/update',             'JobController@updateApplication');
         $router->delete('jobs/{id}',                        'JobController@destroy');
         $router->delete('jobs/application/{id}',            'JobController@unapply');

@@ -5,6 +5,10 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use HipsterJazzbo\Landlord\BelongsToTenants;
+use Illuminate\Support\Facades\DB;
+
+use App\Gradlead\Profile;
+
 
 class User extends Authenticatable
 {
@@ -28,9 +32,31 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    protected $with = ['role','organization','profile','bookmarks','alerts',
+    protected $with = ['role','organization','bookmarks','alerts',
                        'address','achievements','applications'];
 
+    
+    protected function getArrayableAppends()
+    {
+        $appends = ['profile'];
+        $this->appends = array_merge($this->appends, $appends);
+        return parent::getArrayableAppends();
+    }
+    
+    public function getProfileAttribute()
+    {
+        $profile = DB::table('profiles_users')->select(DB::raw('*'))->where('user_id',$this->id)->first(); 
+        if (is_null($profile)) {   
+            $profile = new Profile();
+            $profile->user_id = $this->id;
+            $profile->uuid = md5($this->id.time());
+            $profile->summary = "This is the default profile text. Please update your profile.";
+            $profile->modified_by = 1;
+            $profile->save();
+        }
+        return $profile;
+    }
+    
     public function role()
     {
         return $this->hasOne('\App\Gradlead\Role', 'id', 'role_id');
@@ -39,11 +65,6 @@ class User extends Authenticatable
     public function organization()
     {
         return $this->belongsTo('\App\Gradlead\Organization');
-    }
-
-    public function profile()
-    {
-        return $this->hasOne('\App\Gradlead\Profile', 'user_id', 'id');
     }
 
     public function alerts()

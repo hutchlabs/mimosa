@@ -22,6 +22,7 @@
                             <th>Applications</th>
                             <th>Posting Date</th>
                             <th>Status</th>
+                            <th>Featured</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -39,6 +40,7 @@
                                      @{{ j.numapplications }}
                                 </span>
                             </td>
+
                             <td class="spark-table-pad"> @{{ j.created_at }} </td>
                             
                             <td class="spark-table-pad">
@@ -56,6 +58,17 @@
                                     <i class="fa fa-spinner fa-spin"></i> Activating..
                                 </span>
                                     <span v-else>Activate</span>
+                                </button>
+                            </td>
+
+                            <td class="spark-table-pad">
+                                @{{ j.featured | feature_text }}
+                                <br/>
+                                <button v-if="j.featured" class="btn btn-warning btn-xs" @click.prevent="setFeature(j)">
+                                    <span>Un-Feature</span>
+                                </button>
+                                <button v-else class="btn btn-default btn-xs" @click.prevent="setFeature(j)">
+                                    <span>Feature</span>
                                 </button>
                             </td>
 

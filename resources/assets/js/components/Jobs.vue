@@ -48,6 +48,8 @@ Vue.component('gradlead-jobs-screen', {
             endDate_val: '',
             startDate: '',
             endDate: '',
+            sdisabled: { to: new Date(), },
+            edisabled: { to: new Date(), },
 
             multiJT: '',
             multiSK: '',
@@ -109,8 +111,9 @@ Vue.component('gradlead-jobs-screen', {
                         errors: false,
                         step: 'step1',
                         val: this.stepVal,
-                        vtype: null,
+                        vtype: 'maxlength',
                         type: 'text',
+                        maxlength: 255,
                         validate: true
                     },
                     'description_text': {
@@ -252,8 +255,9 @@ Vue.component('gradlead-jobs-screen', {
                         errors: false,
                         step: 'step1',
                         val: this.stepVal,
-                        vtype: null,
+                        vtype: 'maxlength',
                         type: 'text',
+                        maxlength: 255,
                         validate: true
                     },
                     'description_text': {
@@ -367,6 +371,14 @@ Vue.component('gradlead-jobs-screen', {
 
     watch: {
         'startDate': function (nw) {
+            if (nw) {
+                console.log(nw);
+                var d = nw.split("-");
+                var dd = new Date(d[0],d[1],d[2]);
+                console.log(dd);
+                this.endDate = dd;
+                this.edisabled['to'] = dd;
+            }
             this.setValue(this.currentForm, 'start_date', nw);
             this.validateField(this.currentForm, 'start_date', true);
         },
@@ -717,6 +729,13 @@ Vue.component('gradlead-jobs-screen', {
                     return (this.hasValue(form, field)) ? false : true;
                 }
 
+                if (this[form]['fields'][field]['vtype'] == 'maxlength') {
+                    return (this.hasValue(form, field) && 
+                            this.getFieldValue(form, field, 'input').length <=
+                            this[form]['fields'][field]['maxlength']) ? true : false;
+                }
+
+
                 // only check if other field is set
                 if (this[form]['fields'][field]['vtype'] == 'notnullif') {
                     // check value of dependent field
@@ -873,6 +892,14 @@ Vue.component('gradlead-jobs-screen', {
             });
         },
 
+        setFeature: function (job) {
+            var self = this;
+            job.featured = !job.featured;;
+            this.$http.put(self.baseUrl + 'jobs/' + job.id + '/changefeature').then(function () {
+                bus.$emit('updateJobs');
+            });
+        },
+
         setupListeners: function () {
             var self = this;
 
@@ -921,7 +948,7 @@ Vue.component('gradlead-jobs-screen', {
                 self.plans = items;
                 if (self.plans.length > 0) {
                     $.each(self.plans, function (idx, plan) {
-                        if (!plan.expired && plan.id != 1 && this.noContract(plan.id)) {
+                        if (!plan.expired && plan.id != 1 && self.noContract(plan.id)) {
                             var posts = (plan.num_posts == 0) ? 'Unlimited' : plan.num_posts;
                             var name = 'New Plan: ' + plan.name + ' | Posts: ' + posts + ' | Price: GHC ' + plan.cost;
                             self.availablePlans.push({
@@ -967,6 +994,10 @@ Vue.component('gradlead-jobs-screen', {
             bus.$on('majorsSet', function (items) {
                 //console.log("Got majors in "+ self.modname);
                 self.majors = items;
+                self.majors.sort(function(a,b) { 
+                    var x = a.name; var y = b.name;
+                    return (x < y) ? -1 : ((x > y) ? 1 : 0);
+                });
             });
 
             bus.$on('industriesSet', function (items) {
@@ -1013,6 +1044,9 @@ Vue.component('gradlead-jobs-screen', {
     filters: {
         status_text: function (value) {
             return (value) ? 'Active' : 'Not Active';
+        },
+        feature_text: function (value) {
+            return (value) ? 'Yes' : 'No';
         },
     },
 });

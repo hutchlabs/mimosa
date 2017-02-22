@@ -17,7 +17,7 @@ class Job extends Model
 
     protected function getArrayableAppends()
     {
-        $this->appends = array_merge($this->appends, ['numapplications','orgname']);
+        $this->appends = array_merge($this->appends, ['numapplications','orgname','orglogo']);
         return parent::getArrayableAppends();
     }
 
@@ -36,6 +36,27 @@ class Job extends Model
                 ->where('id',$this->organization_id)
                 ->first(); 
       return (is_null($i)) ? 'Uknown' :  $i->name;
+    }
+    
+    public function getOrglogoAttribute() 
+    {
+        $logo = 'img/a0.jpg';
+        
+        $i =  DB::table('organizations')
+                ->select(DB::raw('id, type'))
+                ->where('id',$this->organization_id)
+                ->first(); 
+        
+        if (!is_null($i)) {
+            $profile = ($i->type=='employer') ? ProfileCompany::where('organization_id',$i->id)->first()
+                                              : ProfileSchool::where('organization_id', $i->id)->first();
+                                                  
+            if ($profile && $profile->file_name<>'') {
+                $path = ($i->type=='employer') ? 'logo' : 'crest';
+                $logo = '/profiles/'.$path.'/'.$profile->id.'?'.date('Y-m-d');
+            }
+        }
+        return $logo;
     }
     
     

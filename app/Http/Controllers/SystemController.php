@@ -351,7 +351,7 @@ class SystemController extends Controller
     // University
     public function universities()
     {
-        $items = University::all();
+        $items = University::where('country','GH')->get();
         return $this->json_response($items);
     }
     

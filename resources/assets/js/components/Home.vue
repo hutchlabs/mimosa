@@ -12,11 +12,13 @@ Vue.component('gradlead-home-screen', {
             modname: 'Home',
             
             authUser: null,
+            avatar: 'img/a0.jpg',
+
             usertype: {'isGradlead': false, 'isCompany':false, 'isSchool':false, 'isAdmin':false, 'canEdit': false},
             permissions: {'canDoEvents': false, 'canDoScreening':false, 'canDoPreselect': false, 'canDoTracking':false},
             
             loadedScreens: 0,
-            expectedScreens: 19,
+            expectedScreens: 21,
         };
     },
     
@@ -35,6 +37,12 @@ Vue.component('gradlead-home-screen', {
                     window.location.href= self.baseUrl;
                 });
         },
+
+		getImageUrl: function() {
+            if (this.authUser.profile != null) { 
+                return '/profiles/avatar/'+this.authUser.profile.id+'?'+new Date(); 
+            }
+        },
         
         getAuthUser: function () {
             var self = this;
@@ -42,6 +50,7 @@ Vue.component('gradlead-home-screen', {
             this.$http.get(self.baseUrl+'fauthuser')
                 .then(function (user) {
                     self.authUser = user.data; 
+                    self.avatar = self.getImageUrl();
                     self.usertype.canEdit = (self.authUser.role.name=='Member') ? false : true;
                     self.usertype.isAdmin = (self.authUser.role.name=='Super Administrator' || self.authUser.role.name=='Administrator');
                     self.usertype.isGradlead = (self.authUser.organization.id==1) ? true : false;
@@ -51,7 +60,8 @@ Vue.component('gradlead-home-screen', {
                     self.permissions.canDoScreening = self.authUser.organization.permissions.screening;
                     self.permissions.canDoPreselect = self.authUser.organization.permissions.preselect;
                     self.permissions.canDoTracking = self.authUser.organization.permissions.tracking;
-                    self.expectedScreens = (self.usertype.isGradlead) ? 19 : ((self.usertype.isCompany) ? 19 : 7); 
+                    self.expectedScreens = (self.usertype.isGradlead) ? 21 : ((self.usertype.isCompany) ? 21 : 7); 
+                   bus.$emit('authUserSet', self.authUser);
                 });
         },
     
@@ -161,6 +171,7 @@ Vue.component('gradlead-home-screen', {
         setupListeners: function () {
             var self = this;
             
+            bus.$on('updateAuthUser', function () { self.getAuthUser(); });
             bus.$on('updateOrganizations', function () { self.getOrganizations(); });
             bus.$on('updatePlans', function () { self.getPlans(); });
             bus.$on('updateContracts', function () { self.getContracts(); });
@@ -180,7 +191,7 @@ Vue.component('gradlead-home-screen', {
             
             bus.$on('screenLoaded', function(name) {
                 self.loadedScreens += 1;
-                console.log("Loaded screens: #"+self.loadedScreens +": "+name);
+                //console.log("Loaded screens: #"+self.loadedScreens +": "+name);
                 if (self.loadedScreens==self.expectedScreens) { self.callOthers(); }
             });
         },

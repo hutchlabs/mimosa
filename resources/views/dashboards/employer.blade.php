@@ -7,6 +7,7 @@
             <!-- nav -->
             <nav ui-nav class="navi">
                 <ul class="nav">
+<!--
                     <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
                         <span>Navigation</span>
                     </li>
@@ -19,12 +20,13 @@
                     </li>
 
                     <li class="line dk"></li>
+-->
 
                     <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
                         <span>Job Board</span>
                     </li>
 
-                    <li>
+                    <li class="active">
                         <a href="#jobs" aria-controls="jobs" role="tab" data-toggle="tab">
                             <i class="fa fa-suitcase icon text-info-lter"></i>
                             <span class="font-bold">Job Postings</span>
@@ -109,7 +111,6 @@
                         </a>
                     </li>
 
-                    <!--
               <li v-if="usertype.isAdmin">
                 <a href class="auto">      
                   <span class="pull-right text-muted">
@@ -134,17 +135,17 @@
                     </a>
                   </li>
                   <li>
-                    <a href="#university" aria-controls="university" role="tab" data-toggle="tab">
+                    <a href="#universities" aria-controls="universities" role="tab" data-toggle="tab">
                         <span>Universities</span>
                     </a>
                   </li>
                   <li>
-                    <a href="#industry" aria-controls="industry" role="tab" data-toggle="tab">
+                    <a href="#industries" aria-controls="industries" role="tab" data-toggle="tab">
                         <span>Industries</span>
                     </a>
                   </li>
                   <li>
-                    <a href="#jtypes" aria-controls="jtypes" role="tab" data-toggle="tab">
+                    <a href="#jobtypes" aria-controls="jobtypes" role="tab" data-toggle="tab">
                         <span>Job Types</span>
                     </a>
                   </li>
@@ -160,7 +161,6 @@
                   </li>
                 </ul>
               </li>
-             -->
 
                     <li v-if="usertype.isAdmin">
                         <a href="#permissions" aria-controls="permissions" role="tab" data-toggle="tab">
@@ -205,7 +205,29 @@
 <!-- content -->
 <div class="app-content">
     <div class="app-content-body fade-in-up tab-content">
-        <div role="tabpanel" class="tab-pane active" id="dashboard">
+        <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="degrees">
+            @include('dashboards.lists.index', array('item'=>'Degrees'))
+        </div>
+        <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="industries">
+            @include('dashboards.lists.index', array('item'=>'Industries'))
+        </div>
+        <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="jobtypes">
+            @include('dashboards.lists.index', array('item'=>'JobTypes'))
+        </div>
+        <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="languages">
+            @include('dashboards.lists.index', array('item'=>'Languages'))
+        </div>
+        <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="majors">
+            @include('dashboards.lists.index', array('item'=>'Majors'))
+        </div>
+        <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="skills">
+            @include('dashboards.lists.index', array('item'=>'Skills'))
+        </div>
+        <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="universities">
+            @include('dashboards.lists.index', array('item'=>'Universities'))
+        </div>
+
+        <div role="tabpanel" class="tab-pane" id="dashboard">
             @include('dashboards.stats.index')
         </div>
         
@@ -229,7 +251,7 @@
             @include('dashboards.applications.index')
         </div>
 
-        <div role="tabpanel" class="tab-pane" id="jobs">
+        <div role="tabpanel" class="tab-pane active" id="jobs">
             @include('dashboards.jobs.index')
         </div>
 
@@ -249,6 +271,7 @@
         <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="plans">
             @include('dashboards.plans.index')
         </div>
+
         
         <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="users">
             @include('dashboards.users.index')
@@ -260,13 +283,12 @@
 
 
         <div role="tabpanel" class="tab-pane" id="yourprofile">
-            Your profile
+            @include('dashboards.profiles.userprofile')
         </div>
 
         <div v-if="usertype.canEdit" role="tabpanel" class="tab-pane" id="orgprofile">
-            Org profile
+            @include('dashboards.profiles.orgprofile')
         </div>
-
     </div>
 </div>
 <!-- /content -->
