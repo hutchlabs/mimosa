@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 use App\User;
 use App\Gradlead\Achievement;
@@ -18,10 +19,13 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('tenant');
     }
     
+    // TODO: Bulk uploads
+
     public function addAddress(Request $request) 
-    {
+    {   
         $user = $request->user();
         
         $this->validate($request, 
@@ -213,7 +217,7 @@ class UserController extends Controller
         $this->validate($request, ['email' => 'required|email|unique:users,email',
                                    'name' => 'required|max:255',
                                    'password'=> 'required|min:6',
-                                   'role_id' => 'required|exists:roles,id',
+                                   'role_id' => 'required|exists:system_roles,id',
                                    'organization_id' => 'required|exists:organizations,id',
                                    'type' => 'required|in:employer,gradlead,graduate,school,student',
                                   ]
@@ -253,7 +257,7 @@ class UserController extends Controller
                                    'name' => 'required|max:255',
                                    'password'=> 'min:6',
                                    'current_password'=> 'min:6',
-                                   'role_id' => 'required|exists:roles,id',
+                                   'role_id' => 'required|exists:system_roles,id',
                                    'organization_id' => 'required|exists:organizations,id',
                                    'type' => 'required|in:employer,gradlead,graduate,school,student',
                                   ]

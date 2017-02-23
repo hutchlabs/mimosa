@@ -38,23 +38,45 @@
 
                         <!-- Add Form -->
                         <form class="form-horizontal " role="form">
-                            <spark-text :display="'Summary*'" :form="forms.updateProfile" :name="'summary'" :input.sync="forms.updateProfile.summary">
-                            </spark-text>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <spark-text :display="'Summary*'" :form="forms.updateProfile" :name="'summary'" :input.sync="forms.updateProfile.summary"></spark-text>
 
-                            <spark-file :display="'Logo'" :form="forms.updateProfile" v-on:updated="setFileName" 
+                                    <spark-text v-show="isCompany" :display="'Description*'" :form="forms.updateProfile" :name="'description'" :input.sync="forms.updateProfile.description"></spark-text>
+
+                                    <spark-text v-show="isCompany" :display="'Number of Employees'" :form="forms.updateProfile" :name="'num_employees'" :input.sync="forms.updateProfile.num_employees" :placeholder="'number of employees e.g. 300'"></spark-text>
+
+                                    <spark-text v-show="isCompany" :display="'website'" :form="forms.updateProfile" :name="'website'" :input.sync="forms.updateProfile.website" :placeholder="'http://'"></spark-text>
+
+                                    <spark-file :display="'Logo'" :form="forms.updateProfile" v-on:updated="setFileName" 
                                        :name="'icon_file'" :warning="'File must be less than 20MB. Must be an image file'"     :filename.sync="forms.updateProfile.file_name" 
-                                :input.sync="forms.updateProfile.icon_file">
-                            </spark-file>
+                                        :input.sync="forms.updateProfile.icon_file">
+                                    </spark-file>
+
+                                </div>
+                                <div class="col-md-6">
+
+                                    <spark-text v-show="isCompany" :display="'Country*'" :form="forms.updateProfile" :name="'country'" :input.sync="forms.updateProfile.country"></spark-text>
+
+                                    <spark-text v-show="isCompany" :display="'City*'" :form="forms.updateProfile" :name="'city'" :input.sync="forms.updateProfile.city"></spark-text>
+
+                                    <spark-text v-show="isCompany" :display="'Address*'" :form="forms.updateProfile" :name="'address'" :input.sync="forms.updateProfile.address"></spark-text>
+
+                                    <spark-text v-show="isCompany" :display="'Job Types*'" :form="forms.updateProfile" :name="'jobtypes'" :input.sync="forms.updateProfile.jobtypes"></spark-text>
+
+                                    <spark-text v-show="isCompany" :display="'Industries*'" :form="forms.updateProfile" :name="'industries'" :input.sync="forms.updateProfile.industries"></spark-text>
+                                </div>
+                            </div>
                         </form>
 
-                        <div class="panel-footer" style="margin-left:250px">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <div class="panel-footer" style="">
+                            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancel</button>
 
-                            <button v-if="isSchool" type="button" class="btn btn-primary" @click.prevent="updateSchoolProfile" :disabled="forms.updateProfile.busy">
+                            <button v-if="isSchool" type="button" class="btn btn-primary pull-right" @click.prevent="updateSchoolProfile" :disabled="forms.updateProfile.busy">
                                 <span v-if="forms.updateProfile.busy"><i class="fa fa-btn fa-spinner fa-spin"></i> Adding</span>
                                 <span v-else> <i class="fa fa-btn fa-save"></i> Update </span>
                             </button>
-                            <button v-else type="button" class="btn btn-primary" @click.prevent="updateCompanyProfile" :disabled="forms.updateProfile.busy">
+                            <button v-else type="button" class="btn btn-primary pull-right" @click.prevent="updateCompanyProfile" :disabled="forms.updateProfile.busy">
                                 <span v-if="forms.updateProfile.busy"><i class="fa fa-btn fa-spinner fa-spin"></i> Adding</span>
                                 <span v-else> <i class="fa fa-btn fa-save"></i> Update </span>
                             </button>

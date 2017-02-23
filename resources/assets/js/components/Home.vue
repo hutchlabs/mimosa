@@ -60,7 +60,7 @@ Vue.component('gradlead-home-screen', {
                     self.permissions.canDoScreening = self.authUser.organization.permissions.screening;
                     self.permissions.canDoPreselect = self.authUser.organization.permissions.preselect;
                     self.permissions.canDoTracking = self.authUser.organization.permissions.tracking;
-                    self.expectedScreens = (self.usertype.isGradlead) ? 21 : ((self.usertype.isCompany) ? 21 : 7); 
+                    self.expectedScreens = (self.usertype.isGradlead) ? 21 : ((self.usertype.isCompany) ? 8 : 7); 
                    bus.$emit('authUserSet', self.authUser);
                 });
         },
@@ -191,7 +191,7 @@ Vue.component('gradlead-home-screen', {
             
             bus.$on('screenLoaded', function(name) {
                 self.loadedScreens += 1;
-                //console.log("Loaded screens: #"+self.loadedScreens +": "+name);
+                console.log("Loaded screens: #"+self.loadedScreens +": "+name);
                 if (self.loadedScreens==self.expectedScreens) { self.callOthers(); }
             });
         },

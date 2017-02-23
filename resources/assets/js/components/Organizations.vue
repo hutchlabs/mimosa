@@ -1,5 +1,8 @@
 Vue.component('gradlead-orgs-screen', {
+    
+    props: ['authUser', 'usertype', 'permissions'],
 
+    // TODO: handle approval
 
     mounted: function() {
         this.setupListeners();
@@ -101,13 +104,26 @@ Vue.component('gradlead-orgs-screen', {
                     NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
                 });
         },
+
+        isInArray: function (item, array) {
+            return !!~$.inArray(item, array);
+        },
+
         
         setupListeners: function () {
             var self = this;
             bus.$on('organizationsSet', function (orgs) {
                 self.organizations = orgs[0];
-                self.employers = orgs[1];
+                //self.employers = orgs[1];
                 self.schools = orgs[2];
+
+                self.employers = [];
+                $.each(orgs[1], function (idx, emp) {
+                       if (self.usertype.isGradlead) { self.employers.push(emp) }
+                       else if (self.isInArray(self.authUser.organization_id, emp.schools)) { 
+                           self.employers.push(emp); 
+                       }
+                });
             });
             bus.$emit('screenLoaded',self.modname);
         },

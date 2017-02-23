@@ -8,17 +8,25 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\Auth\Guard;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
     
+    
+    public function __construct()
+    {
+    }
+
     protected function getTenant()
     {
         $tenants = \Landlord::getTenants();
         if (isset($tenant['organization_id'])) {
             $tenant = \App\Gradlead\Organization::find($tenants['organization_id']);  
         } else {
+            
             $tenant = \App\Gradlead\Organization::find(1);
         }
         return $tenant;

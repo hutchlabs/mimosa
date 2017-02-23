@@ -46,10 +46,6 @@ Vue.component('gradlead-seekers-screen', {
                          ],
             schoolTypeOptions: [
                 {
-                    'text': 'School Employee',
-                    'value': 'school'
-                },
-                {
                     'text': 'Current Student',
                     'value': 'student'
                 },
@@ -101,11 +97,11 @@ Vue.component('gradlead-seekers-screen', {
             this.forms.addUser.name = '';
             this.forms.addUser.email = '';
             this.forms.addUser.password = '';
-            this.forms.addUser.role_id = '';
-            this.forms.addUser.organization_id = '';
+            this.forms.addUser.role_id = 4;
             this.forms.addUser.type = '';
+            this.forms.addUser.organization_id = (this.usertype.isGradlead) ? '' : this.authUser.organization_id;
             this.forms.addUser.errors.forget();
-            $('#modal-add-user').modal('show');
+            $('#modal-add-seeker').modal('show');
         },
         editUser: function (user) {
             this.editingUser = user;
@@ -117,7 +113,7 @@ Vue.component('gradlead-seekers-screen', {
             this.forms.updateUser.role_id = user.role_id;
             this.forms.updateUser.organization_id = user.organization_id;
             this.forms.updateUser.errors.forget();
-            $('#modal-edit-user').modal('show');
+            $('#modal-edit-seeker').modal('show');
         },
 
         removingUser: function (id) {
@@ -165,7 +161,7 @@ Vue.component('gradlead-seekers-screen', {
             var self = this;
             Spark.post(self.baseUrl + 'users', this.forms.addUser)
                 .then(function () {
-                    $('#modal-add-user').modal('hide');
+                    $('#modal-add-seeker').modal('hide');
                     bus.$emit('updateUsers');
                 }, function (resp) {
                     self.forms.addUser.busy = false;
@@ -181,7 +177,7 @@ Vue.component('gradlead-seekers-screen', {
             Spark.put(self.baseUrl + 'users/' + this.editingUser.id, this.forms.updateUser)
                 .then(function () {
                     bus.$emit('updateUsers');
-                    $('#modal-edit-user').modal('hide');
+                    $('#modal-edit-seeker').modal('hide');
                 });
         },
         removeUser: function (user) {
@@ -203,6 +199,7 @@ Vue.component('gradlead-seekers-screen', {
                     });
                 });
         },
+
 
         setupListeners: function () {
             var self = this;
@@ -263,6 +260,11 @@ Vue.component('gradlead-seekers-screen', {
     filters: {
         role_is_editor: function (value) {
             return (value == 'Member') ? 'No' : 'Yes';
+        },
+        ucwords: function (str) {
+            return str.toLowerCase().replace(/\b[a-z]/g, function (letter) {
+                return letter.toUpperCase();
+            });
         },
     },
 });

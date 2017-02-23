@@ -14,6 +14,7 @@ class JobController extends Controller
     public function __construct()
     {
         $this->middleware('auth', ['except'=>'featured']);
+        $this->middleware('tenant');
     }
     
     public function applications(Request $request)

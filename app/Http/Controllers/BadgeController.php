@@ -10,6 +10,7 @@ class BadgeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('tenant');
     }
 
     public function index()

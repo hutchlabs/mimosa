@@ -16,6 +16,7 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('tenant');
     }
 
     /**
@@ -24,9 +25,7 @@ class HomeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        $tenant = $this->getTenant();
-        
+    {        
         switch(Auth::user()->type) {
             case 'employer': $view = 'dashboards.employer'; break;
             case 'gradlead': $view = 'dashboards.gradlead'; break;

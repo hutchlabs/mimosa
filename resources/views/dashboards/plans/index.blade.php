@@ -1,4 +1,4 @@
-<gradlead-plans-screen inline-template>
+<gradlead-plans-screen v-bind:auth-user="authUser" v-bind:permissions="permissions" v-bind:usertype="usertype" inline-template>
 
 <div class="hbox hbox-auto-xs hbox-auto-sm" v-if="everythingLoaded">
   <!-- main -->

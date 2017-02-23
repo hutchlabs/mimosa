@@ -1,4 +1,4 @@
-<gradlead-orgs-screen inline-template>
+<gradlead-orgs-screen v-bind:auth-user="authUser" v-bind:permissions="permissions" v-bind:usertype="usertype"  inline-template>
 
 <div class="hbox hbox-auto-xs hbox-auto-sm" v-if="everythingLoaded">
   <!-- main -->
@@ -33,9 +33,10 @@
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Subdomain</th>
-                        <th># of Users</th>
-                        <th>School Affiliations</th>
+                        <th v-if="usertype.isSchool && 0">Approved?</th>
+                        <th v-if="usertype.isGradlead">Subdomain</th>
+                        <th v-if="usertype.isGradlead"># of Users</th>
+                        <th v-if="usertype.isGradlead">School Affiliations</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -43,9 +44,10 @@
                     <tr v-for="o in employers">
 
                         <td class="spark-table-pad"> @{{ o.name }} </td>
-                        <td class="spark-table-pad"> @{{ o.subdomain }} </td>
-                        <td class="spark-table-pad"> @{{ o.numusers }} </td>
-                        <td class="spark-table-pad"> @{{ o | affiliations }} </td>
+                        <td class="spark-table-pad" v-if="usertype.isSchool && 0"> @{{ o.approved }} </td>
+                        <td class="spark-table-pad" v-if="usertype.isGradlead"> @{{ o.subdomain }} </td>
+                        <td class="spark-table-pad" v-if="usertype.isGradlead"> @{{ o.numusers }} </td>
+                        <td class="spark-table-pad" v-if="usertype.isGradlead"> @{{ o | affiliations }} </td>
 
                         <td class="spark-table-pad">
                             <button class="btn btn-warning btn-addon btn-sm btn-circle" @click.prevent="editOrganization(o)">

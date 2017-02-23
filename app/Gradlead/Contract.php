@@ -4,10 +4,13 @@ namespace App\Gradlead;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use HipsterJazzbo\Landlord\BelongsToTenants;
 
 
 class Contract extends Model
 {
+        use BelongsToTenants;
+
     protected $table = 'plans_contracts';
 
     protected $guarded = [];
@@ -50,7 +53,7 @@ class Contract extends Model
 
     public function hasPosts()
     {
-        return ($this->remaining_posts>0);
+        return ($this->plan->num_posts==0) ? true : ($this->remaining_posts>0);
     }
     
     public function isValid()
@@ -76,9 +79,6 @@ class Contract extends Model
             $c->remaining_notifications = $p->num_notifications;
             $c->start_date = date('Y-m-d');
             $c->end_date = date('Y-m-d',strtotime($c->start_date." +".$p->duration." days"));
-        
-            // TODO: handle featured options   
-            // TODO: raise invoice to Employer?
 
         } else {
             if ($planId!=1) {
@@ -94,6 +94,13 @@ class Contract extends Model
         $c->modified_by = $userId;
         $c->save();
 
+        Contract::createInvoice($c);
+        
         return $c->id;
+    }
+    
+    public static function createInvoice($contract)
+    {
+        // TODO: handle invoices
     }
 }

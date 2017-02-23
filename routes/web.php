@@ -111,9 +111,11 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->get('plans',                   'PlanController@index');
         $router->get('contracts',               'PlanController@contracts');
         $router->post('plans',                  'PlanController@store');
+        $router->post('plans/contracts',        'PlanController@storeContract');
         $router->put('plans/{id}',              'PlanController@update');
         $router->delete('plans/{id}',           'PlanController@destroy');
-    
+        $router->delete('plans/contracts/{id}', 'PlanController@destroyContract');
+
         // Questionnaires
         $router->get('questionnaires',          'QuestionnaireController@index');
         $router->post('questionnaires',         'QuestionnaireController@store');

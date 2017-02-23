@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Hash;
 
 use App\User;
 use App\Gradlead\Profile;
+use Illuminate\Support\Facades\DB;
+
 
 class ApiController extends Controller
 {
@@ -32,9 +35,9 @@ class ApiController extends Controller
         if (Auth::check()) { Auth::logout(); }
 
         $validator = Validator::make($request->all(), 
-                                  ['email' => 'required|email|exists:users,email',
-                                    'password'=> 'required|min:3',
-                                  ]
+                  ['email' => 'required|email|exists:users,email',
+                    'password'=> 'required|min:3',
+                  ]
         );
         
         if ($validator->fails()) {
@@ -48,12 +51,26 @@ class ApiController extends Controller
         // grab credentials from the request
         $credentials = $request->only('email', 'password');
         
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            return $this->json_response($user);
+        DB::enableQueryLog();      
+        //$dd = DB::getQueryLog();
+        //return $this->json_response(['email'=>[$dd],'pass'=>$pass], true, 401);
+        
+        $user = User::withoutGlobalScope('organization_id')->where('email',$request->email)->first();
+        $user->makeVisible('password');
+                
+        if (!is_null($user)) {
+            $pass = Hash::check($request->password,$user->password);
+            if ($pass) {
+                \Landlord::addTenant('organization_id',$user->organization_id);
+                 $pass = Auth::attempt(['email' => $request->email, 
+                                        'password' => $request->password,
+                                        'organization_id'=>$user->organization_id]);
+                $user->makeHidden('password');
+                $response = array('data'=>$user, 'errors'=>null);
+                return response()->json($response);
+            } 
         }
-       
-        $tenants = \Landlord::getTenants();
+
         return $this->json_response(['email'=>['Invalid credentials']], true, 401);
     }
 

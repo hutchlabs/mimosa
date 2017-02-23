@@ -1,4 +1,4 @@
-<div class="modal fade" id="modal-edit-user" tabindex="-1" role="dialog" style="margin:auto; width: 760px">
+<div class="modal fade" id="modal-edit-seeker" tabindex="-1" role="dialog" style="margin:auto; width: 760px">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,12 +14,9 @@
                 <form class="form-horizontal" role="form">
                     <div class="row">
                         <div class="col-md-12">
-                            <spark-select :display="'Organization*'" :form="forms.updateUser" :name="'organization_id'" :items="orgsOptions" :input.sync="forms.updateUser.organization_id">
+                            <spark-select v-if="usertype.isGradlead" :display="'Organization*'" :form="forms.updateUser" :name="'organization_id'" :items="orgsOptions" :input.sync="forms.updateUser.organization_id">
                             </spark-select>
 
-
-                            <spark-select :display="'Role*'" :form="forms.updateUser" :name="'role_id'" :items="roleOptions" :input.sync="forms.updateUser.role_id">
-                            </spark-select>
 
                             <spark-select :display="'Type*'" :form="forms.updateUser" :name="'type'" :items="getTypeOptions()" :input.sync="forms.updateUser.type">
                             </spark-select>

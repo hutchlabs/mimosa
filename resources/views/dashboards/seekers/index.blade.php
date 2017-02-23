@@ -25,7 +25,7 @@
                 <i class="fa fa-plus"></i> Add 
             </button>
 
-            <button class="btn btn-info btn-addon pull-right" @click.prevent="addUserBulk()">
+            <button class="btn btn-info btn-addon pull-right" disabled @click.prevent="addUserBulk()">
                 <i class="fa fa-plus"></i> Bulk Upload 
             </button>
       </div>
@@ -42,8 +42,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Email</th>
-                        <th>Role</th>
-                        <th>Can Edit</th>
+                        <th>Type</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -52,8 +51,7 @@
 
                         <td class="spark-table-pad"> @{{ u.name }} </td>
                         <td class="spark-table-pad"> @{{ u.email }} </td>
-                        <td class="spark-table-pad"> @{{ u.role.name }} </td>
-                        <td class="spark-table-pad"> @{{ u.role.name | role_is_editor }} </td>
+                        <td class="spark-table-pad"> @{{ u.type | ucwords }} </td>
 
                         <td class="spark-table-pad">
                             <button class="btn btn-warning btn-addon btn-sm btn-circle" @click.prevent="editUser(u)">
@@ -79,7 +77,7 @@
 
         </div>
         
-        @include('dashboards.users.add') @include('dashboards.users.edit')
+        @include('dashboards.seekers.add') @include('dashboards.seekers.edit')
       </div>
         <!-- / Users -->
 

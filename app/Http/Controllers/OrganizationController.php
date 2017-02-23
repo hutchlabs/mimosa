@@ -12,6 +12,7 @@ class OrganizationController extends Controller
     public function __construct()
     {
         $this->middleware('auth', ['except'=>'featured']);
+        $this->middleware('tenant');
     }
 
     public function index()
@@ -65,6 +66,15 @@ class OrganizationController extends Controller
             }
             $acl->modified_by = $user->id;
             $acl->save();
+            
+            // Add affiliation if user is school
+            if ($request->type=='employer' && $user->organization->type=='school') {
+                $this->recruiters()->attach($this->id, ['employer_id'=>$o->id, 
+                                                        'modified_by' => $user->id, 
+                                                        'approved'=>1]);
+            }
+            
+            // TODO: sent invitation to employer
             
             return $this->json_response($o);
         
@@ -139,12 +149,18 @@ class OrganizationController extends Controller
 
     public function destroy(Request $request, $orgId)
     {
+        $user = $request->user();
+        
         $i = Organization::find($orgId);
         if (is_null($i)) {
             $this->json_report(['Cannot find organization'], true);
         } else {
-            $i->cleanUp();
-            $i->delete();
+            if ($user->organization->type=='school') {
+                $i->removeAffiliationFrom($user->organization->id);    
+            } else {
+                $i->cleanUp();
+                $i->delete();
+            }
             return $this->ok();
         }
     }

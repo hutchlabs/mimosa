@@ -21,6 +21,7 @@ class ProfileController extends Controller
     public function __construct()
     {
         $this->middleware('auth',['except'=>['avatar','pic','logo','crest']]);
+        $this->middleware('tenant');
     }
     
     public function avatar(Request $request, $profileId) 
@@ -356,8 +357,10 @@ class ProfileController extends Controller
             'address' => 'required', 
             'jobtypes' => 'required',
             'industries' => 'required',
-            'logo' => 'image',
-            'pic' => 'image'
+            'num_employees'=>'numeric',
+            'website'=> 'url',
+            'file_name' => 'string',
+            'icon_file' => 'string'
         ]);
 
         $i = ProfileCompany::find($request->id);
@@ -371,23 +374,20 @@ class ProfileController extends Controller
         $i->job_types = $request->job_types;
         $i->industries = $request->industries;
         $i->website = isset($request->website) ? $request->website:null;
-
-        if ($request->logo <> '') { 
+  
+        if ($request->icon_file<>'') {
             Storage::delete($i->file_path);
-            $fInfo = $this->handleFileUpload($request, 'logo', 'files/logos/');
-            $i->file_name = $fInfo['name'];
-            $i->file_path = $fInfo['path'];
-            $i->file_url = $fInfo['url'];
+            $fInfo = $this->handleNewFileUpload($request, 'files/logos/');
+            if (is_array($fInfo)) {
+                $i->file_name = $fInfo['name'];
+                $i->file_path = $fInfo['path'];
+                $i->file_url = $fInfo['url'];
+            } else {
+                return $this->json_response (
+                    ['icon_file' => ['The file size cannot exceed 20MB.']],true, 422
+                );
+            }
         }
-        
-        if ($request->pic <> '') { 
-            Storage::delete($i->pic_path);
-            $fInfo = $this->handleFileUpload($request, 'pic', 'files/images/');
-            $i->pic_name = $fInfo['name'];
-            $i->pic_path = $fInfo['path'];
-            $i->pic_url = $fInfo['url'];
-        }
-        
         
         $i->modified_by = $user->id;
         $i->save();

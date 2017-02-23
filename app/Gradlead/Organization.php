@@ -198,6 +198,23 @@ class Organization extends Model
         return false;
     }
     
+    public function removeAffiliationFrom($schoolId)
+    {
+        $i = DB::table('organizations_employers')
+                ->select(DB::raw('id'))
+                ->where('organization_id',$schoolId)
+                ->where('employer_id',$this->id)->first();
+        
+        if (!is_null($i)) {
+            $i->delete();
+            return true;
+        }
+        return false;
+    }
+    
+    
+    
+    
     public function isSchool() 
     {
         return ($this->type=='school') ? true : false;

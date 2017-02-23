@@ -20,6 +20,14 @@ Vue.component('gradlead-profiles-org-screen', {
                     id: '',
                     organization_id: '',
                     summary: '',
+                    description: '',
+                    country: '',
+                    city: '',
+                    address: '',
+                    jobtypes: '',
+                    industries: '',
+                    website: '',
+                    num_employees:'',
                     icon_file: '',
                     file_name: '',
                 }),
@@ -34,6 +42,7 @@ Vue.component('gradlead-profiles-org-screen', {
     computed: {
         everythingLoaded: function () { return this.authUser != null },
         isSchool: function() { return (this.usertype.isSchool || this.usertype.isGradlead); },
+        isCompany: function() { return (!this.usertype.isSchool && !this.usertype.isGradlead); },
     },
 
     methods: {

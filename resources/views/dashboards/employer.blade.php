@@ -38,33 +38,8 @@
                             <span class="font-bold">Applications</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="#resumes" aria-controls="resumes" role="tab" data-toggle="tab">
-                            <i class="fa fa-group icon text-info-lter"></i>
-                            <span class="font-bold">Job Seekers</span>
-                        </a>
-                    </li>
 
-                    <li v-if="usertype.canEdit" class="line dk"></li>
-
-                    <li v-if="usertype.canEdit" class="hidden-folded padder m-t m-b-sm text-muted text-xs">
-                        <span>Organizations</span>
-                    </li>
-
-                    <li v-if="usertype.canEdit">
-                        <a href="#employers" aria-controls="employers" role="tab" data-toggle="tab">
-                            <i class="fa fa-building icon text-warning-lter"></i>
-                            <span class="font-bold">Employers</span>
-                        </a>
-                    </li>
-                    <li v-if="usertype.canEdit">
-                        <a href="#schools" aria-controls="schools" role="tab" data-toggle="tab">
-                            <i class="fa fa-institution icon text-warning-lter"></i>
-                            <span class="font-bold">Schools</span>
-                        </a>
-                    </li>
-
-                    <li v-if="usertype.canEdit" class="line dk"></li>
+                    <li v-if="usertype.canEdit && permissions.canDoEvents" class="line dk"></li>
 
                     <li v-if="usertype.canEdit && permissions.canDoEvents" class="hidden-folded padder m-t m-b-sm text-muted text-xs">
                         <span>Content</span>
@@ -77,31 +52,10 @@
                         </a>
                     </li>
 
-                    <li v-if="usertype.canEdit">
-                        <a href="#theme" aria-controls="theme" role="tab" data-toggle="tab">
-                            <i class="glyphicon glyphicon-picture icon text-danger-lter"></i>
-                            <span class="font-bold">Theme</span>
-                        </a>
-                    </li>
-
                     <li v-if="usertype.isAdmin" class="line dk"></li>
 
                     <li v-if="usertype.isAdmin" class="hidden-folded padder m-t m-b-sm text-muted text-xs">
                         <span>Settings</span>
-                    </li>
-
-                    <li v-if="usertype.isAdmin">
-                        <a href="#badges" aria-controls="badges" role="tab" data-toggle="tab">
-                            <i class="glyphicon glyphicon-certificate icon"></i>
-                            <span class="font-bold">Badges</span>
-                        </a>
-                    </li>
-
-                    <li v-if="usertype.isAdmin">
-                        <a href="#plans" aria-controls="plans" role="tab" data-toggle="tab">
-                            <i class="glyphicon glyphicon-shopping-cart icon"></i>
-                            <span class="font-bold">Pricing Plans</span>
-                        </a>
                     </li>
 
                     <li v-if="usertype.isAdmin && permissions.canDoScreening">
@@ -111,61 +65,10 @@
                         </a>
                     </li>
 
-              <li v-if="usertype.isAdmin">
-                <a href class="auto">      
-                  <span class="pull-right text-muted">
-                    <i class="fa fa-fw fa-angle-right text"></i>
-                    <i class="fa fa-fw fa-angle-down text-active"></i>
-                  </span>
-                  <i class="glyphicon glyphicon-list icon"></i>
-                  <span class="font-bold">Lists</span>
-                </a>
-                <ul class="nav nav-sub dk">
-                  <li class="nav-sub-header">
-                    <a href><span>Lists</span></a>
-                  </li>
-                  <li>
-                    <a href="#degrees" aria-controls="degrees" role="tab" data-toggle="tab">
-                        <span>Degrees</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#majors" aria-controls="majors" role="tab" data-toggle="tab">
-                        <span>Majors</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#universities" aria-controls="universities" role="tab" data-toggle="tab">
-                        <span>Universities</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#industries" aria-controls="industries" role="tab" data-toggle="tab">
-                        <span>Industries</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#jobtypes" aria-controls="jobtypes" role="tab" data-toggle="tab">
-                        <span>Job Types</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#skills" aria-controls="skills" role="tab" data-toggle="tab">
-                        <span>Skills</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#languages" aria-controls="languages" role="tab" data-toggle="tab">
-                        <span>Languages</span>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-
                     <li v-if="usertype.isAdmin">
-                        <a href="#permissions" aria-controls="permissions" role="tab" data-toggle="tab">
-                            <i class="glyphicon glyphicon-ok-circle icon"></i>
-                            <span class="font-bold">Permissions</span>
+                        <a href="#plans" aria-controls="plans" role="tab" data-toggle="tab">
+                            <i class="glyphicon glyphicon-shopping-cart icon"></i>
+                            <span class="font-bold">Pricing Plans</span>
                         </a>
                     </li>
 
@@ -205,44 +108,10 @@
 <!-- content -->
 <div class="app-content">
     <div class="app-content-body fade-in-up tab-content">
-        <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="degrees">
-            @include('dashboards.lists.index', array('item'=>'Degrees'))
-        </div>
-        <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="industries">
-            @include('dashboards.lists.index', array('item'=>'Industries'))
-        </div>
-        <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="jobtypes">
-            @include('dashboards.lists.index', array('item'=>'JobTypes'))
-        </div>
-        <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="languages">
-            @include('dashboards.lists.index', array('item'=>'Languages'))
-        </div>
-        <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="majors">
-            @include('dashboards.lists.index', array('item'=>'Majors'))
-        </div>
-        <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="skills">
-            @include('dashboards.lists.index', array('item'=>'Skills'))
-        </div>
-        <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="universities">
-            @include('dashboards.lists.index', array('item'=>'Universities'))
-        </div>
-
         <div role="tabpanel" class="tab-pane" id="dashboard">
             @include('dashboards.stats.index')
         </div>
         
-        <div v-if="usertype.canEdit" role="tabpanel" class="tab-pane" id="employers">
-            @include('dashboards.organizations.employers')
-        </div>
-
-        <div v-if="usertype.canEdit" role="tabpanel" class="tab-pane" id="schools">
-            @include('dashboards.organizations.schools')
-        </div>
-
-        <div v-if="usertype.canEdit && permissions.canDoEvents" role="tabpanel" class="tab-pane" id="events">
-            @include('dashboards.events.index')
-        </div>
-
         <div v-if="usertype.canEdit" role="tabpanel" class="tab-pane" id="theme">
             @include('dashboards.themes.index')
         </div>
@@ -255,21 +124,8 @@
             @include('dashboards.jobs.index')
         </div>
 
-        <div role="tabpanel" class="tab-pane" id="resumes">
-            @include('dashboards.seekers.index')
-        </div>
-        
-
-        <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="permissions">
-            @include('dashboards.permissions.index')
-        </div>
-
-        <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="badges">
-            @include('dashboards.badges.index')
-        </div>
-
         <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="plans">
-            @include('dashboards.plans.index')
+            @include('dashboards.plans.employer')
         </div>
 
         

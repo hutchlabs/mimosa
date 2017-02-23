@@ -2,12 +2,15 @@
 
 namespace App\Gradlead;
 
-use App\Gradlead\BaseModel;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use HipsterJazzbo\Landlord\BelongsToTenants;
 
 
-class Questionnaire extends BaseModel
+class Questionnaire extends Model
 {
+        use BelongsToTenants;
+
     protected $table = 'questionnaires';
 
     protected $guarded = [];

@@ -176,14 +176,20 @@ Vue.component('gradlead-applications-screen', {
         setupListeners: function () {
             var self = this;
             
-            bus.$on('jobsSet', function (jobs) {
-                //console.log("Got jobs in "+self.modname);
-                self.jobs = jobs;
+            bus.$on('jobsSet', function (items) {
+                self.jobs = [];
+                if (items!==null) {
+                    $.each(items, function (idx, job) {
+                        if (self.usertype.isGradlead) { self.jobs.push(job) }
+                        else if (self.authUser.organization_id==job.organziation_id) { 
+                            self.jobs.push(job); 
+                        }
+                    });
+                }
                 self.setJob(self.currentJob);
             });
             
             bus.$on('questionnairesSet', function (items) {
-                //console.log("Got questionnaires in "+ self.modname);
                 self.questionnaires = items;
             });
             

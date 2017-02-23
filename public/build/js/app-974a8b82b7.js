@@ -40021,14 +40021,20 @@ Vue.component('gradlead-applications-screen', {
         setupListeners: function () {
             var self = this;
             
-            bus.$on('jobsSet', function (jobs) {
-                //console.log("Got jobs in "+self.modname);
-                self.jobs = jobs;
+            bus.$on('jobsSet', function (items) {
+                self.jobs = [];
+                if (items!==null) {
+                    $.each(items, function (idx, job) {
+                        if (self.usertype.isGradlead) { self.jobs.push(job) }
+                        else if (self.authUser.organization_id==job.organziation_id) { 
+                            self.jobs.push(job); 
+                        }
+                    });
+                }
                 self.setJob(self.currentJob);
             });
             
             bus.$on('questionnairesSet', function (items) {
-                //console.log("Got questionnaires in "+ self.modname);
                 self.questionnaires = items;
             });
             
@@ -40385,7 +40391,7 @@ Vue.component('gradlead-home-screen', {
                     self.permissions.canDoScreening = self.authUser.organization.permissions.screening;
                     self.permissions.canDoPreselect = self.authUser.organization.permissions.preselect;
                     self.permissions.canDoTracking = self.authUser.organization.permissions.tracking;
-                    self.expectedScreens = (self.usertype.isGradlead) ? 21 : ((self.usertype.isCompany) ? 21 : 7); 
+                    self.expectedScreens = (self.usertype.isGradlead) ? 21 : ((self.usertype.isCompany) ? 8 : 7); 
                    bus.$emit('authUserSet', self.authUser);
                 });
         },
@@ -40516,7 +40522,7 @@ Vue.component('gradlead-home-screen', {
             
             bus.$on('screenLoaded', function(name) {
                 self.loadedScreens += 1;
-                //console.log("Loaded screens: #"+self.loadedScreens +": "+name);
+                console.log("Loaded screens: #"+self.loadedScreens +": "+name);
                 if (self.loadedScreens==self.expectedScreens) { self.callOthers(); }
             });
         },
@@ -41448,7 +41454,7 @@ Vue.component('gradlead-jobs-screen', {
                     for (var i = 0; i < self.schools.length; i++) {
                         if (self.usertype.isGradlead ||
                             (self.usertype.isSchool && self.authUser.organization.id == self.schools[i].id) ||
-                            (self.usertype.isCompany && self.isInArray(this.schools[i].id, self.authUser.organization.schools))
+                            (self.usertype.isCompany && self.isInArray(self.schools[i].id, self.authUser.organization.schools))
                         ) {
                             self.distributionList.push({
                                 'id': self.schools[i].id,
@@ -41463,8 +41469,15 @@ Vue.component('gradlead-jobs-screen', {
             });
 
             bus.$on('jobsSet', function (items) {
-                //console.log("Got jobs in "+ self.modname);
-                self.jobs = items;
+                self.jobs = [];
+                if (items!==null) {
+                    $.each(items, function (idx, job) {
+                        if (self.usertype.isGradlead) { self.jobs.push(job) }
+                        else if (self.authUser.organization_id==job.organziation_id) { 
+                            self.jobs.push(job); 
+                        }
+                    });
+                }
             });
             
             bus.$on('jobTypesSet', function (items) {
@@ -41473,7 +41486,6 @@ Vue.component('gradlead-jobs-screen', {
             });
             
             bus.$on('plansSet', function (items) {
-                //console.log("Got plans in "+ self.modname);
                 self.plans = items;
                 if (self.plans.length > 0) {
                     $.each(self.plans, function (idx, plan) {
@@ -41490,16 +41502,13 @@ Vue.component('gradlead-jobs-screen', {
             });
             
             bus.$on('contractsSet', function (items) {
-                //console.log("Got contracts in "+ self.modname);
                  self.contracts = items;
                     if (self.contracts.length > 0) {
                         $.each(self.contracts, function (idx, contract) {
                             if (!contract.expired) {
-                                var name = 'Existing Plan: ' + contract.plan.name + ' (' + contract.remaining_posts + ' posts left)';
-                                self.availablePlans.push({
-                                    'id': contract.plan.id,
-                                    'name': name
-                                });
+                                var posts = (contract.plan.num_posts==0) ? 'Unlimited':contract.remaining_posts+ ' posts left';
+                                var name = 'Existing Plan: ' + contract.plan.name + ' (' + posts + ')';
+                                self.availablePlans.push({ 'id': contract.plan.id, 'name': name });
                             }
                         });
                     }
@@ -41794,7 +41803,10 @@ Vue.component('gradlead-lists-screen', {
 
 },{}],16:[function(require,module,exports){
 Vue.component('gradlead-orgs-screen', {
+    
+    props: ['authUser', 'usertype', 'permissions'],
 
+    // TODO: handle approval
 
     mounted: function() {
         this.setupListeners();
@@ -41896,13 +41908,26 @@ Vue.component('gradlead-orgs-screen', {
                     NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
                 });
         },
+
+        isInArray: function (item, array) {
+            return !!~$.inArray(item, array);
+        },
+
         
         setupListeners: function () {
             var self = this;
             bus.$on('organizationsSet', function (orgs) {
                 self.organizations = orgs[0];
-                self.employers = orgs[1];
+                //self.employers = orgs[1];
                 self.schools = orgs[2];
+
+                self.employers = [];
+                $.each(orgs[1], function (idx, emp) {
+                       if (self.usertype.isGradlead) { self.employers.push(emp) }
+                       else if (self.isInArray(self.authUser.organization_id, emp.schools)) { 
+                           self.employers.push(emp); 
+                       }
+                });
             });
             bus.$emit('screenLoaded',self.modname);
         },
@@ -42010,12 +42035,19 @@ Vue.component('gradlead-permissions-screen', {
 
 },{}],18:[function(require,module,exports){
 Vue.component('gradlead-plans-screen', {
+    props: ['authUser', 'usertype', 'permissions'],
 
     components: {
         Datepicker
     },
 
     mounted: function() {
+        this.contracts = this.authUser.organization.contracts;
+            this.contracts.sort(function(a,b) { 
+                    var x = (a.expired) ? 1 : 0; 
+                    var y = (b.expired) ? 1 : 0; 
+                    return (x < y) ? -1 : ((x > y) ? 1 : 0);
+            });
         this.setupListeners();
     },
 
@@ -42025,9 +42057,12 @@ Vue.component('gradlead-plans-screen', {
             modname: 'Plans',
             
             plans: [],
+            contracts: [],
 
             editingPlan: {'name':'none'},
             removingPlanId: null,
+
+            availablePlans: [],
 
             yesNoOptions: [
                             {'text': 'Yes', 'value':'1'},
@@ -42067,6 +42102,11 @@ Vue.component('gradlead-plans-screen', {
                     end_date: '',
                 }),
 
+                addContract: new SparkForm ({
+                    'organization_id': '',
+                    'plan_id': '',
+                }),
+
                 updatePlan: new SparkForm ({
                     id: '',
                     name: '',
@@ -42083,13 +42123,17 @@ Vue.component('gradlead-plans-screen', {
             }
         };
     },
-    
-    events: {
+   
+    watch: {
+        'contracts': function() {
+        }
     },
+
+    events: { },
 
     computed: {
         everythingLoaded: function () {
-            return this.plans != null;
+            return this.authUser != null && this.plans != null;
         }
     },
 
@@ -42168,14 +42212,72 @@ Vue.component('gradlead-plans-screen', {
                 });
         },
 
+        addContract: function () {
+            var self = this;
+
+            this.forms.addContract.organization_id = this.authUser.organization_id;
+
+            Spark.post(self.baseUrl+'plans/contracts', this.forms.addContract)
+                .then(function () {
+                    bus.$emit('updateAuthUser');
+                    bus.$emit('updateOrganizations');
+            }, function(resp) {
+                    self.forms.addContract.busy = false;
+                    NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
+                });
+        },
+
+        removeContract: function (contract) {
+            var self = this;
+
+            this.$http.delete(self.baseUrl+'plans/contracts/' + contract.id)
+                .then(function () {
+                    self.contracts = self.removeFromList(self.contracts, contract);
+                    bus.$emit('updateAuthUser');
+                    bus.$emit('updateOrganizations');
+                }, function(resp) {
+                    NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
+                });
+        },
+
+        setAvailablePlans: function () {
+                var self = this;
+                if (this.plans.length > 0) {
+                    this.availablePlans = [];
+                    $.each(this.plans, function (idx, plan) {
+                        //if (!plan.expired && plan.id != 1 && self.noContract(plan.id)) {
+                        if (!plan.expired && plan.id != 1) {
+                            var posts = (plan.num_posts == 0) ? 'Unlimited' : plan.num_posts;
+                            var name = 'New Plan: ' + plan.name + ' | Posts: ' + posts + ' | Price: GHC ' + plan.cost;
+                            self.availablePlans.push({'text': name, 'value':plan.id});
+                        }
+                    });
+                }
+        },
+
+        noContract: function (planid) {
+            var cin = true;
+            $.each(this.contracts, function (i, c) { if (planid == c.plan.id) { cin = false; } });
+            return cin;
+        },
+
         setupListeners: function () {
             var self = this;
-            bus.$on('plansSet', function (items) {
-                //console.log("Got plans in "+ self.modname);
-                self.plans = items;
+            bus.$on('plansSet', function (items) { 
+                self.plans = items; 
+                self.setAvailablePlans();
+            });
+
+            bus.$on('authUserSet', function (user) { 
+                self.contracts = user.organization.contracts;
+                self.contracts.sort(function(a,b) { 
+                    var x = (a.expired) ? 1 : 0; 
+                    var y = (b.expired) ? 1 : 0; 
+                    return (x < y) ? -1 : ((x > y) ? 1 : 0);
+                });
+                self.setAvailablePlans();
             });
             bus.$emit('screenLoaded',self.modname);
-
         },
 
     },
@@ -42186,6 +42288,9 @@ Vue.component('gradlead-plans-screen', {
         },
         feature_check: function (value) {
             return (value==0) ? 'No' : 'Yes';
+        },
+        expiry_check: function (value) {
+            return (value) ? 'Yes' : 'No';
         },
         duration_text: function (value) {
             if (value==0) { return 'Unlimited'; }
@@ -42219,6 +42324,14 @@ Vue.component('gradlead-profiles-org-screen', {
                     id: '',
                     organization_id: '',
                     summary: '',
+                    description: '',
+                    country: '',
+                    city: '',
+                    address: '',
+                    jobtypes: '',
+                    industries: '',
+                    website: '',
+                    num_employees:'',
                     icon_file: '',
                     file_name: '',
                 }),
@@ -42233,6 +42346,7 @@ Vue.component('gradlead-profiles-org-screen', {
     computed: {
         everythingLoaded: function () { return this.authUser != null },
         isSchool: function() { return (this.usertype.isSchool || this.usertype.isGradlead); },
+        isCompany: function() { return (!this.usertype.isSchool && !this.usertype.isGradlead); },
     },
 
     methods: {
@@ -43029,10 +43143,6 @@ Vue.component('gradlead-seekers-screen', {
                          ],
             schoolTypeOptions: [
                 {
-                    'text': 'School Employee',
-                    'value': 'school'
-                },
-                {
                     'text': 'Current Student',
                     'value': 'student'
                 },
@@ -43084,11 +43194,11 @@ Vue.component('gradlead-seekers-screen', {
             this.forms.addUser.name = '';
             this.forms.addUser.email = '';
             this.forms.addUser.password = '';
-            this.forms.addUser.role_id = '';
-            this.forms.addUser.organization_id = '';
+            this.forms.addUser.role_id = 4;
             this.forms.addUser.type = '';
+            this.forms.addUser.organization_id = (this.usertype.isGradlead) ? '' : this.authUser.organization_id;
             this.forms.addUser.errors.forget();
-            $('#modal-add-user').modal('show');
+            $('#modal-add-seeker').modal('show');
         },
         editUser: function (user) {
             this.editingUser = user;
@@ -43100,7 +43210,7 @@ Vue.component('gradlead-seekers-screen', {
             this.forms.updateUser.role_id = user.role_id;
             this.forms.updateUser.organization_id = user.organization_id;
             this.forms.updateUser.errors.forget();
-            $('#modal-edit-user').modal('show');
+            $('#modal-edit-seeker').modal('show');
         },
 
         removingUser: function (id) {
@@ -43148,7 +43258,7 @@ Vue.component('gradlead-seekers-screen', {
             var self = this;
             Spark.post(self.baseUrl + 'users', this.forms.addUser)
                 .then(function () {
-                    $('#modal-add-user').modal('hide');
+                    $('#modal-add-seeker').modal('hide');
                     bus.$emit('updateUsers');
                 }, function (resp) {
                     self.forms.addUser.busy = false;
@@ -43164,7 +43274,7 @@ Vue.component('gradlead-seekers-screen', {
             Spark.put(self.baseUrl + 'users/' + this.editingUser.id, this.forms.updateUser)
                 .then(function () {
                     bus.$emit('updateUsers');
-                    $('#modal-edit-user').modal('hide');
+                    $('#modal-edit-seeker').modal('hide');
                 });
         },
         removeUser: function (user) {
@@ -43186,6 +43296,7 @@ Vue.component('gradlead-seekers-screen', {
                     });
                 });
         },
+
 
         setupListeners: function () {
             var self = this;
@@ -43246,6 +43357,11 @@ Vue.component('gradlead-seekers-screen', {
     filters: {
         role_is_editor: function (value) {
             return (value == 'Member') ? 'No' : 'Yes';
+        },
+        ucwords: function (str) {
+            return str.toLowerCase().replace(/\b[a-z]/g, function (letter) {
+                return letter.toUpperCase();
+            });
         },
     },
 });
@@ -43815,12 +43931,12 @@ require('./components');
 'use strict';
 
 Vue.component('spark-text', {
-    props: ['display', 'form', 'name', 'input', 'maxlength'],
+    props: ['display', 'form', 'name', 'input', 'maxlength', 'placeholder'],
 
     template: '<div class="form-group" :class="{\'has-error\': form.errors.has(name)}">\
     <label class="col-md-4 control-label">{{ display }}</label>\
     <div class="col-md-6">\
-        <input type="text" class="form-control spark-first-field" v-model="fieldValue">\
+        <input :placeholder="placeholder" type="text" class="form-control spark-first-field" v-model="fieldValue">\
         <span class="help-block" v-show="form.errors.has(name)">\
             <small>{{ form.errors.get(name) }}</small>\
         </span>\

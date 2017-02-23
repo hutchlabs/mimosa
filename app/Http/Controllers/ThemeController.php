@@ -10,6 +10,7 @@ class ThemeController extends Controller
     public function __construct()
     {
         $this->middleware('auth', ['except'=>['defaultTheme','editable']]);
+        $this->middleware('tenant');
     }
 
     public function index()

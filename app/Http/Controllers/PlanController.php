@@ -14,6 +14,7 @@ class PlanController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('tenant');
     }
     
     public function index()
@@ -28,6 +29,33 @@ class PlanController extends Controller
         return $this->json_response($items);
     }
     
+    public function storeContract(Request $request)
+    {
+        $user = $request->user();
+
+        $this->validate($request, [
+           'organization_id' => 'required|exists:organizations,id',
+           'plan_id' => 'required|exists:plans,id',
+          ]
+        );
+
+        $p = Plan::find($request->plan_id);
+            
+        $c = new Contract();
+        $c->organization_id = $request->organization_id;
+        $c->plan_id = $p->id;
+        $c->remaining_posts = $p->num_posts - 1;
+        $c->remaining_notifications = $p->num_notifications;
+        $c->start_date = date('Y-m-d');
+        $c->end_date = date('Y-m-d',strtotime($c->start_date." +".$p->duration." days"));
+        $c->modified_by = $user->id;
+        $c->save();
+        
+        Contract::createInvoice($c);
+
+        return $this->json_response($c);
+    }
+
     public function store(Request $request)
     {
         $user = $request->user();
@@ -106,6 +134,20 @@ class PlanController extends Controller
         } else {
             $i->contracts()->detach();
             $i->delete();
+            return $this->ok();
+        }
+    }
+    
+    public function destroyContract(Request $request, $itemId)
+    {
+        $i = Contract::find($itemId);
+        if (is_null($i)) {
+            $this->json_report(['Cannot find Contract'], true);
+        } else {
+            $i->remaining_posts = 0;
+            $i->remaining_notifications = 0;
+            $i->end_date = date('Y-m-d');
+            $i->save();
             return $this->ok();
         }
     }

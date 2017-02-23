@@ -919,7 +919,7 @@ Vue.component('gradlead-jobs-screen', {
                     for (var i = 0; i < self.schools.length; i++) {
                         if (self.usertype.isGradlead ||
                             (self.usertype.isSchool && self.authUser.organization.id == self.schools[i].id) ||
-                            (self.usertype.isCompany && self.isInArray(this.schools[i].id, self.authUser.organization.schools))
+                            (self.usertype.isCompany && self.isInArray(self.schools[i].id, self.authUser.organization.schools))
                         ) {
                             self.distributionList.push({
                                 'id': self.schools[i].id,
@@ -934,8 +934,15 @@ Vue.component('gradlead-jobs-screen', {
             });
 
             bus.$on('jobsSet', function (items) {
-                //console.log("Got jobs in "+ self.modname);
-                self.jobs = items;
+                self.jobs = [];
+                if (items!==null) {
+                    $.each(items, function (idx, job) {
+                        if (self.usertype.isGradlead) { self.jobs.push(job) }
+                        else if (self.authUser.organization_id==job.organziation_id) { 
+                            self.jobs.push(job); 
+                        }
+                    });
+                }
             });
             
             bus.$on('jobTypesSet', function (items) {
@@ -944,7 +951,6 @@ Vue.component('gradlead-jobs-screen', {
             });
             
             bus.$on('plansSet', function (items) {
-                //console.log("Got plans in "+ self.modname);
                 self.plans = items;
                 if (self.plans.length > 0) {
                     $.each(self.plans, function (idx, plan) {
@@ -961,16 +967,13 @@ Vue.component('gradlead-jobs-screen', {
             });
             
             bus.$on('contractsSet', function (items) {
-                //console.log("Got contracts in "+ self.modname);
                  self.contracts = items;
                     if (self.contracts.length > 0) {
                         $.each(self.contracts, function (idx, contract) {
                             if (!contract.expired) {
-                                var name = 'Existing Plan: ' + contract.plan.name + ' (' + contract.remaining_posts + ' posts left)';
-                                self.availablePlans.push({
-                                    'id': contract.plan.id,
-                                    'name': name
-                                });
+                                var posts = (contract.plan.num_posts==0) ? 'Unlimited':contract.remaining_posts+ ' posts left';
+                                var name = 'Existing Plan: ' + contract.plan.name + ' (' + posts + ')';
+                                self.availablePlans.push({ 'id': contract.plan.id, 'name': name });
                             }
                         });
                     }

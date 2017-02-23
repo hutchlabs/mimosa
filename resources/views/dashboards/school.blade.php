@@ -7,6 +7,7 @@
             <!-- nav -->
             <nav ui-nav class="navi">
                 <ul class="nav">
+<!--
                     <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
                         <span>Navigation</span>
                     </li>
@@ -19,12 +20,13 @@
                     </li>
 
                     <li class="line dk"></li>
+-->
 
                     <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
                         <span>Job Board</span>
                     </li>
 
-                    <li>
+                    <li class="active">
                         <a href="#jobs" aria-controls="jobs" role="tab" data-toggle="tab">
                             <i class="fa fa-suitcase icon text-info-lter"></i>
                             <span class="font-bold">Job Postings</span>
@@ -39,7 +41,7 @@
                     <li>
                         <a href="#resumes" aria-controls="resumes" role="tab" data-toggle="tab">
                             <i class="fa fa-group icon text-info-lter"></i>
-                            <span class="font-bold">Job Seekers</span>
+                            <span class="font-bold">Students</span>
                         </a>
                     </li>
 
@@ -125,7 +127,8 @@
 <!-- content -->
 <div class="app-content">
     <div class="app-content-body fade-in-up tab-content">
-        <div role="tabpanel" class="tab-pane active" id="dashboard">
+
+        <div role="tabpanel" class="tab-pane" id="dashboard">
             @include('dashboards.stats.index')
         </div>
         
@@ -145,7 +148,7 @@
             @include('dashboards.applications.index')
         </div>
 
-        <div role="tabpanel" class="tab-pane" id="jobs">
+        <div role="tabpanel" class="tab-pane active" id="jobs">
             @include('dashboards.jobs.index')
         </div>
 
@@ -153,6 +156,7 @@
             @include('dashboards.seekers.index')
         </div>
         
+
         <div v-if="usertype.isAdmin" role="tabpanel" class="tab-pane" id="users">
             @include('dashboards.users.index')
         </div>
@@ -163,13 +167,12 @@
 
 
         <div role="tabpanel" class="tab-pane" id="yourprofile">
-            Your profile
+            @include('dashboards.profiles.userprofile')
         </div>
 
         <div v-if="usertype.canEdit" role="tabpanel" class="tab-pane" id="orgprofile">
-            Org profile
+            @include('dashboards.profiles.orgprofile')
         </div>
-
     </div>
 </div>
 <!-- /content -->
