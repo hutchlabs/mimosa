@@ -11,9 +11,9 @@ use App\Gradlead\Organization;
 
 class SearchController extends Controller
 {
-    public function findJobs()
-    {
-        $items = Job::all();
+    public function findJobs(Request $request)
+    {        
+        $items = Job::search($request->user(), $request->q, $request->location);
         return $this->json_response($items);
     }
 

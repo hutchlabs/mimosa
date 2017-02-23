@@ -106,6 +106,79 @@ class Job extends Model
         return Job::whereRaw($where, array($id,$id))->get();
     }
     
+    public static function search($user, $keywords, $loc, $dates=null, $remote=null)
+    {   
+         DB::enableQueryLog();      
+        $results = ['count'=>0, 'all'=>[], 'school'=>[], 'other'=>[],'featured'=>[]];
+        
+        $cases = Job::query();
+        
+        $fields = ['title','teaser','description_text',
+                   'job_types', 'positions','country','city'];
+        
+        if ($keywords <> '' || $loc <> '') {
+            $terms = explode(' ', $keywords);
+            $locs = explode(' ', $loc);
+            $terms = array_merge($terms, $locs);
+            
+            $cases = $cases->where(function($q) use ($terms, $fields) {
+                         foreach($terms as $term) {
+                            foreach($fields as $field) {
+                               $q->orWhere($field, 'LIKE', '%'.$term.'%'); 
+                            }   
+                        }
+                      });
+            
+            if (isset($dates)) {
+            }
+            
+            if (isset($remote)) {
+                $cases = $cases->where('remote',$remote);
+            }
+            
+            $cases = $cases->where('status',1);
+        }
+        
+        $res = $cases->get();
+        $dd = DB::getQueryLog();
+        
+        $results['count'] = $cases->count();
+        
+        $checkSchool = (is_null($user)) ? false : true;
+        $sid = 0;
+        if ($checkSchool) { $sid = $user->organization_id; }
+        
+        foreach($res as $j) {
+                $item = [
+                            'id'=> $j->id,
+                            'title'=>$j->title,
+                            'teaser'=>$j->teaser,
+                            'description_text'=>$j->description_text,
+                            'orgname'=>$j->orgname,
+                            'orglogo'=>$j->orglogo,
+                            'country'=>$j->country,
+                            'city'=>$j->city,
+                            'featured'=>$j->featured,
+                            'post_date'=>$j->created_at,
+                            'jobTypes'=>$j->job_types,
+                            'questionnaire_id'=>$j->questionnaire_id,
+                            'preselect'=>$j->preselect,
+                         ];
+                array_push($results['all'], $item);
+            
+                if ($checkSchool && $sid>0) {
+                    if (in_array($sid, explode(',',$j->school_ids))) {
+                        array_push($results['school'], $item);   
+                    }
+                }
+            
+                if ($j->featured) { array_push($results['featured'], $item);}
+        }
+        
+        //$results['dd'] = $dd;
+        return $results;
+    }
+    
     public function setStatus()
     {
         $status = 1;
@@ -149,4 +222,5 @@ class Job extends Model
         
         return $score;
     }
+
 }

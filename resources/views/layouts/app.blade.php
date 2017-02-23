@@ -65,7 +65,7 @@
             </div>
             <!-- / buttons -->
 
-            <!-- search form -->
+            <!-- search form 
             <form class="navbar-form navbar-form-sm navbar-left shift" ui-shift="prependTo" data-target=".navbar-collapse" role="search" ng-controller="TypeaheadDemoCtrl">
               <div class="form-group">
                 <div class="input-group">
@@ -76,7 +76,7 @@
                 </div>
               </div>
             </form>
-            <!-- / search form -->
+            / search form -->
 
             <!-- nabar right -->
             <ul class="nav navbar-nav navbar-right">

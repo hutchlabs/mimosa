@@ -20,7 +20,7 @@ class ProfileController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth',['except'=>['avatar','pic','logo','crest']]);
+        $this->middleware('auth',['except'=>['avatar','pic','logo','crest','pdf']]);
         $this->middleware('tenant');
     }
     
@@ -45,6 +45,12 @@ class ProfileController extends Controller
     public function crest(Request $request, $profileId) 
     {
         $b = ProfileSchool::findOrFail($profileId);
+        return $this->display_image_new($b->file_path);
+    }
+    
+    public function pdf(Request $request, $profileId) 
+    {
+        $b = ProfileStudentResume::findOrFail($profileId);
         return $this->display_image_new($b->file_path);
     }
 
@@ -292,23 +298,31 @@ class ProfileController extends Controller
         $this->validate($request, [ 
             'user_id' => 'required|exists:users,id', 
             'name' => 'required|max:255', 
-            'default' => 'required',
-            'resume' => 'required'
+            'description' => 'required|max:255', 
+            'file_name' => 'string',
+            'icon_file' => 'string'
         ]);
         
         if (ProfileStudentResume::withinLimits($request->user_id)) {
             $i = new ProfileStudentResume();
             $i->user_id = $request->user_id;
+            $i->description = $request->description;
             $i->name = $request->name;
             $i->default = 0;
             
-            if ($request->resume <> '') { 
-                $fInfo = $this->handleFileUpload($request, 'resume', 'files/resumes/');
-                $i->file_name = $fInfo['name'];
-                $i->file_path = $fInfo['path'];
-                $i->file_url = $fInfo['url'];
+            if ($request->pdf_file<>'') {
+                $fInfo = $this->handleNewFileUpload($request, 'files/resumes/');
+                if (is_array($fInfo)) {
+                    $i->file_name = $fInfo['name'];
+                    $i->file_path = $fInfo['path'];
+                    $i->file_url = $fInfo['url'];
+                } else {
+                    return $this->json_response (
+                        ['pdf_file' => ['The file size cannot exceed 20MB.']],true, 422
+                    );
+                }
             }
-
+  
             $i->modified_by = $user->id;
             $i->save();
             
@@ -317,6 +331,7 @@ class ProfileController extends Controller
 
         return $this->json_response($i);
     }
+        
     
     public function storeUserSkill(Request $request)
     {
@@ -587,8 +602,9 @@ class ProfileController extends Controller
             'id'=>'required|exists:profiles_student_resumes,id',
             'user_id' => 'required|exists:users,id', 
             'name' => 'required|max:255', 
-            'default' => 'required',
-            'resume' => 'required'
+            'description' => 'required|max:255', 
+            'file_name' => 'string',
+            'icon_file' => 'string'
         ]);
         
         $i = ProfileStudentResume::find($request->id);
@@ -596,13 +612,19 @@ class ProfileController extends Controller
         $i->name = $request->name;
         $i->default = 0;
 
-        if ($request->resume <> '') { 
-            $fInfo = $this->handleFileUpload($request, 'resume', 'files/resumes/');
-            $i->file_name = $fInfo['name'];
-            $i->file_path = $fInfo['path'];
-            $i->file_url = $fInfo['url'];
+        if ($request->pdf_file<>'') {
+            $fInfo = $this->handleNewFileUpload($request, 'files/resumes/');
+            if (is_array($fInfo)) {
+                $i->file_name = $fInfo['name'];
+                $i->file_path = $fInfo['path'];
+                $i->file_url = $fInfo['url'];
+            } else {
+                return $this->json_response (
+                    ['pdf_file' => ['The file size cannot exceed 20MB.']],true, 422
+                );
+            }
         }
-
+  
         $i->modified_by = $user->id;
         $i->save();
 
@@ -610,6 +632,25 @@ class ProfileController extends Controller
         
         return $this->json_response($i);
     }    
+    
+    public function updateUserResumeDefault(Request $request, $itemId)
+    {
+        $user = $request->user();
+
+        $this->validate($request, [ 
+            'id'=>'required|exists:profiles_student_resumes,id',
+            'default' => 'required', 
+        ]);
+        
+        $i = ProfileStudentResume::find($request->id);
+        $i->default = 0;
+        $i->modified_by = $user->id;
+        $i->save();
+
+        ProfileStudentResume::setDefault($i, $request->default);
+        
+        return $this->json_response($i);
+    }
     
     public function updateUserSkill(Request $request, $itemId)
     {

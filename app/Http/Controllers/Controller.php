@@ -78,6 +78,25 @@ class Controller extends BaseController
         
         return array('name'=>$name, 'path'=>$path, 'url'=>$url, 'size'=>$size, 'mimetype'=>$mimetype);
     }
+    
+    public function display_file_new($file_path)
+    {
+        if ($file_path) {
+            $file_path = preg_replace('/storage\/app\/public\//','',$file_path);
+            $contents = Storage::get($file_path);
+
+            if (preg_match('/data:/',$contents)) {
+                $mime = mime_content_type($contents);
+                $contents = base64_decode(preg_replace('/data:\w+\/\w+;base64,/','',$contents));
+            } else {
+                $mime = Storage::mimeType($file_path);
+            }
+            header("Content-Type: ".$mime);
+            header("Content-Length: " . strlen($contents));
+            echo $contents;
+        }
+        exit;
+    }
 
     public function display_image_new($file_path)
     {

@@ -25,6 +25,8 @@ require('./components/Screening.vue');
 require('./components/Lists.vue');
 require('./components/Events.vue');
 require('./components/Themes.vue');
+require('./components/Resumes.vue');
+require('./components/Search.vue');
 
 require('./components/Jobs.vue');
 require('./components/Applications.vue');

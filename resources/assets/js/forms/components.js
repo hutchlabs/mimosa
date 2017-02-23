@@ -13,10 +13,12 @@ Vue.component('spark-text', {
 
     watch: {
         'fieldValue': function (v) {
-            if (v.length > this.textLength) {
-                this.form.set(this.textError); 
-            } else {
-                this.form[this.name] = v;
+            if (v!=null) {
+                if (v.length > this.textLength) {
+                    this.form.set(this.textError); 
+                } else {
+                    this.form[this.name] = v;
+                }
             }
         },
         'input': function (v) {
@@ -353,3 +355,34 @@ Vue.component('spark-progressbar', {
 		getStyle: function () { return 'width: '+ this.p + '%'; },
 	},
 });
+
+Vue.component('spark-checkbox', {
+    props: ['display', 'form', 'name', 'input'],
+
+    template: '<div class="form-group" :class="{\'has-error\': form.errors.has(name)}">\
+         <div class="form-group">\
+              <label class="col-md-4 control-label">{{ display }}</label>\
+              <div class="col-sm-6">\
+                   <div class="checkbox">\
+                      <label class="i-checks">\
+                 		<input type="checkbox" v-model="fieldValue" :id="name" :name="name" class="form-control"><i></i> \
+                      </label>\
+                   </div>\
+          	   </div>\
+        	</div>\
+      	</div>',
+
+    watch: {
+        'fieldValue': function (v) { this.form[this.name] = v; },
+        'input': function (v) { this.fieldValue = this.input; }
+    },
+    mounted: function () {
+        this.fieldValue = this.input;
+    },
+    data: function () {
+        return {
+            fieldValue: ''
+        }
+    },
+});
+

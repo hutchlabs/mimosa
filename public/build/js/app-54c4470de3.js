@@ -39760,6 +39760,8 @@ require('./components/Screening.vue');
 require('./components/Lists.vue');
 require('./components/Events.vue');
 require('./components/Themes.vue');
+require('./components/Resumes.vue');
+require('./components/Search.vue');
 
 require('./components/Jobs.vue');
 require('./components/Applications.vue');
@@ -39777,7 +39779,7 @@ var app = new Vue({
   data: {}
 });
 
-},{"./bootstrap":9,"./components/Applications.vue":10,"./components/Badges.vue":11,"./components/Events.vue":12,"./components/Home.vue":13,"./components/Jobs.vue":14,"./components/Lists.vue":15,"./components/Organizations.vue":16,"./components/Permissions.vue":17,"./components/Plans.vue":18,"./components/Profiles.vue":19,"./components/Screening.vue":20,"./components/Seekers.vue":21,"./components/Stats.vue":22,"./components/Themes.vue":23,"./components/Users.vue":24,"./components/Welcome.vue":25}],9:[function(require,module,exports){
+},{"./bootstrap":9,"./components/Applications.vue":10,"./components/Badges.vue":11,"./components/Events.vue":12,"./components/Home.vue":13,"./components/Jobs.vue":14,"./components/Lists.vue":15,"./components/Organizations.vue":16,"./components/Permissions.vue":17,"./components/Plans.vue":18,"./components/Profiles.vue":19,"./components/Resumes.vue":20,"./components/Screening.vue":21,"./components/Search.vue":22,"./components/Seekers.vue":23,"./components/Stats.vue":24,"./components/Themes.vue":25,"./components/Users.vue":26,"./components/Welcome.vue":27}],9:[function(require,module,exports){
 'use strict';
 
 var _vuejsDatepicker = require('vuejs-datepicker');
@@ -39842,7 +39844,7 @@ window.Multiselect = _vueMultiselect2.default;
 require('./widgets/bootstrap');
 require('./forms/bootstrap');
 
-},{"./forms/bootstrap":26,"./widgets/bootstrap":32,"bootstrap-sass":1,"jquery":2,"lodash":3,"vue-multiselect":4,"vue-resource":5,"vue/dist/vue.js":6,"vuejs-datepicker":7}],10:[function(require,module,exports){
+},{"./forms/bootstrap":28,"./widgets/bootstrap":34,"bootstrap-sass":1,"jquery":2,"lodash":3,"vue-multiselect":4,"vue-resource":5,"vue/dist/vue.js":6,"vuejs-datepicker":7}],10:[function(require,module,exports){
 Vue.component('gradlead-applications-screen', {
     
     props: ['authUser', 'usertype', 'permissions'],
@@ -40391,7 +40393,7 @@ Vue.component('gradlead-home-screen', {
                     self.permissions.canDoScreening = self.authUser.organization.permissions.screening;
                     self.permissions.canDoPreselect = self.authUser.organization.permissions.preselect;
                     self.permissions.canDoTracking = self.authUser.organization.permissions.tracking;
-                    self.expectedScreens = (self.usertype.isGradlead) ? 21 : ((self.usertype.isCompany) ? 8 : 7); 
+                    self.expectedScreens = (self.usertype.isGradlead) ? 21 : ((self.usertype.isCompany) ? 8 : 5); 
                    bus.$emit('authUserSet', self.authUser);
                 });
         },
@@ -40522,7 +40524,7 @@ Vue.component('gradlead-home-screen', {
             
             bus.$on('screenLoaded', function(name) {
                 self.loadedScreens += 1;
-                console.log("Loaded screens: #"+self.loadedScreens +": "+name);
+                //console.log("Loaded screens: #"+self.loadedScreens +": "+name);
                 if (self.loadedScreens==self.expectedScreens) { self.callOthers(); }
             });
         },
@@ -42479,6 +42481,119 @@ Vue.component('gradlead-profiles-user-screen', {
 });
 
 },{}],20:[function(require,module,exports){
+Vue.component('gradlead-resumes-screen', {
+    
+    props: ['authUser', 'usertype', 'permissions'],
+
+    mounted: function () {
+        this.resumes = this.authUser.resumes;
+        this.setDefaults();
+        this.setupListeners();
+    },
+
+    data: function () {
+        return {
+            baseUrl: '/',
+            modname: 'Resumes',
+
+			resumes: [],
+            defaults: [],
+
+ 			forms: {
+                addResume: new SparkForm({
+                    name: '',
+                    user_id: '',
+                    description: '',
+                    default: '',
+                    pdf_file: '',
+                    file_name: '',
+                }),
+                updateDefault: new SparkForm({
+                    id: '',
+                    default: '',
+                }),
+            },
+        };
+    },
+
+    watch: { },
+
+    events: {},
+
+    computed: {
+        everythingLoaded: function () { return this.authUser != null },
+    },
+
+    methods: {
+        setDefaults: function() {
+            var self = this;
+            this.defaults=[];
+            $.each(this.resumes, function(i, r) {
+                self.defaults[r.id] = r.default; 
+            });
+        },
+
+        addResume: function() {
+            this.forms.addResume.name = '';
+            this.forms.addResume.user_id = this.authUser.id;
+            this.forms.addResume.description = '';
+            this.forms.addResume.default = '';
+            this.forms.addResume.pdf_file = '';
+            $('#modal-add-resume').modal('show');
+        },
+
+        setFileName: function(name) {
+            this.forms.addResume.file_name = name;
+        },
+
+		getFileUrl: function(rid) {
+            return '/profiles/pdf/'+rid+'?'+new Date(); 
+        },
+
+        setupListeners: function () {
+            var self = this;
+            bus.$on('authUserSet', function (user) { 
+                self.resumes = user.resumes; 
+                self.setDefaults();
+            });
+            bus.$emit('screenLoaded',self.modname);
+        },
+
+        addNewResume: function() { 
+            var self = this;
+            Spark.post(self.baseUrl+'profiles/users/resume', this.forms.addResume)
+                .then(function () {
+                    bus.$emit('updateAuthUser');
+                });
+        },
+        
+        updateDefault: function (resume) {
+            var self = this;
+            this.forms.updateDefault.id = resume.id; 
+
+            var newval =  !this.defaults[resume.id];
+
+            if (newval) {
+                $.each(this.defaults, function(i,d) {
+                    if (i==resume.id) { self.defaults[i] = newval; }
+                    else { self.defaults[i] = !newval; }
+                });
+            } else {
+                this.defaults[resume.id]=newval;
+            }
+
+            this.forms.updateDefault.default = this.defaults[resume.id]; 
+
+            Spark.put(self.baseUrl+'profiles/users/resume/default/'+resume.id, this.forms.updateDefault).then(function(resp) {
+                bus.$emit('updateAuthUser');
+            });
+        },
+    },
+
+    filters: { },
+});
+
+},{}],21:[function(require,module,exports){
 Vue.component('gradlead-screening-screen', {
 
     mounted: function () {
@@ -43094,7 +43209,182 @@ Vue.component('gradlead-screening-screen', {
     },
 });
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
+Vue.component('gradlead-search-screen', {
+
+    props: ['authUser', 'usertype', 'permissions'],
+
+    components: {
+        Datepicker,
+        Multiselect
+    },
+
+    mounted: function () {        
+        this.setupListeners();
+    },
+
+    data: function () {
+        return {
+            baseUrl: '/',
+            modname: 'Jobs',
+
+            q: '',
+            l: '',
+
+            jobs:[],
+            jobsAll: [],
+            jobsFeatured: [],
+            jobsSchool: [],
+            jobsOther: [],
+
+            srText: '<strong>RESNUM</strong> Results found for: <strong>KEYWORD</strong>',
+            degrees: [],
+            industries: [],
+            jobTypes: [],
+            languages: [],
+            majors: [],
+            skills: [],
+            questionnaires: [],
+        };
+    },
+
+    watch: {
+        'jobs': function(v) {
+           console.log("Jobs changed");
+          this.$refs.resultsText.innerHTML = this.getResultsText();  
+        },
+        'q': function(v) {
+           console.log(v); 
+          this.$refs.resultsText.innerHTML = this.getResultsText();  
+        },
+        'l': function(v) {
+          this.$refs.resultsText.innerHTML = this.getResultsText();  
+          console.log(v); 
+        }
+    },
+
+    events: {},
+
+    computed: {
+        everythingLoaded: function () { return true; },
+        isLoggedIn: function () { return this.authUser!=null; },
+        allCount: function () { return this.jobsAll.length; },       
+        schoolCount: function () { return this.jobsSchool.length; },       
+        otherCount: function () { return this.jobsOther.length; },       
+    },
+
+    methods: {
+        processJobs: function() {
+            var self = this;
+            this.jobsAll= [];
+            this.jobsFeatured= [];
+            this.jobsSchool= [];
+            this.jobsOther= [];
+
+            $.each(this.jobs, function(i, j) {
+                self.jobsAll.push(j); 
+                if (j.featured) { self.jobsFeatured.push(j); }
+                if (self.isLoggedIn) {
+                    if  (self.isInArray(self.authUser.organization_id, j.school_ids.split(','))) {
+                        self.jobsSchool.push(j); }
+                }
+            });
+            
+            this.$refs.resultsText.innerHTML = this.getResultsText();  
+        },
+
+        processSearchResults: function(data) {
+               var st = self.q + ((self.l=='') ?'' : ' in '+self.l);
+                this.jobs = data.all;
+                this.jobsAll= data.all;
+                this.jobsFeatured= data.featured;
+                this.jobsSchool= data.school;
+                this.jobsOther= data.other;
+                var st = this.q + ((this.l=='') ?'' : ' in '+this.l);
+                this.srText.replace("RESNUM",self.jobs.length).replace("KEYWORD",st);
+        },
+
+        // Ajax calls functionality
+        search: function () {
+            var self = this;
+            var uri = self.baseUrl+'search/jobs/?q='+this.q+'&l='+this.l;
+            this.$http.get(uri).then(function (resp) {
+                   self.processSearchResults(resp.data.data);
+            }, function(resp) {
+                    NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
+                });
+        },
+
+        setupListeners: function () {
+            var self = this;
+
+            bus.$on('jobsSet', function (items) {
+                self.jobs = [];
+                if (items!==null) {
+                    $.each(items, function (idx, job) {
+                        if (self.usertype.isGradlead || self.usertype.isSchool) { self.jobs.push(job) }
+                        else if (self.authUser.organization_id==job.organziation_id) { self.jobs.push(job); }
+                    });
+                    self.processJobs();
+                }
+            });
+            
+            bus.$on('jobTypesSet', function (items) { self.jobTypes = items; });
+            bus.$on('questionnairesSet', function (items) { self.questionnaires = items[0]; });
+            bus.$on('languagesSet', function (items) { self.languages = items; });
+            bus.$on('degreesSet', function (items) { self.degrees = items; });
+            bus.$on('industriesSet', function (items) { self.industries = items; });
+            bus.$on('skillsSet', function (items) { self.skills = items; });
+            bus.$on('majorsSet', function (items) {
+                self.majors = items;
+                self.majors.sort(function(a,b) { 
+                    var x = a.name; var y = b.name;
+                    return (x < y) ? -1 : ((x > y) ? 1 : 0);
+                });
+            });
+            
+            bus.$emit('screenLoaded',self.modname);
+        },
+
+        // Helpers
+        getResultsText: function() {
+            if (this.q=='' && this.l=='' && this.jobs.length==0) { return "<span class='text-muted'>waiting..</span>"; }
+           
+            if (this.q=='' && this.l=='' && this.jobs.length>0) { 
+                return 'Displaying <strong>'+this.jobs.length+'</strong> Results<strong>';
+            }
+
+            var st = this.q + ((this.l=='') ?'' : ' in '+this.l);
+            if (this.q != '' && this.l != '') {
+                return "Searching for <strong>"+st+"</strong>"; 
+            }
+
+            return "<span class='text-muted'>waiting..</span>";
+            
+        },
+
+        removeFromList: function (list, item) {
+            return _.reject(list, function (i) {
+                return i.id === item.id;
+            });
+        },
+
+        isInArray: function (item, array) {
+            return !!~$.inArray(item, array);
+        },
+
+        ucwords: function (str) {
+            return str.toLowerCase().replace(/\b[a-z]/g, function (letter) {
+                return letter.toUpperCase();
+            });
+        },
+    },
+
+    filters: {
+    },
+});
+
+},{}],23:[function(require,module,exports){
 Vue.component('gradlead-seekers-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
@@ -43366,7 +43656,7 @@ Vue.component('gradlead-seekers-screen', {
     },
 });
 
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 Vue.component('gradlead-stats-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
@@ -43483,7 +43773,7 @@ Vue.component('gradlead-stats-screen', {
     },
 });
 
-},{}],23:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 Vue.component('gradlead-themes-screen', {
 
     mounted: function() {
@@ -43591,7 +43881,7 @@ Vue.component('gradlead-themes-screen', {
     filters: { },
 });
 
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 Vue.component('gradlead-users-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
@@ -43849,7 +44139,7 @@ Vue.component('gradlead-users-screen', {
     },
 });
 
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 Vue.component('gradlead-welcome-screen', {
 
     mounted: function() {
@@ -43904,7 +44194,7 @@ Vue.component('gradlead-welcome-screen', {
     filters: { },
 });
 
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 /**
@@ -43927,7 +44217,7 @@ $.extend(Spark, require('./http'));
  */
 require('./components');
 
-},{"./components":27,"./errors":28,"./http":29,"./instance":30}],27:[function(require,module,exports){
+},{"./components":29,"./errors":30,"./http":31,"./instance":32}],29:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-text', {
@@ -43945,10 +44235,12 @@ Vue.component('spark-text', {
 
     watch: {
         'fieldValue': function fieldValue(v) {
-            if (v.length > this.textLength) {
-                this.form.set(this.textError);
-            } else {
-                this.form[this.name] = v;
+            if (v != null) {
+                if (v.length > this.textLength) {
+                    this.form.set(this.textError);
+                } else {
+                    this.form[this.name] = v;
+                }
             }
         },
         'input': function input(v) {
@@ -44296,7 +44588,41 @@ Vue.component('spark-progressbar', {
     }
 });
 
-},{}],28:[function(require,module,exports){
+Vue.component('spark-checkbox', {
+    props: ['display', 'form', 'name', 'input'],
+
+    template: '<div class="form-group" :class="{\'has-error\': form.errors.has(name)}">\
+         <div class="form-group">\
+              <label class="col-md-4 control-label">{{ display }}</label>\
+              <div class="col-sm-6">\
+                   <div class="checkbox">\
+                      <label class="i-checks">\
+                 		<input type="checkbox" v-model="fieldValue" :id="name" :name="name" class="form-control"><i></i> \
+                      </label>\
+                   </div>\
+          	   </div>\
+        	</div>\
+      	</div>',
+
+    watch: {
+        'fieldValue': function fieldValue(v) {
+            this.form[this.name] = v;
+        },
+        'input': function input(v) {
+            this.fieldValue = this.input;
+        }
+    },
+    mounted: function mounted() {
+        this.fieldValue = this.input;
+    },
+    data: function data() {
+        return {
+            fieldValue: ''
+        };
+    }
+});
+
+},{}],30:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -44363,7 +44689,7 @@ window.SparkFormErrors = function () {
     };
 };
 
-},{}],29:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -44403,7 +44729,7 @@ module.exports = {
     }
 };
 
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
 /**
@@ -44430,7 +44756,7 @@ window.SparkForm = function (data) {
     };
 };
 
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-authenticate', {
@@ -44596,7 +44922,7 @@ Vue.component('spark-authenticate', {
 				}
 });
 
-},{}],32:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 require('./notifications');
@@ -44605,7 +44931,7 @@ require('./components');
 require('./features');
 require('./authenticate');
 
-},{"./authenticate":31,"./components":33,"./errors":34,"./features":35,"./notifications":36}],33:[function(require,module,exports){
+},{"./authenticate":33,"./components":35,"./errors":36,"./features":37,"./notifications":38}],35:[function(require,module,exports){
 'use strict';
 
 Vue.component('gradlead-sparkline-bar', {
@@ -44651,7 +44977,7 @@ Vue.component('gradlead-plot', {
     }
 });
 
-},{}],34:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 /*
@@ -44678,7 +45004,7 @@ Vue.component('spark-error-alert', {
             </div></div>"
 });
 
-},{}],35:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-featured-jobs', {
@@ -44752,7 +45078,7 @@ Vue.component('spark-featured-employers', {
     }
 });
 
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 window.NotificationStore = {

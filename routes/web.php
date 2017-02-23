@@ -30,9 +30,9 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->post('/fregister', 'ApiController@registeruser');
 
         // Search
-        $router->post('search/jobs',        'SearchController@findJobs');
-        $router->post('search/users',       'SearchController@findCandidates');
-        $router->post('search/employers',   'SearchController@findEmployers');
+        $router->get('search/jobs',        'SearchController@findJobs');
+        $router->get('search/users',       'SearchController@findCandidates');
+        $router->get('search/employers',   'SearchController@findEmployers');
   
         // Jobs & Applications
         $router->get('jobs',                                'JobController@index');
@@ -82,6 +82,7 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->get('profiles/crest/{id}',                 'ProfileController@crest');
         $router->get('profiles/avatar/{id}',                'ProfileController@avatar');
         $router->get('profiles/pic/{id}',                   'ProfileController@pic');
+        $router->get('profiles/pdf/{id}',                   'ProfileController@pdf');
         $router->post('profiles/users',                     'ProfileController@storeUserProfile');
         $router->post('profiles/users/education',           'ProfileController@storeUserEducation');   
         $router->post('profiles/users/experience',          'ProfileController@storeUserExperience');   
@@ -96,7 +97,8 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->put('profiles/users/experience/{id}',      'ProfileController@updateUserExperience');   
         $router->put('profiles/users/language/{id}',        'ProfileController@updateUserLanguage');   
         $router->put('profiles/users/preference/{id}',      'ProfileController@updateUserPreference');
-        $router->put('profiles/users/resume/{id}',          'ProfileController@updateUserResume');   
+        $router->put('profiles/users/resume/{id}',          'ProfileController@updateUserResume');  
+        $router->put('profiles/users/resume/default/{id}',          'ProfileController@updateUserResumeDefault');   
         $router->put('profiles/users/skill/{id}',           'ProfileController@updateUserSkill');
         $router->put('profiles/employees/{id}',             'ProfileController@updateEmployeeProfile');
         $router->put('profiles/schools/{id}',               'ProfileController@updateSchoolProfile');

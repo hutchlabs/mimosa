@@ -25,19 +25,32 @@
                     <li role="presentation" class="active">
                         <a href="#userprofile" aria-controls="userprofile" role="tab" data-toggle="tab">&nbsp;Profile</a>
                     </li>
+                    <li role="presentation">
+                        <a href="#useraccount" aria-controls="useraccount" role="tab" data-toggle="tab">&nbsp;Account</a>
+                    </li>
                 </ul>
             </div>
-
+            
             <div class="panel hbox hbox-auto-xs no-border">
+                
                 <div class="col wrapper">
+                <div class="tab-content">
+
                     <i class="fa fa-circle-o text-info m-r-sm pull-right"></i>
 
                     <div role="tabpanel" class="tab-pane active" id="userprofile">
 
+                        
+                    
+
+                    </div>
+                   
+                    <div role="tabpanel" class="tab-pane" id="useraccount">
+
                         <spark-error-alert :form="forms.updateProfile"></spark-error-alert>
 
                         <!-- Add Form -->
-                        <form class="form-horizontal" role="form">
+                        <form class="form-horizontal " role="form">
                             <div class="row">
                                 <div class="col-md-6">
                             <spark-text :display="'Summary*'" :form="forms.updateProfile" :name="'summary'" :input.sync="forms.updateProfile.summary">
@@ -51,7 +64,7 @@
                                 :input.sync="forms.updateProfile.icon_file">
                             </spark-file>
                                 </div>
-                          </div>
+                        </div>
                         </form>
 
                         <div class="panel-footer">
@@ -62,8 +75,10 @@
                             </button>
                         </div>
                     </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    
 </gradlead-profiles-user-screen>

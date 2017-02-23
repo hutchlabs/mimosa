@@ -20,14 +20,48 @@ class User extends Authenticatable
 
     protected $with = ['role','organization','bookmarks','alerts',
                        'address','achievements','applications'];
-
-
+    
     protected function getArrayableAppends()
     {
         $appends = ['profile'];
+        if ($this->isStudent()) {
+            $appends = array_merge($appends, ['education','languages','preferences','resumes','skills','work']);
+        }
+        
         $this->appends = array_merge($this->appends, $appends);
         return parent::getArrayableAppends();
     }
+    
+    protected function getEducationAttribute()
+    {
+        return DB::table('profiles_student_education')->select(DB::raw('*'))->where('user_id',$this->id)->get(); 
+    }
+    
+    protected function getLanguagesAttribute()
+    {
+        return DB::table('profiles_student_languages')->select(DB::raw('*'))->where('user_id',$this->id)->get(); 
+    }
+    
+    protected function getPreferencesAttribute()
+    {
+        return DB::table('profiles_student_preferences')->select(DB::raw('*'))->where('user_id',$this->id)->first(); 
+    }
+    
+    protected function getResumesAttribute()
+    {
+        return DB::table('profiles_student_resumes')->select(DB::raw('*'))->where('user_id',$this->id)->get(); 
+    }
+    
+    protected function getSkillsAttribute()
+    {
+        return DB::table('profiles_student_skills')->select(DB::raw('*'))->where('user_id',$this->id)->get(); 
+    }
+    
+    protected function getWorkAttribute()
+    {
+        return DB::table('profiles_student_work')->select(DB::raw('*'))->where('user_id',$this->id)->get(); 
+    }
+    
     
     public function getProfileAttribute()
     {
@@ -77,7 +111,7 @@ class User extends Authenticatable
     {
         return $this->hasMany('\App\Gradlead\Bookmark', 'user_id', 'id');
     }
-    
+        
     public static function scopeCandidates($query) 
     {
         return $query->whereRaw('user_type in ("student","graduate")')->get();

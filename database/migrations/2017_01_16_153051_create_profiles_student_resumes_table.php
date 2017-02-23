@@ -17,6 +17,7 @@ class CreateProfilesStudentResumesTable extends Migration
             $table->increments('id');
             $table->integer('user_id');
             $table->string('name');
+            $table->string('description');
             $table->string('file_name');
             $table->string('file_path')->unique();
             $table->string('file_url');

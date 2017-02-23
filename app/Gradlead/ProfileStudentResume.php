@@ -3,6 +3,7 @@
 namespace App\Gradlead;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class ProfileStudentResume extends Model
 {
@@ -20,12 +21,12 @@ class ProfileStudentResume extends Model
                 ->count() < 3;
     }
     
-    public static function setDefault($i, $val)
+    public static function setDefault($i, $val=0)
     {
         if ($val==0)
             return true;
         
-        DB::update('Update profiles_student_resumes SET default=0 where user_id='.$i->user_id);
+        DB::update('Update profiles_student_resumes SET `default`=0 where user_id='.$i->user_id);
         $i->default=1;
         return $i->save();
     }

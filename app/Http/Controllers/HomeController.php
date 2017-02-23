@@ -31,7 +31,7 @@ class HomeController extends Controller
             case 'gradlead': $view = 'dashboards.gradlead'; break;
             case 'school': $view = 'dashboards.school'; break;
             case 'student':
-            case 'graduate': $view = 'dashboard.student'; break;
+            case 'graduate': $view = 'dashboards.student'; break;
             default: $view = 'welcome.index';
         }
             

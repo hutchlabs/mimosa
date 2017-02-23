@@ -51,7 +51,7 @@ class ApiController extends Controller
         // grab credentials from the request
         $credentials = $request->only('email', 'password');
         
-        DB::enableQueryLog();      
+        //DB::enableQueryLog();      
         //$dd = DB::getQueryLog();
         //return $this->json_response(['email'=>[$dd],'pass'=>$pass], true, 401);
         
