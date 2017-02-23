@@ -9,7 +9,7 @@ use HipsterJazzbo\Landlord\BelongsToTenants;
 
 class Contract extends Model
 {
-        use BelongsToTenants;
+    use BelongsToTenants;
 
     protected $table = 'plans_contracts';
 

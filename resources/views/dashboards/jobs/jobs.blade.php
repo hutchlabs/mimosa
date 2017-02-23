@@ -30,7 +30,7 @@
                         <tr v-for="j in jobs">
                             <td class="spark-table-pad"> @{{ j.title }} </td>
                             <td class="spark-table-pad"> @{{ j.orgname }} </td>
-                            <td class="spark-table-pad"> @{{ j.contract.plan.name }} </td>
+                            <td class="spark-table-pad"> @{{ (j.contract!=null) ? j.contract.plan.name : 'No contract' }} </td>
                             <td class="spark-table-pad"> 
                                 <span v-if="j.numapplications > 0">
                                 <b class="badge bg-info">  @{{ j.numapplications }}</b>

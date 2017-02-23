@@ -119,7 +119,7 @@ Vue.component('gradlead-orgs-screen', {
 
                 self.employers = [];
                 $.each(orgs[1], function (idx, emp) {
-                       if (self.usertype.isGradlead) { self.employers.push(emp) }
+                       if (self.authUser.organization.id==1) { self.employers.push(emp) }
                        else if (self.isInArray(self.authUser.organization_id, emp.schools)) { 
                            self.employers.push(emp); 
                        }
