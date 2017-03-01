@@ -27,6 +27,7 @@
             <table id="resumestable" class="table table-striped m-b-none">
                 <thead>
                     <tr>
+                       <th>Company</th>
                         <th>Job</th>
                         <th>Resume</th>
                         <th>Date Applied</th>
@@ -37,6 +38,7 @@
                 <tbody>
                     <tr v-for="u in apps">
 
+                        <td class="spark-table-pad"> @{{ u.orgname }} </td>
                         <td class="spark-table-pad"> @{{ u.jobname }} </td>
                         <td class="spark-table-pad">
                            <span v-if="u.resume!=null"> 

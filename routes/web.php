@@ -120,6 +120,7 @@ Route::group(['middleware' => 'web'], function ($router) {
 
         // Questionnaires
         $router->get('questionnaires',          'QuestionnaireController@index');
+        $router->get('questionnaires/{id}',     'QuestionnaireController@show');
         $router->post('questionnaires',         'QuestionnaireController@store');
         $router->put('questionnaires/{id}',     'QuestionnaireController@update');
         $router->delete('questionnaires/{id}',  'QuestionnaireController@destroy');

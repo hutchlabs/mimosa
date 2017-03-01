@@ -18,7 +18,7 @@ class Application extends Model
     
     protected function getArrayableAppends()
     {
-        $this->appends = array_merge($this->appends, ['applicant','jobname']);
+        $this->appends = array_merge($this->appends, ['applicant','jobname','orgname']);
         return parent::getArrayableAppends();
     }
 
@@ -38,6 +38,22 @@ class Application extends Model
                 ->where('id',$this->job_id)
                 ->first(); 
         return $job->title;
+    }
+    
+    public function getOrgnameAttribute() 
+    {
+        $job = DB::table('jobs')
+                ->select(DB::raw('organization_id'))
+                ->where('id',$this->job_id)
+                ->first(); 
+        if ($job) {
+            $org = DB::table('organizations')
+                ->select(DB::raw('name'))
+                ->where('id',$job->organization_id)
+                ->first();
+            return ($org) ? $org->name : "";
+        }
+        return "";
     }
 
 

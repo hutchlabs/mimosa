@@ -2,6 +2,7 @@ require('./errors');
 require('./components');
 require('./features');
 require('./authenticate');
+require('./questionnaire');
 require('./profile-summary');
 require('./profile-education');
 require('./profile-work');

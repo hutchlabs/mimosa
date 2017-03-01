@@ -54,34 +54,27 @@
                             <div role="tabpanel" class="tab-pane active" id="all">
                                 <ul class="list-group list-group-alt list-group-lg no-borders pull-in m-b-none">
 
-                                    <li v-for="j in jobsAll"  class="list-group-item">
+                                    <li v-for="j in jobsAll" class="list-group-item" style="border-bottom: 1px dashed #aaa">
                                 
-                                        <a href="#" class="pull-right thumb-md m-r" style="">
+                                        <a href="#" class="pull-right thumb-md m-r">
                                             <img :src="j.orglogo" :alt="j.orgname">
                                         </a>
                                         
                                         <div class="clear">
-                                            <a href="#" class="h4 text-primary m-b-sm m-t-sm block">
-                                                @{{ j. title }}
-                                            </a>
-
+                                            <a href="#" class="h4 text-primary m-b-sm m-t-sm block">@{{j.title}}</a>
                                             <p>@{{ j.description_text }}</p>
-
-                                            <p>
-                        
-                                              <a href="">
-                                                   <span class="label bg-primary pos-rlt m-r inline wrapper-xs">    <i class="glyphicon glyphicon-bookmark"></i> Bookmark
-                                                   </span> 
-                                                </a>
-                                                <a href="">
-                                                   <span class="label bg-warning pos-rlt m-r inline wrapper-xs"><i class="glyphicon glyphicon-open"></i> Apply
+                                            <p v-if="!hasApplied(j)">
+                                                <a @click.prevent="apply(j)">
+                                                   <span class="label bg-primary pos-rlt m-r inline wrapper-xs"><i class="glyphicon glyphicon-open"></i> Apply
                                                    </span> 
                                                 </a>
                                             </p>
-                                            <span class="text-muted">
-                                                  Posted: @{{ j.created_at }}
-                                            </span>
-                                         
+                                            <p v-else>
+                                                <span class="text-muted">
+                                                    Applied. Status: @{{ appStatus(j.id) }}
+                                                </span>
+                                            </p>
+                                            <span class="text-muted">Posted: @{{ j.created_at }}</span>        
                                         </div>
                                     </li>
                                 </ul>
@@ -96,27 +89,20 @@
                                         </a>
                                         
                                         <div class="clear">
-                                            <a href="#" class="h4 text-primary m-b-sm m-t-sm block">
-                                                @{{ j. title }}
-                                            </a>
-
+                                            <a href="#" class="h4 text-primary m-b-sm m-t-sm block">@{{j.title}}</a>
                                             <p>@{{ j.description_text }}</p>
-
-                                            <p>
-                        
-                                              <a href="">
-                                                   <span class="label bg-primary pos-rlt m-r inline wrapper-xs">    <i class="glyphicon glyphicon-bookmark"></i> Bookmark
-                                                   </span> 
-                                                </a>
-                                                <a href="">
-                                                   <span class="label bg-warning pos-rlt m-r inline wrapper-xs"><i class="glyphicon glyphicon-open"></i> Apply
+                                            <p v-if="!hasApplied(j)">
+                                                <a @click.prevent="apply(j)">
+                                                   <span class="label bg-primary pos-rlt m-r inline wrapper-xs"><i class="glyphicon glyphicon-open"></i> Apply
                                                    </span> 
                                                 </a>
                                             </p>
-                                            
-                                            <span class="text-muted">
-                                                  Posted: @{{ j.created_at }}
-                                            </span>
+                                            <p v-else>
+                                                <span class="text-muted">
+                                                    Applied. Status: @{{ appStatus(j.id) }}
+                                                </span>
+                                            </p>
+                                            <span class="text-muted">Posted: @{{ j.created_at }}</span>        
                                         </div>
                                     </li>
                                 </ul>
@@ -132,34 +118,31 @@
                                         </a>
                                         
                                         <div class="clear">
-                                            <a href="#" class="h4 text-primary m-b-sm m-t-sm block">
-                                                @{{ j. title }}
-                                            </a>
-
+                                            <a href="#" class="h4 text-primary m-b-sm m-t-sm block">@{{j.title}}</a>
                                             <p>@{{ j.description_text }}</p>
-
-                                            <p>
-                        
-                                              <a href="">
-                                                   <span class="label bg-primary pos-rlt m-r inline wrapper-xs">    <i class="glyphicon glyphicon-bookmark"></i> Bookmark
-                                                   </span> 
-                                                </a>
-                                                <a href="">
-                                                   <span class="label bg-warning pos-rlt m-r inline wrapper-xs"><i class="glyphicon glyphicon-open"></i> Apply
+                                            <p v-if="!hasApplied(j)">
+                                                <a @click.prevent="apply(j)">
+                                                   <span class="label bg-primary pos-rlt m-r inline wrapper-xs"><i class="glyphicon glyphicon-open"></i> Apply
                                                    </span> 
                                                 </a>
                                             </p>
-                                            
-                                            <span class="text-muted pull-right">
-                                                  Posted: @{{ j.created_at }}
-                                            </span>
+                                            <p v-else>
+                                                <span class="text-muted">
+                                                    Applied. Status: @{{ appStatus(j.id) }}
+                                                </span>
+                                            </p>
+                                            <span class="text-muted">Posted: @{{ j.created_at }}</span>        
                                         </div>
                                     </li>
-                                </ul>                            </div>
+                                </ul>                         
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        
+        @include('dashboards.jobs.apply') 
+
     </div>
 </gradlead-search-screen>

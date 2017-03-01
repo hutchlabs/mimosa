@@ -266,7 +266,6 @@ Vue.component('spark-profile-education', {
     methods: {
         setList: function(l) {
             this.list = l;
-            console.log("Updating user list");
         },
 
         getMonthName: function(m) {

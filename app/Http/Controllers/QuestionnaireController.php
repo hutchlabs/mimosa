@@ -164,6 +164,12 @@ class QuestionnaireController extends Controller
         return $this->json_response($items);
     }
     
+    public function show(Request $request, $qId)
+    {
+        $items = Questionnaire::allTenants()->find($qId);
+        return $this->json_response($items);
+    }
+    
     public function store(Request $request)
     {
         $user = $request->user();

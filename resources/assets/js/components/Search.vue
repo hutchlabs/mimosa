@@ -9,6 +9,7 @@ Vue.component('gradlead-search-screen', {
 
     mounted: function () {
         this.setupListeners();
+        this.setResumes(this.authUser.resumes);
     },
 
     data: function () {
@@ -24,7 +25,8 @@ Vue.component('gradlead-search-screen', {
             jobsFeatured: [],
             jobsSchool: [],
             jobsOther: [],
-
+            currentJob: {title:'',id:0},
+            
             srText: '<strong>RESNUM</strong> Results found for: <strong>KEYWORD</strong>',
             degrees: [],
             industries: [],
@@ -32,13 +34,23 @@ Vue.component('gradlead-search-screen', {
             languages: [],
             majors: [],
             skills: [],
+            
             questionnaires: [],
+            resumes: [],
+            
+             forms: {
+                applyForm: new SparkForm ({
+                    user_id: '',
+					job_id: '',
+           			resume_id: '',
+		           	screening: '',
+                }),
+            }
         };
     },
 
     watch: {
         'jobs': function(v) {
-           console.log("Jobs changed");
           this.$refs.resultsText.innerHTML = this.getResultsText();
         },
         'q': function(v) {
@@ -59,6 +71,8 @@ Vue.component('gradlead-search-screen', {
         allCount: function () { return this.jobsAll.length; },
         schoolCount: function () { return this.jobsSchool.length; },
         otherCount: function () { return this.jobsOther.length; },
+        hasNotApplied: function() { return ! this.hasApplied(this.currentJob) },
+        hasResumes: function() { return this.resumes.length > 0; }
     },
 
     methods: {
@@ -80,7 +94,45 @@ Vue.component('gradlead-search-screen', {
 
             this.$refs.resultsText.innerHTML = this.getResultsText();
         },
+        
+        setResumes: function(resumes) {
+            var self = this;
+            resumes = (resumes==null) ? [] : resumes;
+            $.each(resumes, function(i,r) {
+                self.resumes.push({text:r.name, value:r.id});       
+            });    
+        },
+        
+        hasApplied: function(job) {
+            var self = this;
+            var applied = false;
+            $.each(this.authUser.applications, function(i,a){
+                if (a.job_id==job.id) { applied = true; } 
+            });
+            return applied;
+        },
+        
+        appStatus: function(jobId) {
+            var self = this;
+            var status = "Unknown";
+            $.each(this.authUser.applications, function(i,a){
+                if (a.job_id==jobId) { status = a.status; } 
+            });
+            return status;
+        },
+        
+        apply: function(job) {
+                this.currentJob = job;
+                this.forms.applyForm.user_id = this.authUser.id;
+                this.forms.applyForm.job_id = job.id;
+                this.forms.applyForm.resume_id = '';
+                this.forms.applyForm.screening = '';
+                $('#modal-apply').modal('show');
+        },
 
+        //TODO: Bookmark
+        bookmark: function(url) { },
+        
         processSearchResults: function(data) {
                var st = self.q + ((self.l=='') ?'' : ' in '+self.l);
                 this.jobs = data.all;
@@ -93,19 +145,33 @@ Vue.component('gradlead-search-screen', {
         },
 
         // Ajax calls functionality
+        submitApp: function() {
+            var self = this;
+            this.$http.post(self.baseUrl+'jobs/apply', this.forms.applyForm).then(function (resp) {
+                $('#modal-apply').modal('hide');
+                bus.$emit('updateAuthUser');
+            }, function(resp) {
+                
+            });
+        },
+        
         search: function () {
             var self = this;
             var uri = self.baseUrl+'search/jobs/?q='+this.q+'&l='+this.l;
             this.$http.get(uri).then(function (resp) {
                    self.processSearchResults(resp.data.data);
             }, function(resp) {
-                    //NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
-                });
+             
+            });
         },
 
         setupListeners: function () {
             var self = this;
 
+            bus.$on('authUserSet', function (user) { 
+                self.setResumes(user.resumes);
+            });
+            
             bus.$on('jobsSet', function (items) {
                 self.jobs = [];
                 if (items!==null) {

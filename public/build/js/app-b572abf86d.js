@@ -68091,7 +68091,7 @@ Vue.component('gradlead-resumes-screen', {
             Spark.post(self.baseUrl+'profiles/users/resume', this.forms.addResume)
                 .then(function () {
                     bus.$emit('updateAuthUser');
-                });
+            });
         },
         
         updateDefault: function (resume) {
@@ -68748,6 +68748,7 @@ Vue.component('gradlead-search-screen', {
 
     mounted: function () {
         this.setupListeners();
+        this.setResumes(this.authUser.resumes);
     },
 
     data: function () {
@@ -68763,7 +68764,8 @@ Vue.component('gradlead-search-screen', {
             jobsFeatured: [],
             jobsSchool: [],
             jobsOther: [],
-
+            currentJob: {title:'',id:0},
+            
             srText: '<strong>RESNUM</strong> Results found for: <strong>KEYWORD</strong>',
             degrees: [],
             industries: [],
@@ -68771,13 +68773,23 @@ Vue.component('gradlead-search-screen', {
             languages: [],
             majors: [],
             skills: [],
+            
             questionnaires: [],
+            resumes: [],
+            
+             forms: {
+                applyForm: new SparkForm ({
+                    user_id: '',
+					job_id: '',
+           			resume_id: '',
+		           	screening: '',
+                }),
+            }
         };
     },
 
     watch: {
         'jobs': function(v) {
-           console.log("Jobs changed");
           this.$refs.resultsText.innerHTML = this.getResultsText();
         },
         'q': function(v) {
@@ -68798,6 +68810,8 @@ Vue.component('gradlead-search-screen', {
         allCount: function () { return this.jobsAll.length; },
         schoolCount: function () { return this.jobsSchool.length; },
         otherCount: function () { return this.jobsOther.length; },
+        hasNotApplied: function() { return ! this.hasApplied(this.currentJob) },
+        hasResumes: function() { return this.resumes.length > 0; }
     },
 
     methods: {
@@ -68819,7 +68833,45 @@ Vue.component('gradlead-search-screen', {
 
             this.$refs.resultsText.innerHTML = this.getResultsText();
         },
+        
+        setResumes: function(resumes) {
+            var self = this;
+            resumes = (resumes==null) ? [] : resumes;
+            $.each(resumes, function(i,r) {
+                self.resumes.push({text:r.name, value:r.id});       
+            });    
+        },
+        
+        hasApplied: function(job) {
+            var self = this;
+            var applied = false;
+            $.each(this.authUser.applications, function(i,a){
+                if (a.job_id==job.id) { applied = true; } 
+            });
+            return applied;
+        },
+        
+        appStatus: function(jobId) {
+            var self = this;
+            var status = "Unknown";
+            $.each(this.authUser.applications, function(i,a){
+                if (a.job_id==jobId) { status = a.status; } 
+            });
+            return status;
+        },
+        
+        apply: function(job) {
+                this.currentJob = job;
+                this.forms.applyForm.user_id = this.authUser.id;
+                this.forms.applyForm.job_id = job.id;
+                this.forms.applyForm.resume_id = '';
+                this.forms.applyForm.screening = '';
+                $('#modal-apply').modal('show');
+        },
 
+        //TODO: Bookmark
+        bookmark: function(url) { },
+        
         processSearchResults: function(data) {
                var st = self.q + ((self.l=='') ?'' : ' in '+self.l);
                 this.jobs = data.all;
@@ -68832,19 +68884,33 @@ Vue.component('gradlead-search-screen', {
         },
 
         // Ajax calls functionality
+        submitApp: function() {
+            var self = this;
+            this.$http.post(self.baseUrl+'jobs/apply', this.forms.applyForm).then(function (resp) {
+                $('#modal-apply').modal('hide');
+                bus.$emit('updateAuthUser');
+            }, function(resp) {
+                
+            });
+        },
+        
         search: function () {
             var self = this;
             var uri = self.baseUrl+'search/jobs/?q='+this.q+'&l='+this.l;
             this.$http.get(uri).then(function (resp) {
                    self.processSearchResults(resp.data.data);
             }, function(resp) {
-                    //NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
-                });
+             
+            });
         },
 
         setupListeners: function () {
             var self = this;
 
+            bus.$on('authUserSet', function (user) { 
+                self.setResumes(user.resumes);
+            });
+            
             bus.$on('jobsSet', function (items) {
                 self.jobs = [];
                 if (items!==null) {
@@ -69930,25 +69996,27 @@ Vue.component('gl-location', {
         boot: function boot() {
             var self = this;
             this.ref = document.getElementById(this.id);
-            this.autocomplete = new google.maps.places.Autocomplete(this.ref, { types: ['geocode'] });
-            this.autocomplete.addListener('place_changed', function () {
-                var data = {};
-                var place = self.autocomplete.getPlace();
-                var googleInputs = window.GOOGLE_AUTOCOMPLETE.inputs;
-                if (typeof place != 'undefined') {
-                    if (place.address_components !== undefined) {
-                        for (var i = 0; i < place.address_components.length; i++) {
-                            var input = place.address_components[i].types[0];
-                            if (googleInputs[input]) {
-                                data[input] = place.address_components[i][googleInputs[input]];
+            if (typeof google != 'undefined') {
+                this.autocomplete = new google.maps.places.Autocomplete(this.ref, { types: ['geocode'] });
+                this.autocomplete.addListener('place_changed', function () {
+                    var data = {};
+                    var place = self.autocomplete.getPlace();
+                    var googleInputs = window.GOOGLE_AUTOCOMPLETE.inputs;
+                    if (typeof place != 'undefined') {
+                        if (place.address_components !== undefined) {
+                            for (var i = 0; i < place.address_components.length; i++) {
+                                var input = place.address_components[i].types[0];
+                                if (googleInputs[input]) {
+                                    data[input] = place.address_components[i][googleInputs[input]];
+                                }
                             }
+                            self.place = JSON.parse(JSON.stringify(data));
                         }
-                        self.place = JSON.parse(JSON.stringify(data));
+                    } else {
+                        self.sent = true;
                     }
-                } else {
-                    self.sent = true;
-                }
-            });
+                });
+            }
             //console.log("Location: "+this.input);
             if (this.input != '') {
                 this.ref.value = this.input;
@@ -70798,6 +70866,7 @@ require('./errors');
 require('./components');
 require('./features');
 require('./authenticate');
+require('./questionnaire');
 require('./profile-summary');
 require('./profile-education');
 require('./profile-work');
@@ -70805,7 +70874,7 @@ require('./profile-skills');
 require('./profile-languages');
 require('./profile-preferences');
 
-},{"./authenticate":102,"./components":104,"./errors":105,"./features":106,"./profile-education":107,"./profile-languages":108,"./profile-preferences":109,"./profile-skills":110,"./profile-summary":111,"./profile-work":112}],104:[function(require,module,exports){
+},{"./authenticate":102,"./components":104,"./errors":105,"./features":106,"./profile-education":107,"./profile-languages":108,"./profile-preferences":109,"./profile-skills":110,"./profile-summary":111,"./profile-work":112,"./questionnaire":113}],104:[function(require,module,exports){
 'use strict';
 
 Vue.component('gradlead-sparkline-bar', {
@@ -71231,7 +71300,6 @@ Vue.component('spark-profile-education', {
     methods: {
         setList: function setList(l) {
             this.list = l;
-            console.log("Updating user list");
         },
 
         getMonthName: function getMonthName(m) {
@@ -72418,6 +72486,113 @@ Vue.component('spark-profile-work', {
 
 });
 
-},{"moment":64}]},{},[77]);
+},{"moment":64}],113:[function(require,module,exports){
+'use strict';
+
+Vue.component('gl-questionnaire', {
+    props: ['authUser', 'qid', 'input'],
+
+    mounted: function mounted() {
+        console.log("Questionnaire id: " + this.qid);
+        if (this.qid !== null && this.qid > 0) {
+            this.boot();
+        }
+    },
+
+    watch: {
+        'qid': function qid(v) {
+            if (v !== null && v > 0) {
+                this.boot();
+            }
+        }
+    },
+
+    events: {},
+
+    notifications: {
+        showError: {
+            title: 'Questionnaire Error',
+            message: 'Failed to reach server',
+            type: 'error'
+        },
+        showSuccess: {
+            title: 'Questionnaire success',
+            message: 'Successfully modified education',
+            type: 'success'
+        }
+    },
+
+    data: function data() {
+        return {
+            baseUrl: '/',
+            template: null,
+            questionnaire: null,
+            doneBuilding: false,
+            htmlcode: ''
+        };
+    },
+
+    render: function render(createElement) {
+        if (!this.template) {
+            return createElement('div', 'Loading...');
+        } else {
+            return this.template();
+        }
+    },
+    staticRenderFns: function staticRenderFns() {
+        if (this.template) {}
+    },
+
+    methods: {
+        boot: function boot() {
+            console.log("Booting...");
+            this.getQuestionnaire();
+            this.checkBuilding();
+        },
+
+        checkBuilding: function checkBuilding() {
+            var self = this;
+            setTimeout(function () {
+                if (!self.doneBuilding) {
+                    self.checkBuilding();
+                } else {
+                    console.log(self.htmlcode);
+                    var x = createElement('div', 'hello', [createElement('b', 'David')]);
+                    self.template = Vue.compile(x).render;
+                }
+            }, 2000);
+        },
+
+        buildForm: function buildForm() {
+            var self = this;
+            if (self.questionnaire !== null && self.questionnaire.numquestions > 0) {
+                this.htmlcode += "'<fieldset>";
+                this.htmlcode += "<label>" + self.questionnaire.name + "</label>";
+                this.htmlcode += "</fieldset>'";
+            } else {
+                this.htmlcode += "<div>No Questionnaire. Please proceed</div>";
+            }
+            this.doneBuilding = true;
+        },
+
+        removeFromList: function removeFromList(list, item) {
+            return _.reject(list, function (i) {
+                return i.id === item.id;
+            });
+        },
+
+        getQuestionnaire: function getQuestionnaire() {
+            var self = this;
+            this.$http.get(self.baseUrl + 'questionnaires/' + self.qid).then(function (resp) {
+                self.questionnaire = resp.data.data;
+                self.buildForm();
+            }, function (resp) {
+                self.showError({ 'message': resp.error[0] });
+            });
+        }
+    }
+});
+
+},{}]},{},[77]);
 
 //# sourceMappingURL=app.js.map

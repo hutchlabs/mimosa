@@ -81,7 +81,7 @@ Vue.component('gradlead-resumes-screen', {
             Spark.post(self.baseUrl+'profiles/users/resume', this.forms.addResume)
                 .then(function () {
                     bus.$emit('updateAuthUser');
-                });
+            });
         },
         
         updateDefault: function (resume) {

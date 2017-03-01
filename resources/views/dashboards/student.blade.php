@@ -113,6 +113,7 @@
         </div>
 
         <div role="tabpanel" class="tab-pane" id="myprofile">
+            @include('dashboards.profiles.studentprofile')
         </div>
     </div>
 </div>
