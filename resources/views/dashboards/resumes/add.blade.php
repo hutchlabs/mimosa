@@ -13,22 +13,26 @@
                 <!-- Add Form -->
                 <form class="form-horizontal" role="form">
                     <div class="row">
-                        <div class="col-md-12">
-                            <spark-text :display="'Name*'" :form="forms.addResume" :name="'name'" :input="forms.addResume.name">
-                            </spark-text>
+                        <div class="col-md-12 offset-2">
+                            <gl-text :display="'Name*'" :form="forms.addResume" :name="'name'" :input="forms.addResume.name">
+                            </gl-text>
 
-                            <spark-text :display="'Description*'" :form="forms.addResume" :name="'description'" :input="forms.addResume.description">
-                            </spark-text>
+                            <gl-text :display="'Description*'" :form="forms.addResume" :name="'description'" :input="forms.addResume.description">
+                            </gl-text>
 
-                            <spark-checkbox :display="'Default?'" :form="forms.addResume" :name="'default'" :input="forms.addResume.default">
-                            </spark-checkbox>
-                            
-                            <spark-file :display="'Resume'" :form="forms.addResume" v-on:updated="setFileName"
+                           <div class="row">
+                               <div class="col-sm-6" style="margin-left: 20px">
+                                <gl-checkbox :display="'Default?'" :form="forms.addResume" :name="'default'" :input="forms.addResume.default">
+                                </gl-checkbox>
+                                </div>
+                            </div>
+                             
+                            <gl-file :display="'Resume'" :form="forms.addResume" v-on:updated="setFileName"
                                         :name="'pdf_file'" 
                                         :warning="'File must be less than 20MB. Must be an pdf file'"     
                                         :filename.sync="forms.addResume.file_name" 
                                         :input.sync="forms.addResume.pdf_file">
-                            </spark-file>
+                            </gl-file>
 
                         </div>
                     </div>

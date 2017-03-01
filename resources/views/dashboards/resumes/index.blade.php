@@ -47,8 +47,16 @@
                                 <input v-model="defaults[u.id]" type="checkbox" @click="updateDefault(u)"><i></i>
                             </label>
                         </td>
-                        <td class="spark-table-pad"> <a :href="getFileUrl(u.id)">Download</a></td>
-
+                        <td class="spark-table-pad">
+                           <span v-if="u!=null"> 
+                                <a :href="getFileUrl(u.id)">
+                                    <i class="fa fa-download icon"></i> Download
+                                </a>
+                            </span>
+                            <span v-else>
+                                No file attached.
+                            </span>
+                        </td>
                         <td class="spark-table-pad">
                             <button class="btn btn-danger btn-addon btn-sm btn-cirlce" @click.prevent="removeResume(u)">
                                 <span>

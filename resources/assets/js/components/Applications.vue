@@ -221,3 +221,70 @@ Vue.component('gradlead-applications-screen', {
         },
     },
 });
+
+
+Vue.component('gradlead-applications-user-screen', {
+    
+    props: ['authUser', 'usertype', 'permissions'],
+
+    mounted: function () {
+        this.setupListeners();
+        this.apps = this.authUser.applications;
+    },
+
+    data: function () {
+        return {
+            baseUrl: '/',
+            modname: 'Applications - User',
+            apps: [],
+        };
+    },
+
+    watch: {},
+
+    events: {},
+
+    computed: {
+        everythingLoaded: function () { return this.authUser != null; },
+    },
+
+    methods: {
+        setList: function(list) {
+            this.apps = list;    
+        },
+        
+        getFileUrl: function(rid) {
+            return '/profiles/pdf/'+rid+'?'+new Date(); 
+        },
+
+        
+        // Remove functionality
+        removeApp: function (app) {
+            var self = this;
+            this.$http.delete(self.baseUrl + 'jobs/application/' + app.id)
+                .then(function () {
+                    self.apps = self.removeFromList(self.apps, app);
+                    bus.$emit('updateAuthUser');
+                }, function (resp) {});
+        },
+
+
+        // Ajax calls
+        setupListeners: function () {
+            var self = this;
+            bus.$on('authUserSet', function (user) { self.setList(user.applications); });
+            bus.$emit('screenLoaded',self.modname);
+        },
+
+
+        // Helpers
+        removeFromList: function (list, item) {
+            return _.reject(list, function (i) {
+                return i.id === item.id;
+            });
+        },
+
+    },
+
+    filters: {},
+});
