@@ -28,6 +28,7 @@ class CreateJobsTable extends Migration
             $table->longText('positions')->nullable();
             $table->string('country')->nullable();
             $table->string('city')->nullable();
+            $table->string('neighborhood')->nullable();
             $table->boolean('remote')->default(0);
             $table->string('send_via_email')->nullable();
             $table->string('send_via_url')->nullable();

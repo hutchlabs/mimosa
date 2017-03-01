@@ -7,9 +7,9 @@ Vue.component('gradlead-plans-screen', {
 
     mounted: function() {
         this.contracts = this.authUser.organization.contracts;
-            this.contracts.sort(function(a,b) { 
-                    var x = (a.expired) ? 1 : 0; 
-                    var y = (b.expired) ? 1 : 0; 
+            this.contracts.sort(function(a,b) {
+                    var x = (a.expired) ? 1 : 0;
+                    var y = (b.expired) ? 1 : 0;
                     return (x < y) ? -1 : ((x > y) ? 1 : 0);
             });
         this.setupListeners();
@@ -19,7 +19,7 @@ Vue.component('gradlead-plans-screen', {
         return {
             baseUrl: '/',
             modname: 'Plans',
-            
+
             plans: [],
             contracts: [],
 
@@ -87,7 +87,7 @@ Vue.component('gradlead-plans-screen', {
             }
         };
     },
-   
+
     watch: {
         'contracts': function() {
         }
@@ -128,7 +128,7 @@ Vue.component('gradlead-plans-screen', {
             this.forms.updatePlan.feature_company = plan.feature_company;
             this.forms.updatePlan.duration = plan.duration;
             this.forms.updatePlan.start_date = plan.start_date;
-            this.forms.updatePlan.end_date = plan.end_date; 
+            this.forms.updatePlan.end_date = plan.end_date;
             this.forms.updatePlan.errors.forget();
             $('#modal-edit-plan').modal('show');
         },
@@ -150,7 +150,7 @@ Vue.component('gradlead-plans-screen', {
                     bus.$emit('updatePlans');
             }, function(resp) {
                     self.forms.addPlan.busy = false;
-                    NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
+                    //NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
                 });
         },
         updatePlan: function () {
@@ -172,7 +172,7 @@ Vue.component('gradlead-plans-screen', {
                     bus.$emit('updatePlans');
                 }, function(resp) {
                     self.removingPlanId = 0;
-                    NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
+                    //NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
                 });
         },
 
@@ -187,7 +187,7 @@ Vue.component('gradlead-plans-screen', {
                     bus.$emit('updateOrganizations');
             }, function(resp) {
                     self.forms.addContract.busy = false;
-                    NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
+                    //NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
                 });
         },
 
@@ -200,7 +200,7 @@ Vue.component('gradlead-plans-screen', {
                     bus.$emit('updateAuthUser');
                     bus.$emit('updateOrganizations');
                 }, function(resp) {
-                    NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
+                    //NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
                 });
         },
 
@@ -227,16 +227,16 @@ Vue.component('gradlead-plans-screen', {
 
         setupListeners: function () {
             var self = this;
-            bus.$on('plansSet', function (items) { 
-                self.plans = items; 
+            bus.$on('plansSet', function (items) {
+                self.plans = items;
                 self.setAvailablePlans();
             });
 
-            bus.$on('authUserSet', function (user) { 
+            bus.$on('authUserSet', function (user) {
                 self.contracts = user.organization.contracts;
-                self.contracts.sort(function(a,b) { 
-                    var x = (a.expired) ? 1 : 0; 
-                    var y = (b.expired) ? 1 : 0; 
+                self.contracts.sort(function(a,b) {
+                    var x = (a.expired) ? 1 : 0;
+                    var y = (b.expired) ? 1 : 0;
                     return (x < y) ? -1 : ((x > y) ? 1 : 0);
                 });
                 self.setAvailablePlans();

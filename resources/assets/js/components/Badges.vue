@@ -8,13 +8,13 @@ Vue.component('gradlead-badges-screen', {
         return {
             baseUrl: '/',
             modname: 'Badges',
-            
+
             badges: [],
 			files: [],
 
             editingBadge: {'name':'none'},
             removingBadgeId: null,
-            
+
             nameError: false,
             descError: false,
 
@@ -43,7 +43,7 @@ Vue.component('gradlead-badges-screen', {
             this.descError = false;
             $('#modal-add-badge').modal('show');
         },
-        
+
         editBadge: function (badge) {
             this.editingBadge = badge;
             this.nameError = false;
@@ -70,24 +70,24 @@ Vue.component('gradlead-badges-screen', {
                 return this.baseUrl+'img/a0.jpg';
             }
         },
-           
+
         addNewBadge: function (e) {
             var self = this;
             if($('#name').val()=='') { this.nameError = true; }
             if ($('#description').val()=='') { this.descError = true; }
-            
+
             if ( $('#name').val() != "" && $('#description').val()!='') {
                     $('#modal-add-badge').modal('hide');
             } else {
                 e.preventDefault();
             }
-        },   
-            
+        },
+
         updateBadge: function (e) {
             var self = this;
             if($('#uname').val()=='') { this.nameError = true; }
             if ($('#udescription').val()=='') { this.descError = true; }
-            
+
             if ( $('#uname').val() != "" && $('#udescription').val()!='') {
                     $('#modal-edit-badge').modal('hide');
             } else {
@@ -106,21 +106,21 @@ Vue.component('gradlead-badges-screen', {
                     bus.$emit('updateBadges');
                 }, function(resp) {
                     self.removingBadgeId = 0;
-                    NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
+                    //NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
                 });
         },
-        
+
         setupListeners: function () {
             var self = this;
             bus.$on('badgesSet', function (items) {
                 //console.log("Got badges in "+ self.modname);
                 self.badges = items;
             });
-            
+
             bus.$emit('screenLoaded',self.modname);
         },
 
-  
+
     },
 
     filters: {

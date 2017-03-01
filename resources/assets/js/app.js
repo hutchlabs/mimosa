@@ -12,6 +12,8 @@ require('./bootstrap');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+import miniToastr from 'mini-toastr';
+
 require('./components/Welcome.vue');
 require('./components/Home.vue');
 require('./components/Stats.vue');
@@ -32,7 +34,6 @@ require('./components/Jobs.vue');
 require('./components/Applications.vue');
 require('./components/Seekers.vue');
 
-window.bus = new Vue({});
 
 const app = new Vue({
     el: '#app',
@@ -41,6 +42,9 @@ const app = new Vue({
         'notifications': Notification,
     },
 
+    mounted: function() {
+        miniToastr.init();
+    },
+
     data: { }
 });
-

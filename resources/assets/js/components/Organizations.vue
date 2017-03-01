@@ -1,5 +1,5 @@
 Vue.component('gradlead-orgs-screen', {
-    
+
     props: ['authUser', 'usertype', 'permissions'],
 
     // TODO: handle approval
@@ -7,12 +7,12 @@ Vue.component('gradlead-orgs-screen', {
     mounted: function() {
         this.setupListeners();
     },
-    
+
     data: function() {
         return {
             baseUrl: '/',
             modname: 'Organizations',
-            
+
             organizations: [],
             employers: [],
             schools: [],
@@ -35,7 +35,7 @@ Vue.component('gradlead-orgs-screen', {
             }
         };
     },
-    
+
     events: {
     },
 
@@ -79,7 +79,7 @@ Vue.component('gradlead-orgs-screen', {
                     bus.$emit('updateOrganizations');
                 }, function(resp) {
                     self.forms.addOrganization.busy = false;
-                    NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
+                    //NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
                 });
         },
         updateOrganization: function (type) {
@@ -101,7 +101,7 @@ Vue.component('gradlead-orgs-screen', {
                     bus.$emit('updateOrganizations');
                 }, function(resp) {
                     self.removingOrganizationId = 0;
-                    NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
+                    //NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
                 });
         },
 
@@ -109,7 +109,7 @@ Vue.component('gradlead-orgs-screen', {
             return !!~$.inArray(item, array);
         },
 
-        
+
         setupListeners: function () {
             var self = this;
             bus.$on('organizationsSet', function (orgs) {
@@ -120,8 +120,8 @@ Vue.component('gradlead-orgs-screen', {
                 self.employers = [];
                 $.each(orgs[1], function (idx, emp) {
                        if (self.authUser.organization.id==1) { self.employers.push(emp) }
-                       else if (self.isInArray(self.authUser.organization_id, emp.schools)) { 
-                           self.employers.push(emp); 
+                       else if (self.isInArray(self.authUser.organization_id, emp.schools)) {
+                           self.employers.push(emp);
                        }
                 });
             });

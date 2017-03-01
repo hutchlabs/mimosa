@@ -13,6 +13,7 @@ use App\Gradlead\Major;
 use App\Gradlead\Permission;
 use App\Gradlead\Skill;
 use App\Gradlead\University;
+use App\Gradlead\Country;
 
 class SystemController extends Controller
 {
@@ -27,7 +28,7 @@ class SystemController extends Controller
         $items = Degree::all();
         return $this->json_response($items);
     }
-    
+
     public function storeDegree(Request $request)
     {
         $user = $request->user();
@@ -38,14 +39,14 @@ class SystemController extends Controller
         $i->save();
         return $this->json_response($i);
     }
-    
+
     public function updateDegree(Request $request, $itemId)
     {
         $user = $request->user();
         $this->validate($request, ['name' => 'required|max:255']);
         $i = Degree::find($itemId);
         if (is_null($i)) {
-            return $this->json_response(['Cannot find item to update'], true);    
+            return $this->json_response(['Cannot find item to update'], true);
         }
         $i->name = $request->name;
         $i->modified_by = $user->id;
@@ -63,7 +64,7 @@ class SystemController extends Controller
             return $this->ok();
         }
     }
-    
+
 
     // Industries
     public function industries()
@@ -71,7 +72,7 @@ class SystemController extends Controller
         $items = Industry::all();
         return $this->json_response($items);
     }
-    
+
     public function storeIndustry(Request $request)
     {
         $user = $request->user();
@@ -82,14 +83,14 @@ class SystemController extends Controller
         $i->save();
         return $this->json_response($i);
     }
-    
+
     public function updateIndustry(Request $request, $itemId)
     {
         $user = $request->user();
         $this->validate($request, ['name' => 'required|max:255']);
         $i = Industry::find($itemId);
         if (is_null($i)) {
-            return $this->json_response(['Cannot find item to update'], true);    
+            return $this->json_response(['Cannot find item to update'], true);
         }
         $i->name = $request->name;
         $i->modified_by = $user->id;
@@ -107,15 +108,15 @@ class SystemController extends Controller
             return $this->ok();
         }
     }
-    
-    
+
+
     // Job Types
     public function jobTypes()
     {
         $items = JobType::all();
         return $this->json_response($items);
     }
-    
+
     public function storeJobType(Request $request)
     {
         $user = $request->user();
@@ -126,14 +127,14 @@ class SystemController extends Controller
         $i->save();
         return $this->json_response($i);
     }
-    
+
     public function updateJobType(Request $request, $itemId)
     {
         $user = $request->user();
         $this->validate($request, ['name' => 'required|max:255']);
         $i = JobType::find($itemId);
         if (is_null($i)) {
-            return $this->json_response(['Cannot find item to update'], true);    
+            return $this->json_response(['Cannot find item to update'], true);
         }
         $i->name = $request->name;
         $i->modified_by = $user->id;
@@ -151,14 +152,14 @@ class SystemController extends Controller
             return $this->ok();
         }
     }
-    
+
     // Languages
     public function languages()
     {
         $items = Language::all();
         return $this->json_response($items);
     }
-    
+
     public function storeLanguage(Request $request)
     {
         $user = $request->user();
@@ -169,14 +170,14 @@ class SystemController extends Controller
         $i->save();
         return $this->json_response($i);
     }
-    
+
     public function updateLanguage(Request $request, $itemId)
     {
         $user = $request->user();
         $this->validate($request, ['name' => 'required|max:255']);
         $i = Language::find($itemId);
         if (is_null($i)) {
-            return $this->json_response(['Cannot find item to update'], true);    
+            return $this->json_response(['Cannot find item to update'], true);
         }
         $i->name = $request->name;
         $i->modified_by = $user->id;
@@ -194,14 +195,14 @@ class SystemController extends Controller
             return $this->ok();
         }
     }
-    
+
     // Majors
     public function majors()
     {
         $items = Major::all();
         return $this->json_response($items);
     }
-    
+
     public function storeMajor(Request $request)
     {
         $user = $request->user();
@@ -213,14 +214,14 @@ class SystemController extends Controller
         $i->save();
         return $this->json_response($i);
     }
-    
+
     public function updateMajor(Request $request, $itemId)
     {
         $user = $request->user();
         $this->validate($request, [ 'name' => 'required|max:255','category'=>'required|max:255' ]);
         $i = Major::find($itemId);
         if (is_null($i)) {
-            return $this->json_response(['Cannot find item to update'], true);    
+            return $this->json_response(['Cannot find item to update'], true);
         }
         $i->name = $request->name;
         $i->category = $request->category;
@@ -239,25 +240,25 @@ class SystemController extends Controller
             return $this->ok();
         }
     }
-    
+
     // Permissions
     public function permissions()
     {
         $items = Permission::all();
         return $this->json_response($items);
     }
-    
+
     public function storePermission(Request $request)
     {
         $user = $request->user();
 
-        $this->validate($request, [ 
-            'organization_id' => 'required|exists:organizations,id', 
-            'preselect' => 'required', 
-            'screening' => 'required', 
-            'tracking' => 'required', 
-            'badges' => 'required', 
-            'events' => 'required', 
+        $this->validate($request, [
+            'organization_id' => 'required|exists:organizations,id',
+            'preselect' => 'required',
+            'screening' => 'required',
+            'tracking' => 'required',
+            'badges' => 'required',
+            'events' => 'required',
         ]);
 
         $i = new Permission();
@@ -272,24 +273,24 @@ class SystemController extends Controller
 
         return $this->json_response($i);
     }
-    
+
     public function updatePermission(Request $request, $itemId)
     {
         $user = $request->user();
 
-        $this->validate($request, [ 
-            'organization_id' => 'required|exists:organizations,id', 
-            'preselect' => 'required', 
-            'screening' => 'required', 
-            'tracking' => 'required', 
-            'badges' => 'required', 
-            'events' => 'required', 
+        $this->validate($request, [
+            'organization_id' => 'required|exists:organizations,id',
+            'preselect' => 'required',
+            'screening' => 'required',
+            'tracking' => 'required',
+            'badges' => 'required',
+            'events' => 'required',
         ]);
 
         $i = Permission::find($itemId);
 
         if (is_null($i)) {
-            return $this->json_response(['Cannot find item to update'], true);    
+            return $this->json_response(['Cannot find item to update'], true);
         }
 
         $i->organization_id = $request->organization_id;
@@ -304,14 +305,14 @@ class SystemController extends Controller
     }
 
 
-    
+
     // Skills
     public function skills()
     {
         $items = Skill::all();
         return $this->json_response($items);
     }
-    
+
     public function storeSkill(Request $request)
     {
         $user = $request->user();
@@ -322,14 +323,14 @@ class SystemController extends Controller
         $i->save();
         return $this->json_response($i);
     }
-    
+
     public function updateSkill(Request $request, $itemId)
     {
         $user = $request->user();
         $this->validate($request, ['name' => 'required|max:255']);
         $i = Skill::find($itemId);
         if (is_null($i)) {
-            return $this->json_response(['Cannot find item to update'], true);    
+            return $this->json_response(['Cannot find item to update'], true);
         }
         $i->name = $request->name;
         $i->modified_by = $user->id;
@@ -347,14 +348,14 @@ class SystemController extends Controller
             return $this->ok();
         }
     }
-    
+
     // University
     public function universities()
     {
         $items = University::where('country','GH')->get();
         return $this->json_response($items);
     }
-    
+
     public function storeUniversity(Request $request)
     {
         $user = $request->user();
@@ -367,14 +368,14 @@ class SystemController extends Controller
         $i->save();
         return $this->json_response($i);
     }
-    
+
     public function updateUniversity(Request $request, $itemId)
     {
         $user = $request->user();
         $this->validate($request, [ 'name' => 'required|max:255','country'=>'required|max:255' ]);
         $i = University::find($itemId);
         if (is_null($i)) {
-            return $this->json_response(['Cannot find item to update'], true);    
+            return $this->json_response(['Cannot find item to update'], true);
         }
         $i->name = $request->name;
         $i->country = $request->country;
@@ -393,5 +394,48 @@ class SystemController extends Controller
             $i->delete();
             return $this->ok();
         }
-    } 
+    }
+
+    // Country
+    public function countries()
+    {
+        $items = Country::all();
+        return $this->json_response($items);
+    }
+
+    public function storeCountry(Request $request)
+    {
+        $user = $request->user();
+        $this->validate($request, [ 'name' => 'required|max:255']);
+        $i = new Country();
+        $i->name = $request->name;
+        $i->modified_by = $user->id;
+        $i->save();
+        return $this->json_response($i);
+    }
+
+    public function updateCountry(Request $request, $itemId)
+    {
+        $user = $request->user();
+        $this->validate($request, [ 'name' => 'required|max:255']);
+        $i = Country::find($itemId);
+        if (is_null($i)) {
+            return $this->json_response(['Cannot find item to update'], true);
+        }
+        $i->name = $request->name;
+        $i->modified_by = $user->id;
+        $i->save();
+        return $this->json_response($i);
+    }
+
+    public function destroyCountry(Request $request, $itemId)
+    {
+        $i = Country::find($itemId);
+        if (is_null($i)) {
+            $this->json_report(['Cannot find item'], true);
+        } else {
+            $i->delete();
+            return $this->ok();
+        }
+    }
 }

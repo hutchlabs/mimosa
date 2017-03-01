@@ -18,6 +18,9 @@ class CreateProfilesUsersTable extends Migration
             $table->integer('user_id');
             $table->string('uuid');
             $table->string('summary')->nullable();
+            $table->string('country')->nullable();
+            $table->string('city')->nullable();
+            $table->string('neighborhood')->nullable();
             $table->string('file_name')->nullable();
             $table->string('file_path')->nullable();
             $table->string('file_url')->nullable();

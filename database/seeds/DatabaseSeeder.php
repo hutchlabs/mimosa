@@ -25,5 +25,6 @@ class DatabaseSeeder extends Seeder
         $this->call(SystemPluginsTableSeeder::class);
         $this->call(SystemSkillsTableSeeder::class);
         $this->call(SystemUniversityTableSeeder::class);
+        $this->call(CountriesTableSeeder::class);
     }
 }

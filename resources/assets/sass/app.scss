@@ -8,6 +8,22 @@
 // Bootstrap
 //@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
 
+@import "quill";
+
+.ql-save:after {
+  font-weight:bold;
+  font-size: 14px;
+  padding: 5px;
+  border: 1px solid #46b8da;
+  content: "Save";
+  color: #fff;
+  background-color: #5bc0de;
+  border-radius: 5px;
+}
+
+.pac-container {  //this is a fix for google autocomplete not showing up
+   z-index: 10000 !important;
+}
 
 .modal-header {
     color:#fff;

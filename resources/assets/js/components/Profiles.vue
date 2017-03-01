@@ -1,5 +1,5 @@
 Vue.component('gradlead-profiles-org-screen', {
-    
+
     props: ['authUser', 'usertype', 'permissions'],
 
     mounted: function () {
@@ -51,14 +51,14 @@ Vue.component('gradlead-profiles-org-screen', {
         },
 
 		getImageUrl: function() {
-            if (this.profile != null) { 
-                var p = (this.isSchool) ? 'crest' : 'logo';    
-                return '/profiles/'+p+'/'+this.profile.id+'?'+new Date(); 
+            if (this.profile != null) {
+                var p = (this.isSchool) ? 'crest' : 'logo';
+                return '/profiles/'+p+'/'+this.profile.id+'?'+new Date();
             }
         },
 
         setProfile: function(p) {
-            this.profile = p; 
+            this.profile = p;
             if (this.profile != null) {
                 this.avatar = this.getImageUrl();
                 this.forms.updateProfile.id = this.profile.id;
@@ -73,7 +73,7 @@ Vue.component('gradlead-profiles-org-screen', {
             bus.$emit('screenLoaded',self.modname);
         },
 
-        updateSchoolProfile: function() { 
+        updateSchoolProfile: function() {
             var self = this;
             Spark.put(self.baseUrl+'profiles/schools/' + this.profile.id, this.forms.updateProfile)
                 .then(function () {
@@ -82,7 +82,7 @@ Vue.component('gradlead-profiles-org-screen', {
                 });
         },
 
-        updateCompanyProfile: function() { 
+        updateCompanyProfile: function() {
             var self = this;
             Spark.put(self.baseUrl+'profiles/employees/' + this.profile.id, this.forms.updateProfile)
                 .then(function () {
@@ -96,7 +96,7 @@ Vue.component('gradlead-profiles-org-screen', {
 });
 
 Vue.component('gradlead-profiles-user-screen', {
-    
+
     props: ['authUser', 'usertype', 'permissions'],
 
     mounted: function () {
@@ -111,12 +111,16 @@ Vue.component('gradlead-profiles-user-screen', {
 
 			profile: {},
             avatar: 'img/a0.jpg',
-
+            location: '',
+            
  			forms: {
                 updateProfile: new SparkForm({
                     id: '',
                     user_id: '',
                     summary: '',
+                    country: '',
+                    city: '',
+                    neighborhood:'',
                     uuid: '',
                     icon_file: '',
                     file_name: '',
@@ -125,14 +129,19 @@ Vue.component('gradlead-profiles-user-screen', {
         };
     },
 
-    watch: { 
+    watch: {
     },
 
-    events: {},
+    events: {
+        'showNotification': function(notification) {
+            console.log("Sending up");
+            bus.$emit('showNotification',notification);
+        },
+    },
 
     computed: {
         everythingLoaded: function () { return this.authUser != null },
-        isStudent: function() { return (this.authUser.type=='student' || 
+        isStudent: function() { return (this.authUser.type=='student' ||
                                         this.authUser.type=='graduate'); },
     },
 
@@ -142,19 +151,27 @@ Vue.component('gradlead-profiles-user-screen', {
         },
 
 		getImageUrl: function() {
-            if (this.profile != null) { 
-                return '/profiles/avatar/'+this.profile.id+'?'+new Date(); 
+            if (this.profile != null) {
+                return '/profiles/avatar/'+this.profile.id+'?'+new Date();
             }
         },
-
+        
+        getLocation: function(e) {
+            return [e.neighborhood, e.city, e.country].join(', ');
+        },
+        
         setProfile: function(p) {
-            this.profile = p; 
+            this.profile = p;
             if (this.profile != null) {
+                this.location = this.getLocation(this.profile);
                 this.avatar = this.getImageUrl();
                 this.forms.updateProfile.id = this.profile.id;
                 this.forms.updateProfile.user_id = this.profile.user_id;
                 this.forms.updateProfile.uuid = this.profile.uuid;
                 this.forms.updateProfile.summary = this.profile.summary;
+                this.forms.updateProfile.country = this.profile.country;
+                this.forms.updateProfile.city = this.profile.city;
+                this.forms.updateProfile.neighborhood  = this.profile.neighborhood;
             }
         },
 
@@ -164,7 +181,7 @@ Vue.component('gradlead-profiles-user-screen', {
             bus.$emit('screenLoaded',self.modname);
         },
 
-        updateUserProfile: function() { 
+        updateUserProfile: function() {
             var self = this;
             Spark.put(self.baseUrl+'profiles/users/' + this.profile.id, this.forms.updateProfile)
                 .then(function () { bus.$emit('updateAuthUser'); });

@@ -108,6 +108,7 @@
 <script src="{{ asset('dist/assets/js/jquery.countdown.min.js') }}"></script>
 <script src="{{ asset('js/app.js') }}"></script>
 <script src="{{ asset('js/vendors/bootstrap-editable.js') }}"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7T2ffkCZ8eou8ylORC8C5SkMmWmSxyiM&libraries=places"></script>
 
 
  @yield('script')

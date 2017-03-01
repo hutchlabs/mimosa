@@ -165,11 +165,7 @@ Vue.component('gradlead-seekers-screen', {
                     bus.$emit('updateUsers');
                 }, function (resp) {
                     self.forms.addUser.busy = false;
-                    NotificationStore.addNotification({
-                        text: resp.statusText,
-                        type: "btn-danger",
-                        timeout: 5000,
-                    });
+                    //NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000, });
                 });
         },
         updateUser: function () {
@@ -192,11 +188,7 @@ Vue.component('gradlead-seekers-screen', {
 
                 }, function (resp) {
                     self.removingUserId = 0;
-                    NotificationStore.addNotification({
-                        text: resp.error[0],
-                        type: "btn-danger",
-                        timeout: 5000,
-                    });
+                    //NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000, });
                 });
         },
 
@@ -230,7 +222,7 @@ Vue.component('gradlead-seekers-screen', {
 
             bus.$on('organizationsSet', function (orgs) {
                 self.organizations = [];
-                
+
                 if (self.authUser.organization_id == 1) {
                     self.organizations = orgs[0];
                 } else {
@@ -242,7 +234,7 @@ Vue.component('gradlead-seekers-screen', {
                         }
 
                 }
-                
+
                 self.orgsOptions = [];
                 for (var i = 0; i < self.organizations.length; ++i) {
                     self.orgsOptions.push({

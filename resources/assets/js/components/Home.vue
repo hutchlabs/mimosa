@@ -1,5 +1,9 @@
 Vue.component('gradlead-home-screen', {
 
+	components: {
+    	BounceLoader,
+	},
+
     mounted: function() {
         this.setupListeners();
         this.getAuthUser();
@@ -10,25 +14,37 @@ Vue.component('gradlead-home-screen', {
         return {
             baseUrl: '/',
             modname: 'Home',
-            
+
             authUser: null,
             avatar: 'img/a0.jpg',
 
             usertype: {'isGradlead': false, 'isCompany':false, 'isSchool':false, 'isAdmin':false, 'canEdit': false},
             permissions: {'canDoEvents': false, 'canDoScreening':false, 'canDoPreselect': false, 'canDoTracking':false},
-            
+
             loadedScreens: 0,
             expectedScreens: 21,
+            expectedCalls: 16,
+            completedCalls: 0,
         };
     },
-    
-    events: {},
+
+    events: {
+    },
 
     computed: {
+        everythingLoaded: function() {
+            return ((this.authUser!=null) && (this.completedCalls>=this.expectedCalls));
+        },
+
         userLoaded: function() { return (this.authUser==null) ? false : true; },
     },
 
-    methods: {      
+    methods: {
+        icCounter: function() {
+            this.completedCalls++;
+            bus.$emit('allLoaded');
+        },
+
         doLogout: function () {
             var self = this;
             this.$http.get(self.baseUrl+'flogout')
@@ -39,17 +55,17 @@ Vue.component('gradlead-home-screen', {
         },
 
 		getImageUrl: function() {
-            if (this.authUser.profile != null) { 
-                return '/profiles/avatar/'+this.authUser.profile.id+'?'+new Date(); 
+            if (this.authUser.profile != null) {
+                return '/profiles/avatar/'+this.authUser.profile.id+'?'+new Date();
             }
         },
-        
+
         getAuthUser: function () {
             var self = this;
 
             this.$http.get(self.baseUrl+'fauthuser')
                 .then(function (user) {
-                    self.authUser = user.data; 
+                    self.authUser = user.data;
                     self.avatar = self.getImageUrl();
                     self.usertype.canEdit = (self.authUser.role.name=='Member') ? false : true;
                     self.usertype.isAdmin = (self.authUser.role.name=='Super Administrator' || self.authUser.role.name=='Administrator');
@@ -60,11 +76,11 @@ Vue.component('gradlead-home-screen', {
                     self.permissions.canDoScreening = self.authUser.organization.permissions.screening;
                     self.permissions.canDoPreselect = self.authUser.organization.permissions.preselect;
                     self.permissions.canDoTracking = self.authUser.organization.permissions.tracking;
-                    self.expectedScreens = (self.usertype.isGradlead) ? 21 : ((self.usertype.isCompany) ? 8 : 5); 
-                   bus.$emit('authUserSet', self.authUser);
+                    self.expectedScreens = (self.usertype.isGradlead) ? 21 : ((self.usertype.isCompany) ? 8 : 5);
+                    bus.$emit('authUserSet', self.authUser);
                 });
         },
-    
+
         callOthers: function() {
             this.getUsers();
             this.getRoles();
@@ -82,10 +98,11 @@ Vue.component('gradlead-home-screen', {
             this.getIndustries();
             this.getSkills();
             this.getUniversities();
+            this.getCountries();
 
             this.getBadges();
         },
-        
+
         getOrganizations: function () {
             var self = this;
             this.$http.get(self.baseUrl+'organizations')
@@ -97,80 +114,139 @@ Vue.component('gradlead-home-screen', {
                         if (organizations[i].type=='school') { schools.push(organizations[i]); }
                         if (organizations[i].type=='employer') { employers.push(organizations[i]); }
                    }
+                   self.icCounter();
                    bus.$emit('organizationsSet', [organizations, employers, schools]);
                 });
         },
-        
+
         getPlans: function () {
+            var self = this;
             this.$http.get(this.baseUrl + 'plans')
-                .then(function(resp) { bus.$emit('plansSet', resp.data.data); });
+                .then(function(resp) { self.icCounter(); bus.$emit('plansSet', resp.data.data); });
         },
-        
+
         getContracts: function () {
+            var self = this;
             this.$http.get(this.baseUrl + 'contracts')
-                .then(function (resp) { bus.$emit('contractsSet', resp.data.data); });
+                .then(function (resp) { self.icCounter(); bus.$emit('contractsSet', resp.data.data); });
         },
-        
+
         getJobs: function () {
+            var self = this;
             this.$http.get(this.baseUrl+'jobs')
-                .then(function (resp) { bus.$emit('jobsSet', resp.data.data); });
-		},
-             
-        getJobTypes: function () {
-            this.$http.get(this.baseUrl+'jobtypes').then(function (resp) { bus.$emit('jobTypesSet', resp.data.data); });
-		},
-        
-        getQuestionnaires: function (info) {
-            this.$http.get(this.baseUrl+'questionnaires').then(function (resp) {
-                    bus.$emit('questionnairesSet', [resp.data.data, info[0], info[1]]); });
-		},
-        
-        getMajors: function () {
-            this.$http.get(this.baseUrl+'majors').then(function (resp) { bus.$emit('majorsSet', resp.data.data); });
+                .then(function (resp) { self.icCounter(); bus.$emit('jobsSet', resp.data.data); });
 		},
 
+        getJobTypes: function () {
+            var self = this;
+            this.$http.get(this.baseUrl+'jobtypes').then(function (resp) {
+                self.icCounter();
+                bus.$emit('jobTypesSet', resp.data.data); });
+		},
+
+        getQuestionnaires: function (info) {
+            var self = this;
+            this.$http.get(this.baseUrl+'questionnaires').then(function (resp) {
+                self.icCounter();
+                bus.$emit('questionnairesSet', [resp.data.data, info[0], info[1]]); });
+		},
+
+        getMajors: function () {
+            var self = this;
+            this.$http.get(this.baseUrl+'majors').then(function (resp) {
+                var items = resp.data.data;
+                items.sort(function(a,b) {
+                    var x = a.name; var y = b.name;
+                    return (x < y) ? -1 : ((x > y) ? 1 : 0);
+                });
+                $.each(items, function(i,x){ items[i].name = self.ucwords(x.name)});
+                self.icCounter();
+                bus.$emit('majorsSet', items);
+            });
+		},
+
+        getCountries: function () {
+            var self = this;
+            this.$http.get(this.baseUrl+'countries').then(function (resp) {
+                var items = resp.data.data;
+                items.sort(function(a,b) {
+                    var x = a.name; var y = b.name;
+                    return (x < y) ? -1 : ((x > y) ? 1 : 0);
+                });
+                self.icCounter();
+                bus.$emit('countriesSet', items);
+            });
+        },
+
         getUniversities: function () {
-            this.$http.get(this.baseUrl+'universities').then(function(resp) {bus.$emit('universitiesSet',resp.data.data);});
+            var self = this;
+            this.$http.get(this.baseUrl+'universities').then(function(resp) {
+                self.icCounter();
+                bus.$emit('universitiesSet',resp.data.data);});
 		},
-        
+
         getDegrees: function () {
-            this.$http.get(this.baseUrl+'degrees').then(function (resp) { bus.$emit('degreesSet', resp.data.data); });
+            var self = this;
+            this.$http.get(this.baseUrl+'degrees').then(function (resp) {
+                self.icCounter();
+                bus.$emit('degreesSet', resp.data.data); });
 		},
-        
+
         getIndustries: function () {
-            this.$http.get(this.baseUrl+'industries').then(function (resp) { bus.$emit('industriesSet', resp.data.data); });
+            var self = this;
+            this.$http.get(this.baseUrl+'industries').then(function (resp) {
+                self.icCounter();
+                bus.$emit('industriesSet', resp.data.data); });
 		},
-        
+
         getLanguages: function () {
-            this.$http.get(this.baseUrl+'languages').then(function (resp) { bus.$emit('languagesSet', resp.data.data); });
+            var self = this;
+            this.$http.get(this.baseUrl+'languages').then(function (resp) {
+                self.icCounter();
+                bus.$emit('languagesSet', resp.data.data); });
 		},
-       
+
         getSkills: function () {
-            this.$http.get(this.baseUrl+'skills').then(function (resp) { bus.$emit('skillsSet', resp.data.data); });
+            var self = this;
+            this.$http.get(this.baseUrl+'skills').then(function (resp) {
+            self.icCounter();
+            bus.$emit('skillsSet', resp.data.data); });
 		},
-                   
+
         getBadges: function () {
+            var self = this;
             this.$http.get(this.baseUrl + 'badges')
-                .then(function (resp) { bus.$emit('badgesSet', resp.data.data); });
+                .then(function (resp) {
+                    self.icCounter();
+                    bus.$emit('badgesSet', resp.data.data); });
         },
-        
+
         getEvents: function () {
+            var self = this;
             this.$http.get(this.baseUrl+'events')
-                .then(function (resp) { bus.$emit('eventsSet', resp.data.data); });
+                .then(function (resp) {
+                    self.icCounter();
+                    bus.$emit('eventsSet', resp.data.data); });
 		},
-        
+
         getUsers: function () {
+            var self = this;
             this.$http.get(this.baseUrl+'users')
-                .then(function (resp) { bus.$emit('usersSet', resp.data.data); });
+                .then(function (resp) {
+                    self.icCounter();
+                    bus.$emit('usersSet', resp.data.data); });
         },
-        
+
         getRoles: function () {
-            this.$http.get(this.baseUrl+'roles') .then(function (resp) { bus.$emit('rolesSet', resp.data);     });
+            var self = this;
+            this.$http.get(this.baseUrl+'roles') .then(function (resp) {
+                self.icCounter();
+                bus.$emit('rolesSet', resp.data);     });
         },
-        
+
         setupListeners: function () {
             var self = this;
-            
+
             bus.$on('updateAuthUser', function () { self.getAuthUser(); });
             bus.$on('updateOrganizations', function () { self.getOrganizations(); });
             bus.$on('updatePlans', function () { self.getPlans(); });
@@ -188,14 +264,20 @@ Vue.component('gradlead-home-screen', {
             bus.$on('updateUsers', function () { self.getUsers(); });
             bus.$on('updateRoles', function () { self.getRoles(); });
             bus.$on('updateUniversities', function () { self.getUniversities(); });
-            
+            bus.$on('updateCountries', function () { self.getCountries(); });
+
             bus.$on('screenLoaded', function(name) {
                 self.loadedScreens += 1;
                 //console.log("Loaded screens: #"+self.loadedScreens +": "+name);
                 if (self.loadedScreens==self.expectedScreens) { self.callOthers(); }
             });
         },
-  
+
+        ucwords: function (str) {
+            return str.toLowerCase().replace(/\b[a-z]/g, function (letter) {
+                return letter.toUpperCase();
+            });
+        },
     },
 
     filters: { },

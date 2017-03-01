@@ -17,6 +17,9 @@ class CreateProfilesSchoolsTable extends Migration
             $table->increments('id');
             $table->integer('organization_id');
             $table->string('summary');
+            $table->string('country')->nullable();
+            $table->string('city')->nullable();
+            $table->string('neighborhood')->nullable();
             $table->string('file_name')->nullable();
             $table->string('file_path')->nullable();
             $table->string('file_url')->nullable();

@@ -21,6 +21,7 @@ class CreateProfilesStudentWorkTable extends Migration
             $table->longText('description');
             $table->string('country');
             $table->string('city');
+            $table->string('neighborhood');
             $table->date('start_date');
             $table->date('end_date');
             $table->boolean('current')->default(0);

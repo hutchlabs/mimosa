@@ -21,6 +21,7 @@ class CreateProfilesCompaniesTable extends Migration
             $table->integer('num_employees')->nullable();
             $table->string('country');
             $table->string('city');
+            $table->string('neighborhood')->nullable();
             $table->string('address');
             $table->longText('job_types');
             $table->longText('industries');

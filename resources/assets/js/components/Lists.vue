@@ -6,7 +6,7 @@ Vue.component('gradlead-lists-screen', {
         'notifications': Notification,
     },
 
-    mounted: function () {        
+    mounted: function () {
         this.setupListeners();
     },
 
@@ -52,7 +52,7 @@ Vue.component('gradlead-lists-screen', {
 
     computed: {
         everythingLoaded: function () {
-            return this.authUser != null && this.list!='' && this.universities.length > 0; 
+            return this.authUser != null && this.list!='' && this.universities.length > 0;
         },
         isMajor: function() { return this.list=='Majors'; },
         isUniversity: function() { return this.list=='Universities'; },
@@ -63,7 +63,7 @@ Vue.component('gradlead-lists-screen', {
         addList: function () {
             this.forms.addForm.name = '';
             this.forms.addForm.webiste = '';
-            this.forms.addForm.country = ''; 
+            this.forms.addForm.country = '';
             this.forms.addForm.category = '';
             this.forms.addForm.errors.forget();
         },
@@ -90,7 +90,7 @@ Vue.component('gradlead-lists-screen', {
                         closeAddButton.click();
                     }, function(resp) {
                         self.forms.addForm.busy = false;
-                        NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
+                        //NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
                     });
             }
         },
@@ -117,7 +117,7 @@ Vue.component('gradlead-lists-screen', {
                         self.removeItem(item);
                         bus.$emit('update'+self.list);
                     }, function(resp) {
-                        NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
+                        //NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
                     });
             }
         },
@@ -129,8 +129,8 @@ Vue.component('gradlead-lists-screen', {
             bus.$on('industriesSet', function (items) { self.industries = items; });
             bus.$on('jobTypesSet', function (items) { self.jobTypes = items; });
             bus.$on('languagesSet', function (items) { self.languages = items; });
-            bus.$on('majorsSet', function (items) { 
-                self.majors = items; 
+            bus.$on('majorsSet', function (items) {
+                self.majors = items;
                 self.categoryOptions = [];
                 var seen = [];
                 $.each(self.majors, function(idx, m) {
@@ -200,7 +200,7 @@ Vue.component('gradlead-lists-screen', {
         },
     },
 
-    filters: { 
+    filters: {
         ucw: function(str) {
             return str.toLowerCase().replace(/\b[a-z]/g, function (letter) {
                 return letter.toUpperCase();

@@ -12,7 +12,7 @@ Vue.component('gradlead-events-screen', {
         return {
             baseUrl: '/',
             modname: 'Events',
-            
+
             events: [],
 
             editingEvent: {'name':'none'},
@@ -37,7 +37,7 @@ Vue.component('gradlead-events-screen', {
             }
         };
     },
-    
+
     events: {
     },
 
@@ -62,7 +62,7 @@ Vue.component('gradlead-events-screen', {
             this.forms.updateEvent.name = event.name
             this.forms.updateEvent.description = event.description;
             this.forms.updateEvent.start_date = event.start_date;
-            this.forms.updateEvent.end_date = event.end_date; 
+            this.forms.updateEvent.end_date = event.end_date;
             this.forms.updateEvent.errors.forget();
             $('#modal-edit-event').modal('show');
         },
@@ -84,7 +84,7 @@ Vue.component('gradlead-events-screen', {
                     bus.$emit('updateEvents');
                 }, function(resp) {
                     self.forms.addEvent.busy = false;
-                    NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
+                //    NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
                 });
         },
         updateEvent: function () {
@@ -106,17 +106,17 @@ Vue.component('gradlead-events-screen', {
                     bus.$emit('updateEvents');
                 }, function(resp) {
                     self.removingEventId = 0;
-                    NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
+                    //NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
                 });
         },
-        
+
         setupListeners: function () {
             var self = this;
             bus.$on('eventsSet', function (items) {
                 console.log("Got events in "+ self.modname);
                 self.events = items;
             });
-            
+
             bus.$emit('screenLoaded',self.modname);
         },
     },
