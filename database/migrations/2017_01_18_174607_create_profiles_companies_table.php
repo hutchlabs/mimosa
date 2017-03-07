@@ -22,7 +22,7 @@ class CreateProfilesCompaniesTable extends Migration
             $table->string('country');
             $table->string('city');
             $table->string('neighborhood')->nullable();
-            $table->string('address');
+            $table->string('street')->nullable();
             $table->longText('job_types');
             $table->longText('industries');
             $table->string('website')->nullable();

@@ -1,5 +1,3 @@
-<gradlead-profiles-user-screen v-bind:auth-user="authUser" v-bind:permissions="permissions" v-bind:usertype="usertype" inline-template>
-
     <div class="hbox hbox-auto-xs hbox-auto-sm">
         <div class="col">
 
@@ -8,7 +6,7 @@
                     <div class="row m-t">
                         <div class="col-sm-7">
                             <a href class="thumb-lg pull-left m-r">
-                                <img v-bind:src="avatar" class="img-circle"/>
+                                <img v-bind:src="avatar" class="img-circle" />
                             </a>
                             <div class="clear m-b">
                                 <div class="m-b m-t-sm">
@@ -25,45 +23,29 @@
                     <li role="presentation" class="active">
                         <a href="#userprofile" aria-controls="userprofile" role="tab" data-toggle="tab">&nbsp;Profile</a>
                     </li>
+                    <li role="presentation">
+                        <a href="#useraccount" aria-controls="useraccount" role="tab" data-toggle="tab">&nbsp;Account</a>
+                    </li>
                 </ul>
             </div>
 
-            <div class="panel hbox hbox-auto-xs no-border">
+            <div class="hbox hbox-auto-xs no-border">
+
                 <div class="col wrapper">
-                    <i class="fa fa-circle-o text-info m-r-sm pull-right"></i>
+                    <div class="tab-content">
 
-                    <div role="tabpanel" class="tab-pane active" id="userprofile">
-
-                        <spark-error-alert :form="forms.updateProfile"></spark-error-alert>
-
-                        <!-- Add Form -->
-                        <form class="form-horizontal" role="form">
-                            <div class="row">
-                                <div class="col-md-6">
-                            <spark-text :display="'Summary*'" :form="forms.updateProfile" :name="'summary'" :input.sync="forms.updateProfile.summary">
-                            </spark-text>
-
-                            <spark-text :display="'UUID*'" :form="forms.updateProfile" :name="'uuid'" :input.sync="forms.updateProfile.uuid">
-                            </spark-text>
-
-                            <spark-file :display="'Logo'" :form="forms.updateProfile" v-on:updated="setFileName" 
-                                       :name="'icon_file'" :warning="'File must be less than 20MB. Must be an image file'"     :filename.sync="forms.updateProfile.file_name" 
-                                :input.sync="forms.updateProfile.icon_file">
-                            </spark-file>
-                                </div>
-                          </div>
-                        </form>
-
-                        <div class="panel-footer">
-                            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary pull-right" @click.prevent="updateUserProfile" :disabled="forms.updateProfile.busy">
-                                <span v-if="forms.updateProfile.busy"><i class="fa fa-btn fa-spinner fa-spin"></i> Adding</span>
-                                <span v-else> <i class="fa fa-btn fa-save"></i> Update </span>
-                            </button>
+                        <div role="tabpanel" class="tab-pane active" id="userprofile">
+                            <gl-profile-user :title="'Profile Details'" :auth-user="authUser">
+                            </gl-profile-user>
                         </div>
+
+                        <div role="tabpanel" class="tab-pane" id="useraccount">
+                            <gl-profile-account :title="'Account Details'" :auth-user="authUser">
+                            </gl-profile-account>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</gradlead-profiles-user-screen>

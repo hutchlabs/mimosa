@@ -16,14 +16,14 @@
 
         <div class="col-sm-12 text-center">
           <div class="photo-form-wrapper clearfix">
-            <form class="mail-list-signup">
+            <form class="mail-list-signup" method="post" action="/vjobs">
               <div class="row">
                 <div class="col-md-4 col-sm-4 col-md-offset-2 col-sm-offset-2">
-                  <input class="signup-name-field validate-required" type="text" placeholder="Enter Search Query">
+                  <input class="signup-name-field validate-required" name="q" id="q" type="text" placeholder="Search Jobs">
                 </div>
 
                 <div class="col-md-4 col-sm-4">
-                  <input class="signup-email-field validate-required validate-email" type="text" placeholder="Add Location">
+                  <input class="signup-email-field validate-required validate-email" name="loc" id="loc" type="text" placeholder="Search Location">
                 </div>
 
                 <div class="col-md-12 col-md-offset-0 col-sm-4 col-sm-offset-4 text-center">

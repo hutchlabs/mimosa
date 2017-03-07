@@ -22,67 +22,7 @@ class UserController extends Controller
         $this->middleware('tenant');
     }
     
-    // TODO: Bulk uploads
-
-    public function addAddress(Request $request) 
-    {   
-        $user = $request->user();
-        
-        $this->validate($request, 
-                        ['user_id' => 'required|exists:users,id',
-                         'country' => 'required:max:255',
-                         'region' =>  'required:max:255',
-                         'city' =>    'required:max:255']);
-        
-        $i = new Address();
-        $i->user_id = $request->user_id;
-        $i->country = $request->country;
-        $i->region = $request->region;
-        $i->city = $request->city;
-        $i->area = $request->area;
-        $i->street = $request->street;
-        $i->modified_by = $user->id;
-        $i->save();
-                
-        return $this->ok();
-    }
-    
-    public function updateAddress(Request $request, $addressId) 
-    {
-        $user = $request->user();
-        
-        $this->validate($request, 
-                        ['id'=> 'required|exists:users_address,id',
-                         'user_id' => 'required|exists:users,id',
-                         'country' => 'required:max:255',
-                         'region' =>  'required:max:255',
-                         'city' =>    'required:max:255']);
-        
-        $i = Address::find($request->id);
-        $i->user_id = $request->user_id;
-        $i->country = $request->country;
-        $i->region = $request->region;
-        $i->city = $request->city;
-        $i->area = $request->area;
-        $i->street = $request->street;
-        $i->modified_by = $user->id;
-        $i->save();
-                
-        return $this->ok();
-    }
-    
-    public function destroyAddress(Request $request, $addressId) 
-    {
-        $i = Address::find($addressId);
-        if ($i) {
-            $i->delete();
-            return $this->ok();
-        } else {
-            return $this->json_response(['Cannot find address'], true);
-        }
-    }
-    
-    
+    // TODO: Bulk uploads    
     public function alert(Request $request) 
     {
         $user = $request->user();
@@ -228,6 +168,7 @@ class UserController extends Controller
         $u->name = $request->name;
         $u->email = $request->email;
         $u->password = Hash::make($request->password);
+        $u->uuid = md5($request->user_id.time());
         $u->organization_id = $request->organization_id;
         $u->role_id = $request->role_id;
         $u->type = $request->type;
@@ -237,7 +178,6 @@ class UserController extends Controller
         if ($u->isStudent()) {
             $p = new Profile();
             $p->user_id = $u->id;
-            $p->uuid = uniqid();
             $p->modified_by = 1;
             $p->save();
         }
@@ -255,8 +195,7 @@ class UserController extends Controller
         $this->validate($request, [
                                    'email' => 'required|email|unique:users,email,'.$u->id,
                                    'name' => 'required|max:255',
-                                   'password'=> 'min:6',
-                                   'current_password'=> 'min:6',
+                                   'uuid' => 'required|max:255|unique:users,uuid,'.$u->id,
                                    'role_id' => 'required|exists:system_roles,id',
                                    'organization_id' => 'required|exists:organizations,id',
                                    'type' => 'required|in:employer,gradlead,graduate,school,student',
@@ -264,9 +203,9 @@ class UserController extends Controller
                                 );
 
         if ($request->password<>'') {
-            if (! Hash::check($request->current_password, $u->password)) {
+            if (sizeof($request->password)<6) {
                 return $this->json_response(
-                    ['current_password' => ['The current password you provided is incorrect.']], true, 422);
+                    ['password' => ['The password needs to be more than 6 characters.']], true, 422);
             } else {
                 $u->password = Hash::make($request->password);
             }
@@ -276,6 +215,7 @@ class UserController extends Controller
         $u->name = $request->name;
         $u->email = $request->email;
         $u->organization_id = $request->organization_id;
+        $u->uuid = $request->uuid;
         $u->role_id = $request->role_id;
         $u->type = $request->type;
         $u->modified_by = $user->id;

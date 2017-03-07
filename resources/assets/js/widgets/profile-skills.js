@@ -66,7 +66,7 @@ Vue.component('spark-profile-skills', {
     methods: {
         setList: function(l) { 
             this.list = l; 
-            if (this.list.length>0) {
+            if (this.list!=null && this.list.length>0) {
                 this.mode = 'edit';
                 this.id = this.list[0].id;
                 this.multiCSK_val = this.getMultiValues(this.list[0].skills);

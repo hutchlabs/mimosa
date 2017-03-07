@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Gradlead\Permission;
 use App\Gradlead\Contract;
 use App\Gradlead\Theme;
-
+use App\Gradlead\ProfileCompany;
 
 class Organization extends Model
 {
@@ -121,6 +121,13 @@ class Organization extends Model
                 $profile->save();
             }
         }
+                
+        $address = [];
+        if ($profile->street<>'') { array_push($address, $profile->street); }
+        if ($profile->neighborhood<>'') { array_push($address, $profile->neighborhood); }
+        if ($profile->city<>'') { array_push($address, $profile->city); }
+        if ($profile->country<>'') { array_push($address, $profile->country); }
+        $profile->address = (sizeof($address)>0) ? join(', ',$address) : 'No address given';
         return $profile;
     }
     
@@ -213,6 +220,72 @@ class Organization extends Model
     }
     
     
+    public static function search($keywords, $loc, $type='employer', $dates=null, $remote=null)
+    {   
+        //DB::enableQueryLog();      
+        $results = ['count'=>0, 'all'=>[]];
+           
+        $orgCases = Organization::query();
+        $pcCases = ProfileCompany::query();
+        
+        $orgFields = ['name'];
+        $pcFields = ['summary','description','street',
+                     'job_types', 'country','city','industries','neighborhood'];
+
+        if ($keywords <> '' || $loc <> '') {
+            $terms = explode(' ', trim($keywords));
+            $locs = explode(' ', trim($loc));
+            $terms = array_merge($terms, $locs);
+            
+            foreach($terms as $key=>$val) { if ($val==''){ unset($terms[$key]); }}
+
+            $pcCases = $pcCases->where(function($q) use ($terms, $pcFields) {
+                         foreach($terms as $term) {
+                            foreach($pcFields as $field) {
+                               $q->orWhere($field, 'LIKE', '%'.$term.'%'); 
+                            }   
+                        }
+                      });
+            
+            $orgCases = $orgCases->where(function($q) use ($terms, $orgFields) {
+                         foreach($terms as $term) {
+                            foreach($orgFields as $field) {
+                               $q->orWhere($field, 'LIKE', '%'.$term.'%'); 
+                            }   
+                        }
+                      });
+            
+            if (isset($dates)) { }
+            
+            //$cases = $cases->where('status',1);
+        }
+        //$dd = DB::getQueryLog();
+        //$results['dd'] = $dd;
+
+        $seen = [];
+        
+        $res = $pcCases->get();
+
+        foreach($res as $j) {
+            if (!in_array($j->organization_id,$seen)) {
+                $item = Organization::find($j->organization_id);            
+                if($item->type==$type) { array_push($results['all'], $item); }
+                array_push($seen, $j->organization_id);
+            }
+        }
+        
+        $res = $orgCases->get();
+        foreach($res as $j) {
+            if (!in_array($j->id,$seen)) {
+                if ($j->type==$type) { array_push($results['all'], $j); }
+                array_push($seen, $j->id);
+            }
+        }
+        
+        $results['count'] = sizeof($results['all']);
+
+        return $results;
+    }
     
     
     public function isSchool() 

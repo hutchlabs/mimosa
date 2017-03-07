@@ -1,5 +1,5 @@
 Vue.component('spark-profile-summary', {
-    props: ['profileid','userid','uuid','summary','title'],
+    props: ['profileid','userid','summary','title'],
 
     template: '<div class="panel hbox hbox-auto-xs no-border">\
                 <div class="col wrapper">\
@@ -13,7 +13,6 @@ Vue.component('spark-profile-summary', {
     mounted: function () {
         var self = this;
         this.forms.updateForm.id = this.profileid;
-        this.forms.updateForm.uuid = this.uuid;
         this.forms.updateForm.user_id = this.userid;
         this.forms.updateForm.summary = this.summary;
         this.initQuill(this.summary);
@@ -56,7 +55,6 @@ Vue.component('spark-profile-summary', {
             forms: {
                 updateForm: new SparkForm ({
                     id: '',
-                    uuid: '',
                     user_id: '',
                     summary: '',
                 }),

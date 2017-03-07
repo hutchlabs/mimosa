@@ -17,12 +17,13 @@ Vue.component('gradlead-home-screen', {
 
             authUser: null,
             avatar: 'img/a0.jpg',
+            logo: 'img/a0.jpg',
 
             usertype: {'isGradlead': false, 'isCompany':false, 'isSchool':false, 'isAdmin':false, 'canEdit': false},
             permissions: {'canDoEvents': false, 'canDoScreening':false, 'canDoPreselect': false, 'canDoTracking':false},
 
             loadedScreens: 0,
-            expectedScreens: 21,
+            expectedScreens: 19,
             expectedCalls: 16,
             completedCalls: 0,
         };
@@ -59,6 +60,13 @@ Vue.component('gradlead-home-screen', {
                 return '/profiles/avatar/'+this.authUser.profile.id+'?'+new Date();
             }
         },
+        
+        getLogoUrl: function() {
+            if (this.authUser.organization.profile != null) {
+                var p = (this.usertype.isSchool) ? 'crest' : 'logo';
+                return '/profiles/'+p+'/'+this.authUser.organization.profile.id+'?'+new Date();
+            }
+        },
 
         getAuthUser: function () {
             var self = this;
@@ -66,7 +74,6 @@ Vue.component('gradlead-home-screen', {
             this.$http.get(self.baseUrl+'fauthuser')
                 .then(function (user) {
                     self.authUser = user.data;
-                    self.avatar = self.getImageUrl();
                     self.usertype.canEdit = (self.authUser.role.name=='Member') ? false : true;
                     self.usertype.isAdmin = (self.authUser.role.name=='Super Administrator' || self.authUser.role.name=='Administrator');
                     self.usertype.isGradlead = (self.authUser.organization.id==1) ? true : false;
@@ -76,7 +83,9 @@ Vue.component('gradlead-home-screen', {
                     self.permissions.canDoScreening = self.authUser.organization.permissions.screening;
                     self.permissions.canDoPreselect = self.authUser.organization.permissions.preselect;
                     self.permissions.canDoTracking = self.authUser.organization.permissions.tracking;
-                    self.expectedScreens = (self.usertype.isGradlead) ? 21 : ((self.usertype.isCompany) ? 8 : 5);
+                    self.expectedScreens = (self.usertype.isGradlead) ? 19 : ((self.usertype.isCompany) ? 6 : 3);
+                    self.logo = self.getLogoUrl();
+                    self.avatar = self.getImageUrl();
                     bus.$emit('authUserSet', self.authUser);
                 });
         },

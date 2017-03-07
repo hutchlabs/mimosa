@@ -33,9 +33,9 @@
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Subdomain</th>
                         <th># of Users</th>
                         <th>Employer Affiliations</th>
+                        <th>Profile</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -43,10 +43,14 @@
                     <tr v-for="o in schools">
 
                         <td class="spark-table-pad"> @{{ o.name }} </td>
-                        <td class="spark-table-pad"> @{{ o.subdomain }} </td>
                         <td class="spark-table-pad"> @{{ o.numusers }} </td>
                         <td class="spark-table-pad"> @{{ o | affiliations }} </td>
 
+                        <td class="spark-table-pad">
+                            <button class="btn btn-default btn-addon btn-sm btn-circle" @click.prevent="viewProfile(o)">
+                                <i class="fa fa-institution"></i> Profile</button>
+                        </td>
+                        
                         <td class="spark-table-pad">
                             <button class="btn btn-warning btn-addon btn-sm btn-circle" @click.prevent="editOrganization(o)">
                                 <i class="fa fa-pencil"></i> Edit</button>
@@ -66,8 +70,8 @@
             </div>
 
         </div>
-        
-        @include('dashboards.organizations.schools-add') @include('dashboards.organizations.schools-edit')
+
+
       </div>
         <!-- / Schools -->
 
@@ -75,6 +79,9 @@
   
   </div>
   <!-- / main -->
+          
+        @include('dashboards.organizations.schools-add') @include('dashboards.organizations.schools-edit')
+                @include('dashboards.organizations.schools-profile-view')
 </div>
 
 </gradlead-orgs-screen>

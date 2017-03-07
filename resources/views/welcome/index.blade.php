@@ -41,12 +41,27 @@
 
 <div class="main-container">
 
- @if($link=='home')
-    @include('welcome.home', array('tid'=>$tid,'theme'=>$theme))
+ @if($link=='profile')
+    @include('welcome.profile', array('tid'=>$tid,'theme'=>$theme))
+
+ @elseif($link=='jobs')
+    @include('welcome.jobs', array('tid'=>$tid,'theme'=>$theme))
+ @elseif($link=='jobs-profile')
+    @include('welcome.jobs-profile', array('tid'=>$tid,'theme'=>$theme))
+
+ @elseif($link=='employers')
+    @include('welcome.employers', array('tid'=>$tid,'theme'=>$theme))
+ @elseif($link=='employers-profile')
+    @include('welcome.employers-profile', array('tid'=>$tid,'theme'=>$theme))
+
  @elseif($link=='schools')
     @include('welcome.schools', array('tid'=>$tid,'theme'=>$theme))
- @else
+
+ @elseif($link=='contact')
     @include('welcome.contact', array('tid'=>$tid,'theme'=>$theme))
+
+ @else
+    @include('welcome.home', array('tid'=>$tid,'theme'=>$theme))
  @endif
 
 </div>

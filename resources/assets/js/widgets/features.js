@@ -3,9 +3,9 @@ Vue.component('spark-featured-jobs', {
 
     // TODO: Finish onclick 
     template: '<div> \
-        <div v-for="job in jobs" class="col-md-4 col-sm-6 blog-masonry-item development card" style="cursor:pointer">\
-          <div v-if="job.organization.profile!=null" class="item-inner quote-post">\
-            <div class="post-title">\
+        <div v-for="job in jobs" class="col-md-4 col-sm-6 blog-masonry-item development card" style="cursor:pointer; height:162px">\
+          <div @click.prevent="show(job.id)" v-if="job.organization.profile!=null" class="item-inner quote-post">\
+            <div class="post-title" style="height:162px;">\
               <div class="row">\
                 <div class="col-md-4">\
                     <img :src="job.orglogo" class="img-circle emp-logo">\
@@ -28,11 +28,15 @@ Vue.component('spark-featured-jobs', {
     },
     data: function () {
         return {
+            baseUrl: '/',
             jobs: []
         }
     },
 
     methods: {
+        show: function(id) {
+            window.location.href= this.baseUrl+'j/'+id;
+        },
         getFeaturedJobs: function () {
             this.$http.get('/jobs/featured')
                 .then(function (resp) {
@@ -48,7 +52,7 @@ Vue.component('spark-featured-employers', {
     // TODO: Finish onclick 
     template: '<div> \
                 <div v-for="o in orgs" class="col-md-2 col-sm-4" style="cursor:pointer">\
-                    <img alt="Client Logo" :src="o.logo_url">\
+                    <img @click.prevent="show(o.id)" alt="Client Logo" :src="o.logo_url">\
                 </div>\
             </div>',
  
@@ -57,11 +61,15 @@ Vue.component('spark-featured-employers', {
     },
     data: function () {
         return {
+            baseUrl: '/',
             orgs: []
         }
     },
 
     methods: {
+        show: function(id) {
+            window.location.href= this.baseUrl+'o/'+id;
+        },
         getFeaturedEmployers: function () {
             this.$http.get('/organizations/featured')
                 .then(function (resp) {

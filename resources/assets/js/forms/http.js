@@ -1,27 +1,10 @@
 module.exports = {
-    /**
-     * A few helper methods for making HTTP requests and doing common form actions.
-     */
-    post: function (uri, form) {
-        return Spark.sendForm('post', uri, form);
-    },
+    post: function (uri, form) { return Spark.sendForm('post', uri, form); },
 
+    put: function (uri, form) { return Spark.sendForm('put', uri, form); },
 
-    put: function (uri, form) {
-        return Spark.sendForm('put', uri, form);
-    },
+    delete: function (uri, form) { return Spark.sendForm('delete', uri, form); },
 
-
-    delete: function (uri, form) {
-        return Spark.sendForm('delete', uri, form);
-    },
-
-
-    /**
-     * Send the form to the back-end server. Perform common form tasks.
-     *
-     * This function will automatically clear old errors, update "busy" status, etc.
-     */
     sendForm: function (method, uri, form) {
         return new Promise(function (resolve, reject) {
             form.startProcessing();
@@ -29,11 +12,13 @@ module.exports = {
             Vue.http[method](uri, form)
                 .then(function (response) {
                     form.finishProcessing();
-                    resolve(response.data);
+                    var vals = (typeof response.data.data != 'undefined') ? response.data.data : response.data;
+                    resolve(vals);
                 },function (response) {
-                    form.errors.set(response.data);
+                    var errs = (typeof response.data.errors != 'undefined') ? response.data.errors : response.data;
+                    form.errors.set(errs);
                     form.busy = false;
-                    reject(response.data);
+                    reject(errs);
                 });
         });
     }

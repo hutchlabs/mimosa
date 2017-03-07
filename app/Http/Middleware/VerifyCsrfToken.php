@@ -16,6 +16,8 @@ class VerifyCsrfToken extends BaseVerifier
         'flogout',
         'fregister',
         'fauthuser',
-        'badges'
+        'badges',
+        'vjobs',
+        'employers'
     ];
 }

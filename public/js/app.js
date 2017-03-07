@@ -48229,7 +48229,7 @@ if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
   if (!module.hot.data) {
     hotAPI.createRecord("data-v-233716ee", __vue__options__)
   } else {
-    hotAPI.rerender("data-v-233716ee", __vue__options__)
+    hotAPI.reload("data-v-233716ee", __vue__options__)
   }
 })()}
 },{"babel-runtime/core-js/get-iterator":1,"babel-runtime/core-js/json/stringify":2,"moment":64,"vue":74,"vue-hot-reload-api":68,"vueify/lib/insert-css":75}],68:[function(require,module,exports){
@@ -65042,7 +65042,6 @@ require('./components/Stats.vue');
 require('./components/Users.vue');
 require('./components/Organizations.vue');
 require('./components/Permissions.vue');
-require('./components/Profiles.vue');
 require('./components/Badges.vue');
 require('./components/Plans.vue');
 require('./components/Screening.vue');
@@ -65070,7 +65069,7 @@ var app = new Vue({
     data: {}
 });
 
-},{"./bootstrap":78,"./components/Applications.vue":79,"./components/Badges.vue":80,"./components/Events.vue":81,"./components/Home.vue":82,"./components/Jobs.vue":83,"./components/Lists.vue":84,"./components/Organizations.vue":85,"./components/Permissions.vue":86,"./components/Plans.vue":87,"./components/Profiles.vue":88,"./components/Resumes.vue":89,"./components/Screening.vue":90,"./components/Search.vue":91,"./components/Seekers.vue":92,"./components/Stats.vue":93,"./components/Themes.vue":94,"./components/Users.vue":95,"./components/Welcome.vue":96,"mini-toastr":63}],78:[function(require,module,exports){
+},{"./bootstrap":78,"./components/Applications.vue":79,"./components/Badges.vue":80,"./components/Events.vue":81,"./components/Home.vue":82,"./components/Jobs.vue":83,"./components/Lists.vue":84,"./components/Organizations.vue":85,"./components/Permissions.vue":86,"./components/Plans.vue":87,"./components/Resumes.vue":88,"./components/Screening.vue":89,"./components/Search.vue":90,"./components/Seekers.vue":91,"./components/Stats.vue":92,"./components/Themes.vue":93,"./components/Users.vue":94,"./components/Welcome.vue":95,"mini-toastr":63}],78:[function(require,module,exports){
 'use strict';
 
 var _vuejsDatepicker = require('vuejs-datepicker');
@@ -65098,6 +65097,8 @@ var _vueDatepicker = require('vue-datepicker');
 var _vueDatepicker2 = _interopRequireDefault(_vueDatepicker);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 window._ = require('lodash');
 
@@ -65167,16 +65168,16 @@ window.GOOGLE_AUTOCOMPLETE = {
   'key': 'AIzaSyD7T2ffkCZ8eou8ylORC8C5SkMmWmSxyiM',
   'library': 'places',
   // google inputs retrieved.
-  'inputs': {
+  'inputs': _defineProperty({
     administrative_area_level_1: 'long_name',
     street_number: 'short_name',
+    route: 'long_name',
     postal_code: 'short_name',
     sublocality_level_1: 'long_name',
     neighborhood: 'long_name',
     locality: 'long_name',
-    country: 'long_name',
-    route: 'long_name'
-  }
+    country: 'long_name'
+  }, 'route', 'long_name')
 };
 
 /** Pulse loaders **/
@@ -65205,7 +65206,7 @@ window.bus = new Vue({});
 require('./widgets/bootstrap');
 require('./forms/bootstrap');
 
-},{"./forms/bootstrap":97,"./widgets/bootstrap":103,"bootstrap-sass":4,"jquery":61,"lodash":62,"mini-toastr":63,"quill":66,"vue-datepicker":67,"vue-multiselect":69,"vue-notifications":70,"vue-resource":71,"vue-spinner/dist/vue-spinner.min":72,"vue/dist/vue.js":73,"vuejs-datepicker":76}],79:[function(require,module,exports){
+},{"./forms/bootstrap":96,"./widgets/bootstrap":102,"bootstrap-sass":4,"jquery":61,"lodash":62,"mini-toastr":63,"quill":66,"vue-datepicker":67,"vue-multiselect":69,"vue-notifications":70,"vue-resource":71,"vue-spinner/dist/vue-spinner.min":72,"vue/dist/vue.js":73,"vuejs-datepicker":76}],79:[function(require,module,exports){
 Vue.component('gradlead-applications-screen', {
     
     props: ['authUser', 'usertype', 'permissions'],
@@ -65778,12 +65779,13 @@ Vue.component('gradlead-home-screen', {
 
             authUser: null,
             avatar: 'img/a0.jpg',
+            logo: 'img/a0.jpg',
 
             usertype: {'isGradlead': false, 'isCompany':false, 'isSchool':false, 'isAdmin':false, 'canEdit': false},
             permissions: {'canDoEvents': false, 'canDoScreening':false, 'canDoPreselect': false, 'canDoTracking':false},
 
             loadedScreens: 0,
-            expectedScreens: 21,
+            expectedScreens: 19,
             expectedCalls: 16,
             completedCalls: 0,
         };
@@ -65820,6 +65822,13 @@ Vue.component('gradlead-home-screen', {
                 return '/profiles/avatar/'+this.authUser.profile.id+'?'+new Date();
             }
         },
+        
+        getLogoUrl: function() {
+            if (this.authUser.organization.profile != null) {
+                var p = (this.usertype.isSchool) ? 'crest' : 'logo';
+                return '/profiles/'+p+'/'+this.authUser.organization.profile.id+'?'+new Date();
+            }
+        },
 
         getAuthUser: function () {
             var self = this;
@@ -65827,7 +65836,6 @@ Vue.component('gradlead-home-screen', {
             this.$http.get(self.baseUrl+'fauthuser')
                 .then(function (user) {
                     self.authUser = user.data;
-                    self.avatar = self.getImageUrl();
                     self.usertype.canEdit = (self.authUser.role.name=='Member') ? false : true;
                     self.usertype.isAdmin = (self.authUser.role.name=='Super Administrator' || self.authUser.role.name=='Administrator');
                     self.usertype.isGradlead = (self.authUser.organization.id==1) ? true : false;
@@ -65837,7 +65845,9 @@ Vue.component('gradlead-home-screen', {
                     self.permissions.canDoScreening = self.authUser.organization.permissions.screening;
                     self.permissions.canDoPreselect = self.authUser.organization.permissions.preselect;
                     self.permissions.canDoTracking = self.authUser.organization.permissions.tracking;
-                    self.expectedScreens = (self.usertype.isGradlead) ? 21 : ((self.usertype.isCompany) ? 8 : 5);
+                    self.expectedScreens = (self.usertype.isGradlead) ? 19 : ((self.usertype.isCompany) ? 6 : 3);
+                    self.logo = self.getLogoUrl();
+                    self.avatar = self.getImageUrl();
                     bus.$emit('authUserSet', self.authUser);
                 });
         },
@@ -67318,6 +67328,19 @@ Vue.component('gradlead-orgs-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
 
+    notifications: {
+      /*showError: {
+          title: 'Organization Error',
+          message: 'Failed to reach server',
+          type: 'error'
+        },
+        showSuccess: {
+          title: 'Profile success',
+          message: 'Successfully modified organization',
+          type: 'success'
+        },*/
+    },
+    
     // TODO: handle approval
 
     mounted: function() {
@@ -67332,7 +67355,8 @@ Vue.component('gradlead-orgs-screen', {
             organizations: [],
             employers: [],
             schools: [],
-
+            
+            profilingOrganization: {'name':'none'},
             editingOrganization: {'name':'none'},
             removingOrganizationId: null,
 
@@ -67340,13 +67364,11 @@ Vue.component('gradlead-orgs-screen', {
                 addOrganization: new SparkForm ({
                     name: '',
                     type: '',
-                    subdomain: '',
                 }),
 
                 updateOrganization: new SparkForm ({
                     name: '',
                     type: '',
-                    subdomain: '',
                 }),
             }
         };
@@ -67365,7 +67387,6 @@ Vue.component('gradlead-orgs-screen', {
         addOrganization: function (type) {
             this.forms.addOrganization.name = '';
             this.forms.addOrganization.type = type;
-            this.forms.addOrganization.subdomain = (type!='gradlead')?'':'localhost';
             this.forms.addOrganization.errors.forget();
             $('#modal-add-'+type+'-org').modal('show');
         },
@@ -67373,9 +67394,14 @@ Vue.component('gradlead-orgs-screen', {
             this.editingOrganization = org;
             this.forms.updateOrganization.name = org.name;
             this.forms.updateOrganization.type = org.type;
-            this.forms.updateOrganization.subdomain = org.subdomain;
             this.forms.updateOrganization.errors.forget();
             $('#modal-edit-'+org.type+'-org').modal('show');
+        },
+        
+        viewProfile: function(org) {
+            this.profilingOrganization = org;
+
+            $('#modal-'+org.type+'-view-profile').modal('show');
         },
 
         removingOrganization: function(id) { return (this.removingOrganizationId == id); },
@@ -67392,16 +67418,18 @@ Vue.component('gradlead-orgs-screen', {
             Spark.post(self.baseUrl+'organizations', this.forms.addOrganization)
                 .then(function () {
                     $('#modal-add-'+type+'-org').modal('hide');
+                    self.showSuccess({message: 'Organization added'});
                     bus.$emit('updateOrganizations');
                 }, function(resp) {
                     self.forms.addOrganization.busy = false;
-                    //NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
+                    self.showError({'message': resp[0]});
                 });
         },
         updateOrganization: function (type) {
             var self = this;
             Spark.put(self.baseUrl+'organizations/' + this.editingOrganization.id, this.forms.updateOrganization)
                 .then(function () {
+                    self.showSuccess({message: 'Organization updated'});
                     bus.$emit('updateOrganizations');
                     $('#modal-edit-'+type+'-org').modal('hide');
                 });
@@ -67417,7 +67445,7 @@ Vue.component('gradlead-orgs-screen', {
                     bus.$emit('updateOrganizations');
                 }, function(resp) {
                     self.removingOrganizationId = 0;
-                    //NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
+                    self.showError({'message': resp[0]});
                 });
         },
 
@@ -67814,200 +67842,6 @@ Vue.component('gradlead-plans-screen', {
 });
 
 },{}],88:[function(require,module,exports){
-Vue.component('gradlead-profiles-org-screen', {
-
-    props: ['authUser', 'usertype', 'permissions'],
-
-    mounted: function () {
-        this.setProfile(this.authUser.organization.profile);
-        this.setupListeners();
-    },
-
-    data: function () {
-        return {
-            baseUrl: '/',
-            modname: 'Org Profile',
-
-			profile: {},
-            avatar: 'img/a0.jpg',
-
- 			forms: {
-                updateProfile: new SparkForm({
-                    id: '',
-                    organization_id: '',
-                    summary: '',
-                    description: '',
-                    country: '',
-                    city: '',
-                    address: '',
-                    jobtypes: '',
-                    industries: '',
-                    website: '',
-                    num_employees:'',
-                    icon_file: '',
-                    file_name: '',
-                }),
-            },
-        };
-    },
-
-    watch: { },
-
-    events: {},
-
-    computed: {
-        everythingLoaded: function () { return this.authUser != null },
-        isSchool: function() { return (this.usertype.isSchool || this.usertype.isGradlead); },
-        isCompany: function() { return (!this.usertype.isSchool && !this.usertype.isGradlead); },
-    },
-
-    methods: {
-        setFileName: function(name) {
-            this.forms.updateProfile.file_name = name;
-        },
-
-		getImageUrl: function() {
-            if (this.profile != null) {
-                var p = (this.isSchool) ? 'crest' : 'logo';
-                return '/profiles/'+p+'/'+this.profile.id+'?'+new Date();
-            }
-        },
-
-        setProfile: function(p) {
-            this.profile = p;
-            if (this.profile != null) {
-                this.avatar = this.getImageUrl();
-                this.forms.updateProfile.id = this.profile.id;
-                this.forms.updateProfile.organization_id = this.profile.organization_id;
-                this.forms.updateProfile.summary = this.profile.summary;
-            }
-        },
-
-        setupListeners: function () {
-            var self = this;
-            bus.$on('authUserSet', function (user) { self.setProfile(user.organization.profile); });
-            bus.$emit('screenLoaded',self.modname);
-        },
-
-        updateSchoolProfile: function() {
-            var self = this;
-            Spark.put(self.baseUrl+'profiles/schools/' + this.profile.id, this.forms.updateProfile)
-                .then(function () {
-                    bus.$emit('updateAuthUser');
-                    bus.$emit('updateOrganizations');
-                });
-        },
-
-        updateCompanyProfile: function() {
-            var self = this;
-            Spark.put(self.baseUrl+'profiles/employees/' + this.profile.id, this.forms.updateProfile)
-                .then(function () {
-                    bus.$emit('updateAuthUser');
-                    bus.$emit('updateOrganizations');
-                });
-        },
-    },
-
-    filters: { },
-});
-
-Vue.component('gradlead-profiles-user-screen', {
-
-    props: ['authUser', 'usertype', 'permissions'],
-
-    mounted: function () {
-        this.setProfile(this.authUser.profile);
-        this.setupListeners();
-    },
-
-    data: function () {
-        return {
-            baseUrl: '/',
-            modname: 'User Profile',
-
-			profile: {},
-            avatar: 'img/a0.jpg',
-            location: '',
-            
- 			forms: {
-                updateProfile: new SparkForm({
-                    id: '',
-                    user_id: '',
-                    summary: '',
-                    country: '',
-                    city: '',
-                    neighborhood:'',
-                    uuid: '',
-                    icon_file: '',
-                    file_name: '',
-                }),
-            },
-        };
-    },
-
-    watch: {
-    },
-
-    events: {
-        'showNotification': function(notification) {
-            console.log("Sending up");
-            bus.$emit('showNotification',notification);
-        },
-    },
-
-    computed: {
-        everythingLoaded: function () { return this.authUser != null },
-        isStudent: function() { return (this.authUser.type=='student' ||
-                                        this.authUser.type=='graduate'); },
-    },
-
-    methods: {
-        setFileName: function(name) {
-            this.forms.updateProfile.file_name = name;
-        },
-
-		getImageUrl: function() {
-            if (this.profile != null) {
-                return '/profiles/avatar/'+this.profile.id+'?'+new Date();
-            }
-        },
-        
-        getLocation: function(e) {
-            return [e.neighborhood, e.city, e.country].join(', ');
-        },
-        
-        setProfile: function(p) {
-            this.profile = p;
-            if (this.profile != null) {
-                this.location = this.getLocation(this.profile);
-                this.avatar = this.getImageUrl();
-                this.forms.updateProfile.id = this.profile.id;
-                this.forms.updateProfile.user_id = this.profile.user_id;
-                this.forms.updateProfile.uuid = this.profile.uuid;
-                this.forms.updateProfile.summary = this.profile.summary;
-                this.forms.updateProfile.country = this.profile.country;
-                this.forms.updateProfile.city = this.profile.city;
-                this.forms.updateProfile.neighborhood  = this.profile.neighborhood;
-            }
-        },
-
-        setupListeners: function () {
-            var self = this;
-            bus.$on('authUserSet', function (user) { self.setProfile(user.profile); });
-            bus.$emit('screenLoaded',self.modname);
-        },
-
-        updateUserProfile: function() {
-            var self = this;
-            Spark.put(self.baseUrl+'profiles/users/' + this.profile.id, this.forms.updateProfile)
-                .then(function () { bus.$emit('updateAuthUser'); });
-        },
-    },
-
-    filters: { },
-});
-
-},{}],89:[function(require,module,exports){
 Vue.component('gradlead-resumes-screen', {
     
     props: ['authUser', 'usertype', 'permissions'],
@@ -68120,7 +67954,7 @@ Vue.component('gradlead-resumes-screen', {
     filters: { },
 });
 
-},{}],90:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 Vue.component('gradlead-screening-screen', {
 
     mounted: function () {
@@ -68736,7 +68570,7 @@ Vue.component('gradlead-screening-screen', {
     },
 });
 
-},{}],91:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 Vue.component('gradlead-search-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
@@ -68977,7 +68811,7 @@ Vue.component('gradlead-search-screen', {
     },
 });
 
-},{}],92:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 Vue.component('gradlead-seekers-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
@@ -69241,7 +69075,7 @@ Vue.component('gradlead-seekers-screen', {
     },
 });
 
-},{}],93:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 Vue.component('gradlead-stats-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
@@ -69358,7 +69192,7 @@ Vue.component('gradlead-stats-screen', {
     },
 });
 
-},{}],94:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 Vue.component('gradlead-themes-screen', {
 
     mounted: function() {
@@ -69466,7 +69300,7 @@ Vue.component('gradlead-themes-screen', {
     filters: { },
 });
 
-},{}],95:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 Vue.component('gradlead-users-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
@@ -69716,7 +69550,7 @@ Vue.component('gradlead-users-screen', {
     },
 });
 
-},{}],96:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 Vue.component('gradlead-welcome-screen', {
 
     mounted: function() {
@@ -69744,6 +69578,14 @@ Vue.component('gradlead-welcome-screen', {
     },
 
     methods: {
+        showEmployer: function(id) {
+            window.location.href= this.baseUrl+'o/'+id;
+        },
+        
+        showJob: function(id) {
+            window.location.href= this.baseUrl+'j/'+id;
+        },
+        
         getFeaturedJobs: function () {
             this.$http.get(self.baseUrl+'jobs/featured')
                 .then(function (resp) {
@@ -69771,30 +69613,15 @@ Vue.component('gradlead-welcome-screen', {
     filters: { },
 });
 
-},{}],97:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 'use strict';
 
-/**
- * Load the SparkForm helper class.
- */
 require('./instance');
-
-/**
- * Define the form error collection class.
- */
 require('./errors');
-
-/**
- * Add additional form helpers to the Spark object.
- */
 $.extend(Spark, require('./http'));
-
-/**
- * Define the Spark form input components.
- */
 require('./components');
 
-},{"./components":98,"./errors":99,"./http":100,"./instance":101}],98:[function(require,module,exports){
+},{"./components":97,"./errors":98,"./http":99,"./instance":100}],97:[function(require,module,exports){
 'use strict';
 
 var _moment = require('moment');
@@ -69948,6 +69775,25 @@ Vue.component('gl-file', {
     }
 });
 
+Vue.component('gl-hidden', {
+    props: ['display', 'form', 'name', 'input'],
+    template: '<input type="hidden" class="form-control" v-model="fieldValue" />',
+    watch: {
+        'fieldValue': function fieldValue(v) {
+            this.form[this.name] = v;
+        },
+        'input': function input(v) {
+            this.fieldValue = this.input;
+        }
+    },
+    mounted: function mounted() {
+        this.fieldValue = this.input;
+    },
+    data: function data() {
+        return { fieldValue: '' };
+    }
+});
+
 Vue.component('gl-location', {
 
     props: ['display', 'form', 'name', 'id', 'input', 'placeholder'],
@@ -69977,7 +69823,6 @@ Vue.component('gl-location', {
     computed: {},
 
     mounted: function mounted() {
-        //Loader.load(() => { return this.boot(this); });
         this.boot();
     },
 
@@ -69985,10 +69830,16 @@ Vue.component('gl-location', {
         'place': function place(address) {
             if (Object.keys(address).length > 0) {
                 this.address = address;
+                if (typeof this.form['street'] != 'undefined') {
+                    //this.form['street'] = this.address.street_number + ' '+this.address.route;
+                }
                 this.form['country'] = address.country;
                 this.form['city'] = address.locality;
                 this.form['neighborhood'] = address.neighborhood;
             }
+        },
+        'input': function input(v) {
+            this.ref.value = v;
         }
     },
 
@@ -70017,7 +69868,6 @@ Vue.component('gl-location', {
                     }
                 });
             }
-            //console.log("Location: "+this.input);
             if (this.input != '') {
                 this.ref.value = this.input;
             }
@@ -70034,8 +69884,79 @@ Vue.component('gl-location', {
     }
 });
 
+Vue.component('gl-password', {
+    props: ['display', 'form', 'name', 'input', 'placeholder', 'similar', 'minlength', 'required'],
+
+    template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
+                <div class="col-sm-12">\
+                    <label class="control-label">{{ display }}</label>\
+                    <input type="password" :placeholder="placeholder" class="form-control" v-model="fieldValue">\
+                    <span class="help-block" v-show="form.errors.has(name)"><small style="color:red">The password needs to be more than {{ minlength }} characters</small></span>\
+                    <span class="help-block" v-show="sameError"><small style="color:red">This does not match the given password</small></span>\
+                </div>\
+            </div>',
+    watch: {
+        'fieldValue': function fieldValue(v) {
+            this.form[this.name] = v;
+            this.form.errors.forget();
+            this.form.errors.rforget(this.name);
+
+            if (v.length == 0 && this.isRequired && !this.firstLoad) {
+                this.form.errors.set(this.reqError);
+            } else if (v.length == 0 && !this.isRequired) {// do nothing
+            } else if (!this.isValidLength && !this.firstLoad) {
+                this.form.errors.set(this.textError);
+            }
+
+            this.firstLoad = false;
+        },
+        'input': function input(v) {
+            this.fieldValue = this.input;
+        },
+        'similar': function similar(v) {
+            this.fieldSame = this.similar;
+        }
+    },
+    computed: {
+        sameError: function sameError() {
+            return this.fieldSame != null && this.fieldSame != this.fieldValue;
+        },
+        isRequired: function isRequired() {
+            return typeof this.required != 'undefined';
+        },
+        isValid: function isValid() {
+            return this.isValidLength && this.fieldValue != '';
+        },
+        isValidLength: function isValidLength() {
+            return this.fieldValue.length >= this.minTextLength;
+        }
+    },
+    mounted: function mounted() {
+        this.reqError[this.name] = ['This field is required'];
+
+        if (this.isRequired && !this.isValid) {
+            this.form.errors.rset(this.name);
+        }
+
+        this.fieldSame = typeof this.similar != 'undefined' ? this.similar : this.fieldSame;
+        this.minTextLength = typeof this.minlength != 'undefined' ? this.minlength : this.minTextLength;
+        this.textError[this.name] = ['The password needs to be more than ' + this.textLength + ' characters'];
+    },
+    data: function data() {
+        return {
+            firstLoad: true,
+            reqError: {},
+
+            fieldValue: '',
+            fieldSame: null,
+            minTextLength: 6,
+            textError: {}
+        };
+    }
+});
+
 Vue.component('gl-text', {
-    props: ['display', 'form', 'name', 'input', 'maxlength', 'placeholder'],
+    props: ['display', 'form', 'name', 'input', 'maxlength', 'minlength', 'placeholder', 'required'],
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                     <div class="col-sm-12">\
@@ -70050,33 +69971,61 @@ Vue.component('gl-text', {
     watch: {
         'fieldValue': function fieldValue(v) {
             if (v != null) {
-                if (v.length > this.textLength) {
-                    this.form.set(this.textError);
-                } else {
-                    this.form[this.name] = v;
+                this.form.errors.forget();
+                this.form.errors.rforget(this.name);
+                this.form[this.name] = v;
+
+                if (v.length == 0 && this.isRequired && !this.firstLoad) {
+                    this.form.errors.set(this.reqError);
+                } else if (v.length == 0 && !this.isRequired) {// do nothing
+                } else if (!this.isValidLength && !this.firstLoad) {
+                    this.form.errors.set(this.textError);
                 }
+
+                this.firstLoad = false;
             }
         },
         'input': function input(v) {
             this.fieldValue = this.input;
         }
     },
+    computed: {
+        isRequired: function isRequired() {
+            return typeof this.required != 'undefined';
+        },
+        isValid: function isValid() {
+            return this.isValidLength && this.fieldValue != '';
+        },
+        isValidLength: function isValidLength() {
+            return this.fieldValue.length >= this.minTextLength && this.fieldValue.length <= this.maxTextLength;
+        }
+    },
     mounted: function mounted() {
+        this.reqError[this.name] = ['This field is required'];
+        if (this.isRequired && !this.isValid) {
+            this.form.errors.rset(this.name);
+        }
+
+        this.maxTextLength = typeof this.maxlength != 'undefined' ? this.maxlength : this.maxTextLength;
+        this.minTextLength = typeof this.minlength != 'undefined' ? this.minlength : this.minTextLength;
+        this.textError[this.name] = ['This needs to be between ' + this.minTextLength + ' and ' + this.maxTextLength + ' characters'];
         this.fieldValue = this.input;
-        this.textLength = typeof this.maxlength != 'Undefined' ? this.maxlength : this.textLength;
-        this.textError[this.name] = ['Value cannot be longer than ' + this.textLength + ' characters'];
     },
     data: function data() {
         return {
+            firstLoad: true,
+            reqError: {},
+
             fieldValue: '',
-            textLength: 255,
+            minTextLength: 0,
+            maxTextLength: 255,
             textError: {}
         };
     }
 });
 
 Vue.component('gl-textarea', {
-    props: ['id', 'display', 'form', 'name', 'input', 'placeholder'],
+    props: ['id', 'display', 'form', 'name', 'input', 'placeholder', 'required'],
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                 <div class="col-sm-12">\
@@ -70088,9 +70037,27 @@ Vue.component('gl-textarea', {
                 </div>\
                </div>',
 
-    watch: {},
+    computed: {
+        isRequired: function isRequired() {
+            return typeof this.required != 'undefined';
+        },
+        isValid: function isValid() {
+            return this.isRequired ? this.form[this.name].length > 0 : true;
+        }
+    },
+
+    watch: {
+        'input': function input(v) {
+            this.quill.setText(v);
+        }
+    },
 
     mounted: function mounted() {
+        this.reqError[this.name] = ['This field is required'];
+        if (this.isRequired && !this.isValid) {
+            this.form.errors.rset(this.name);
+        }
+
         this.config.placeholder = this.placeholder;
         this.initQuill(this.input);
     },
@@ -70098,6 +70065,10 @@ Vue.component('gl-textarea', {
     data: function data() {
         return {
             quill: '',
+
+            firstLoad: true,
+            reqError: {},
+
             config: {
                 placeholder: '',
                 theme: 'snow',
@@ -70111,11 +70082,27 @@ Vue.component('gl-textarea', {
     methods: {
         initQuill: function initQuill(text) {
             var self = this;
-            this.quill = new Quill('#' + this.id, this.config);
-            this.quill.setText(text);
-            this.quill.on('text-change', function (change) {
-                self.form[self.name] = self.quill.getText();
-            });
+            if (this.id != '') {
+                this.quill = new Quill('#' + this.id, this.config);
+                this.quill.setText(text);
+                this.quill.on('text-change', function (change) {
+                    var v = self.quill.getText();
+
+                    self.form.errors.rforget(self.name);
+                    self.form.errors.forget();
+
+                    self.form[self.name] = v;
+
+                    if (v.length == 0 && self.isRequired && !self.firstLoad) {
+                        self.form.errors.set(self.reqError);
+                    } else if (v.length == 0 && !self.isRequired) {// do nothing
+                    }
+
+                    self.firstLoad = false;
+                });
+            } else {
+                console.log('Quill id issue. Id is ' + this.id);
+            }
         }
     }
 });
@@ -70174,7 +70161,7 @@ Vue.component('spark-text', {
         'fieldValue': function fieldValue(v) {
             if (v != null) {
                 if (v.length > this.textLength) {
-                    this.form.set(this.textError);
+                    this.form.errors.set(this.textError);
                 } else {
                     this.form[this.name] = v;
                 }
@@ -70186,7 +70173,7 @@ Vue.component('spark-text', {
     },
     mounted: function mounted() {
         this.fieldValue = this.input;
-        this.textLength = typeof this.maxlength != 'Undefined' ? this.maxlength : this.textLength;
+        this.textLength = typeof this.maxlength != 'undefined' ? this.maxlength : this.textLength;
         this.textError[this.name] = ['Value cannot be longer than ' + this.textLength + ' characters'];
     },
     data: function data() {
@@ -70559,57 +70546,40 @@ Vue.component('spark-checkbox', {
     }
 });
 
-},{"moment":64}],99:[function(require,module,exports){
+},{"moment":64}],98:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-/**
- * Spark form error collection class.
- */
 window.SparkFormErrors = function () {
     this.errors = {};
+    this.rerrors = {};
 
-    /**
-     * Determine if the collection has any errors.
-     */
     this.hasErrors = function () {
         return !_.isEmpty(this.errors);
     };
+    this.hasrErrors = function () {
+        return !_.isEmpty(this.rerrors);
+    };
 
-    /**
-     * Determine if the collection has errors for a given field.
-     */
     this.has = function (field) {
         return _.indexOf(_.keys(this.errors), field) > -1;
     };
 
-    /**
-     * Get all of the raw errors for the collection.
-     */
     this.all = function () {
         return this.errors;
     };
 
-    /**
-     * Get all of the errors for the collection in a flat array.
-     */
     this.flatten = function () {
         return _.flatten(_.toArray(this.errors));
     };
 
-    /**
-     * Get the first error message for a given field.
-     */
     this.get = function (field) {
         if (this.has(field)) {
             return this.errors[field][0];
         }
     };
 
-    /**
-     * Set the raw errors for the collection.
-     */
     this.set = function (errors) {
         if ((typeof errors === 'undefined' ? 'undefined' : _typeof(errors)) === 'object') {
             this.errors = errors;
@@ -70618,21 +70588,22 @@ window.SparkFormErrors = function () {
         }
     };
 
-    /**
-     * Forget all of the errors currently in the collection.
-     */
     this.forget = function () {
         this.errors = {};
     };
+
+    this.rset = function (name) {
+        this.rerrors[name] = name + ' is required';
+    };
+    this.rforget = function (name) {
+        delete this.rerrors[name];
+    };
 };
 
-},{}],100:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
 'use strict';
 
 module.exports = {
-    /**
-     * A few helper methods for making HTTP requests and doing common form actions.
-     */
     post: function post(uri, form) {
         return Spark.sendForm('post', uri, form);
     },
@@ -70645,33 +70616,27 @@ module.exports = {
         return Spark.sendForm('delete', uri, form);
     },
 
-    /**
-     * Send the form to the back-end server. Perform common form tasks.
-     *
-     * This function will automatically clear old errors, update "busy" status, etc.
-     */
     sendForm: function sendForm(method, uri, form) {
         return new Promise(function (resolve, reject) {
             form.startProcessing();
 
             Vue.http[method](uri, form).then(function (response) {
                 form.finishProcessing();
-                resolve(response.data);
+                var vals = typeof response.data.data != 'undefined' ? response.data.data : response.data;
+                resolve(vals);
             }, function (response) {
-                form.errors.set(response.data);
+                var errs = typeof response.data.errors != 'undefined' ? response.data.errors : response.data;
+                form.errors.set(errs);
                 form.busy = false;
-                reject(response.data);
+                reject(errs);
             });
         });
     }
 };
 
-},{}],101:[function(require,module,exports){
+},{}],100:[function(require,module,exports){
 "use strict";
 
-/**
- * SparkForm helper class. Used to set common properties on all forms.
- */
 window.SparkForm = function (data) {
     var form = this;
 
@@ -70680,6 +70645,10 @@ window.SparkForm = function (data) {
     this.errors = new SparkFormErrors();
     this.busy = false;
     this.successful = false;
+
+    this.inValid = function () {
+        return form.errors.hasErrors() || form.errors.hasrErrors();
+    };
 
     this.startProcessing = function () {
         form.errors.forget();
@@ -70693,7 +70662,7 @@ window.SparkForm = function (data) {
     };
 };
 
-},{}],102:[function(require,module,exports){
+},{}],101:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-authenticate', {
@@ -70859,7 +70828,7 @@ Vue.component('spark-authenticate', {
 				}
 });
 
-},{}],103:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
 'use strict';
 
 require('./errors');
@@ -70867,14 +70836,18 @@ require('./components');
 require('./features');
 require('./authenticate');
 require('./questionnaire');
+require('./profile-account');
+require('./profile-user');
+require('./profile-org');
 require('./profile-summary');
 require('./profile-education');
 require('./profile-work');
 require('./profile-skills');
 require('./profile-languages');
 require('./profile-preferences');
+require('./gl-profile-org');
 
-},{"./authenticate":102,"./components":104,"./errors":105,"./features":106,"./profile-education":107,"./profile-languages":108,"./profile-preferences":109,"./profile-skills":110,"./profile-summary":111,"./profile-work":112,"./questionnaire":113}],104:[function(require,module,exports){
+},{"./authenticate":101,"./components":103,"./errors":104,"./features":105,"./gl-profile-org":106,"./profile-account":107,"./profile-education":108,"./profile-languages":109,"./profile-org":110,"./profile-preferences":111,"./profile-skills":112,"./profile-summary":113,"./profile-user":114,"./profile-work":115,"./questionnaire":116}],103:[function(require,module,exports){
 'use strict';
 
 Vue.component('gradlead-sparkline-bar', {
@@ -70920,7 +70893,7 @@ Vue.component('gradlead-plot', {
     }
 });
 
-},{}],105:[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 'use strict';
 
 /*
@@ -70968,7 +70941,7 @@ Vue.component('gl-error-alert', {
             </div></div>"
 });
 
-},{}],106:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-featured-jobs', {
@@ -70976,9 +70949,9 @@ Vue.component('spark-featured-jobs', {
 
     // TODO: Finish onclick 
     template: '<div> \
-        <div v-for="job in jobs" class="col-md-4 col-sm-6 blog-masonry-item development card" style="cursor:pointer">\
-          <div v-if="job.organization.profile!=null" class="item-inner quote-post">\
-            <div class="post-title">\
+        <div v-for="job in jobs" class="col-md-4 col-sm-6 blog-masonry-item development card" style="cursor:pointer; height:162px">\
+          <div @click.prevent="show(job.id)" v-if="job.organization.profile!=null" class="item-inner quote-post">\
+            <div class="post-title" style="height:162px;">\
               <div class="row">\
                 <div class="col-md-4">\
                     <img :src="job.orglogo" class="img-circle emp-logo">\
@@ -71001,11 +70974,15 @@ Vue.component('spark-featured-jobs', {
     },
     data: function data() {
         return {
+            baseUrl: '/',
             jobs: []
         };
     },
 
     methods: {
+        show: function show(id) {
+            window.location.href = this.baseUrl + 'j/' + id;
+        },
         getFeaturedJobs: function getFeaturedJobs() {
             this.$http.get('/jobs/featured').then(function (resp) {
                 this.jobs = resp.data.data;
@@ -71020,7 +70997,7 @@ Vue.component('spark-featured-employers', {
     // TODO: Finish onclick 
     template: '<div> \
                 <div v-for="o in orgs" class="col-md-2 col-sm-4" style="cursor:pointer">\
-                    <img alt="Client Logo" :src="o.logo_url">\
+                    <img @click.prevent="show(o.id)" alt="Client Logo" :src="o.logo_url">\
                 </div>\
             </div>',
 
@@ -71029,11 +71006,15 @@ Vue.component('spark-featured-employers', {
     },
     data: function data() {
         return {
+            baseUrl: '/',
             orgs: []
         };
     },
 
     methods: {
+        show: function show(id) {
+            window.location.href = this.baseUrl + 'o/' + id;
+        },
         getFeaturedEmployers: function getFeaturedEmployers() {
             this.$http.get('/organizations/featured').then(function (resp) {
                 this.orgs = resp.data.data;
@@ -71042,7 +71023,326 @@ Vue.component('spark-featured-employers', {
     }
 });
 
+},{}],106:[function(require,module,exports){
+'use strict';
+
+Vue.component('gl-view-profile-org', {
+
+    props: ['organization', 'authUser', 'usertype', 'permissions'],
+
+    template: '<div class="hbox hbox-auto-xs no-border">\
+                <div class="col wrapper">\
+                    <spark-error-alert :form="forms.updateProfile"></spark-error-alert>\
+                    <form class="form-horizontal " role="form">\
+                        <div class="row">\
+                            <div class="col-md-6">\
+                                <gl-textarea :required="true" :id="idSum" :display="\'Summary\'" :form="forms.updateProfile" :name="\'summary\'" :placeholder="\'Something interesting about you...\'" :input.sync="forms.updateProfile.summary">\
+                                </gl-textarea>\
+                                <gl-text :display="\'Street\'" :form="forms.updateProfile" :name="\'street\'" :input.sync="forms.updateProfile.street" :minlength="3" :placeholder="\'e.g. 5 mango ln\'"></gl-text>\
+\
+                                <gl-location :id="idLoc"\
+                                  :display="\'Address (Area, City, Country)\'"\
+                                  :form="forms.updateProfile"\
+                                  :name="\'location\'"\
+                                  :input.sync="location"\
+                                  :placeholder="\'e.g. North legon, Accra, Ghana\'">\
+                                  </gl-location>\
+\
+                                <gl-file :display="\'Logo\'" :form="forms.updateProfile" v-on:updated="setFileName" :name="\'icon_file\'" :warning="\'File must be less than 20MB. Must be an image file\'" :filename.sync="forms.updateProfile.file_name" :input.sync="forms.updateProfile.icon_file">\
+                                </gl-file>\
+\
+                            </div>\
+                            <div class="col-md-6">\
+                                <gl-text v-show="isCompany" :display="\'Description*\'" :form="forms.updateProfile" :name="\'description\'" :input.sync="forms.updateProfile.description"></gl-text>\
+\
+                                <gl-text v-show="isCompany" :display="\'Number of Employees\'" :form="forms.updateProfile" :name="\'num_employees\'" :input.sync="forms.updateProfile.num_employees" :placeholder="\'Number of employees e.g. 300\'"></gl-text>\
+\
+                                <gl-text v-show="isCompany" :display="\'Website\'" :form="forms.updateProfile" :name="\'website\'" :input.sync="forms.updateProfile.website" :placeholder="\'http://\'"></gl-text>\
+\
+                                <gl-text v-show="isCompany" :display="\'Job Types*\'" :form="forms.updateProfile" :name="\'jobtypes\'" :input.sync="forms.updateProfile.jobtypes"></gl-text>\
+\
+                                <gl-text v-show="isCompany" :display="\'Industries*\'" :form="forms.updateProfile" :name="\'industries\'" :input.sync="forms.updateProfile.industries"></gl-text>\
+                            </div>\
+                        </div>\
+                    </form>\
+                    <div class="footer">\
+                        <button v-if="isSchool" type="button" class="btn btn-primary pull-right" @click.prevent="updateSchoolProfile" :disabled="forms.updateProfile.busy">\
+                            <span v-if="forms.updateProfile.busy"><i class="fa fa-btn fa-spinner fa-spin"></i> Updating</span>\
+                            <span v-else> <i class="fa fa-btn fa-save"></i> Update </span>\
+                        </button>\
+                        <button v-else type="button" class="btn btn-primary pull-right" @click.prevent="updateCompanyProfile" :disabled="forms.updateProfile.busy">\
+                            <span v-if="forms.updateProfile.busy"><i class="fa fa-btn fa-spinner fa-spin"></i> Updating</span>\
+                            <span v-else> <i class="fa fa-btn fa-save"></i> Update </span>\
+                        </button>\
+                    </div>\
+                </div>\
+            </div>',
+
+    mounted: function mounted() {
+        this.idSum = Math.random().toString(36).substr(2, 5);
+        this.idLoc = Math.random().toString(36).substr(2, 5);
+        this.boot();
+    },
+
+    data: function data() {
+        return {
+            baseUrl: '/',
+
+            profile: {},
+            avatar: 'img/a0.jpg',
+            location: '',
+            idSum: Math.random().toString(36).substr(2, 5),
+            idLoc: Math.random().toString(36).substr(2, 5),
+
+            forms: {
+                updateProfile: new SparkForm({
+                    id: '',
+                    organization_id: '',
+                    summary: '',
+                    description: '',
+                    country: '',
+                    city: '',
+                    street: '',
+                    jobtypes: '',
+                    industries: '',
+                    website: '',
+                    num_employees: '',
+                    icon_file: '',
+                    file_name: ''
+                })
+            }
+        };
+    },
+
+    watch: {
+        'organization': function organization(v) {
+            this.boot();
+        }
+    },
+
+    events: {},
+
+    computed: {
+        isSchool: function isSchool() {
+            return this.organization.type == 'school' || this.organization.type == 'gradlead';
+        },
+        isCompany: function isCompany() {
+            return this.organization.type == 'employer';
+        }
+    },
+
+    methods: {
+        boot: function boot() {
+            this.setProfile(this.organization.profile);
+        },
+
+        setFileName: function setFileName(name) {
+            this.forms.updateProfile.file_name = name;
+        },
+
+        getImageUrl: function getImageUrl() {
+            if (this.profile != null) {
+                var p = this.isSchool ? 'crest' : 'logo';
+                return '/profiles/' + p + '/' + this.profile.id + '?' + new Date();
+            }
+        },
+
+        getLocation: function getLocation(e) {
+            var add = [];
+            //if (e.street!='') { add.push(e.street); }
+            if (e.neighborhood != '') {
+                add.push(e.neighborhood);
+            }
+            if (e.city != '') {
+                add.push(e.city);
+            }
+            if (e.country != '') {
+                add.push(e.country);
+            }
+            return add.length > 0 ? add.join(', ') : '';
+        },
+
+        setProfile: function setProfile(p) {
+            this.profile = p;
+            if (this.profile != null) {
+                this.location = this.getLocation(this.profile);
+                this.avatar = this.getImageUrl();
+                this.forms.updateProfile.id = this.profile.id;
+                this.forms.updateProfile.organization_id = this.profile.organization_id;
+                this.forms.updateProfile.summary = this.profile.summary;
+                this.forms.updateProfile.country = this.profile.country;
+                this.forms.updateProfile.city = this.profile.city;
+                this.forms.updateProfile.neighborhood = this.profile.neighborhood;
+                this.forms.updateProfile.street = this.profile.street;
+
+                if (this.isCompany) {
+                    this.forms.updateProfile.description = this.profile.description;
+                    this.forms.updateProfile.website = this.profile.website;
+                    this.forms.updateProfile.num_employees = this.profile.num_employees;
+                    this.forms.updateProfile.jobtypes = this.profile.jobtypes;this.forms.updateProfile.industries = this.profile.industries;
+                }
+            }
+        },
+
+        updateSchoolProfile: function updateSchoolProfile() {
+            var self = this;
+            Spark.put(self.baseUrl + 'profiles/schools/' + this.profile.id, this.forms.updateProfile).then(function () {
+                bus.$emit('updateAuthUser');
+                bus.$emit('updateOrganizations');
+            }, function (resp) {
+                self.forms.updateProfile.busy = false;
+            });
+        },
+
+        updateCompanyProfile: function updateCompanyProfile() {
+            var self = this;
+            Spark.put(self.baseUrl + 'profiles/employees/' + this.profile.id, this.forms.updateProfile).then(function () {
+                bus.$emit('updateAuthUser');
+                bus.$emit('updateOrganizations');
+            }, function (resp) {
+                self.forms.updateProfile.busy = false;
+                self.showError({ 'message': resp[0] });
+            });
+        }
+    },
+
+    filters: {}
+});
+
 },{}],107:[function(require,module,exports){
+'use strict';
+
+Vue.component('gl-profile-account', {
+    props: ['authUser', 'title'],
+
+    template: '<div class="panel hbox hbox-auto-xs no-border">\
+        <div class="col wrapper">\
+            <i class="fa fa-circle-o text-info m-r-sm pull-right"></i>\
+                        <h4 class="font-thin m-t-none m-b-none text-primary-lt">{{ title }}</h4>\
+                        <br/>\
+                        <spark-error-alert :form="forms.updateAccount"></spark-error-alert>\
+                        <form class="form-horizontal " role="form">\
+                            <div class="row">\
+                                <div class="col-md-6">\
+                                    <gl-text :required="true" :display="\'Name*\'"\
+                                    :form="forms.updateAccount" :name="\'name\'"\
+                                    :placeholder="\'Enter your name e.g. First Last\'":input.sync="forms.updateAccount.name">\
+                                    </gl-text>\
+                                 </div>\
+                            </div>\
+                            <div class="row">\
+                                <div class="col-md-6">\
+                                    <gl-text :required="true" :display="\'UUID*\'" :placeholder="\'Enter a unique identifier (e.g. firstname_lastname)\'" :form="forms.updateAccount" :name="\'uuid\'" :minlength="4" :input.sync="forms.updateAccount.uuid">\
+                                    </gl-text>\
+                                 </div>\
+                            </div>\
+                            <div class="row">\
+                                <div class="col-md-6">\
+                                    <gl-password :display="\'Password*\'" :form="forms.updateAccount"\ :name="\'password\'"\
+                                    :minlength="6"\
+                                    :placeholder="\'Enter a password. It must be more than 6 characters\'"\
+                                    :input.sync="forms.updateAccount.password">\
+                                    </gl-password>\
+                                 </div>\
+                            </div>\
+                            <div class="row">\
+                                <div class="col-md-6">\
+                                    <gl-password :display="\'Confirm*\'" :form="forms.updateAccount" :name="\'confirm\'" :similar.sync="forms.updateAccount.password" \
+                                    :placeholder="\'Re-enter  password. It must match the one above\'"\
+                                    :input.sync="forms.updateAccount.confirm">\
+                                    </gl-password>\
+                                 </div>\
+                            </div>\
+                        </form>\
+                        <div class="panel-footer">\
+                            <button type="button" class="btn btn-primary pull-right" @click.prevent="updateUserAccount" :disabled="forms.updateAccount.busy || forms.updateAccount.inValid()">\
+                                <span v-if="forms.updateAccount.busy"><i class="fa fa-btn fa-spinner fa-spin"></i> Updating</span>\
+                                <span v-else> <i class="fa fa-btn fa-save"></i> Update </span>\
+                            </button>\
+                        </div>\
+                    </div>\
+                </div>',
+
+    mounted: function mounted() {
+        this.setAccount(this.authUser);
+        this.setupListeners();
+    },
+
+    watch: {},
+
+    events: {},
+
+    notifications: {
+        showError: {
+            title: 'Account Error',
+            message: 'Failed to reach server',
+            type: 'error'
+        },
+        showSuccess: {
+            title: 'Account success',
+            message: 'Successfully modified account',
+            type: 'success'
+        }
+    },
+
+    data: function data() {
+        return {
+            baseUrl: '/',
+
+            account: {},
+
+            forms: {
+                updateAccount: new SparkForm({
+                    id: '',
+                    uuid: '',
+                    email: '',
+                    name: '',
+                    role_id: '',
+                    organization_id: '',
+                    type: '',
+                    password: '',
+                    confirm: ''
+                })
+            }
+        };
+    },
+
+    methods: {
+        setAccount: function setAccount(a) {
+            this.account = a;
+            if (a != null) {
+                this.forms.updateAccount.id = a.id;
+                this.forms.updateAccount.email = a.email;
+                this.forms.updateAccount.organization_id = a.organization_id;
+                this.forms.updateAccount.role_id = a.role_id;
+                this.forms.updateAccount.type = a.type;
+                this.forms.updateAccount.uuid = a.uuid;
+                this.forms.updateAccount.name = a.name;
+                this.forms.updateAccount.errors.forget();
+            }
+        },
+
+        setupListeners: function setupListeners() {
+            var self = this;
+            bus.$on('authUserSet', function (user) {
+                self.setAccount(user);
+            });
+        },
+
+        updateUserAccount: function updateUserAccount() {
+            var self = this;
+            Spark.put(self.baseUrl + 'users/' + this.account.id, this.forms.updateAccount).then(function () {
+                self.showSuccess({ message: 'Account updated' });
+                bus.$emit('updateAuthUser');
+            }, function (resp) {
+                self.forms.updateAccount.busy = false;
+                self.showError({ 'message': resp[0] });
+            });
+        }
+    }
+});
+
+},{}],108:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-profile-education', {
@@ -71416,7 +71716,7 @@ Vue.component('spark-profile-education', {
     }
 });
 
-},{}],108:[function(require,module,exports){
+},{}],109:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-profile-languages', {
@@ -71650,7 +71950,214 @@ Vue.component('spark-profile-languages', {
     filters: {}
 });
 
-},{}],109:[function(require,module,exports){
+},{}],110:[function(require,module,exports){
+'use strict';
+
+Vue.component('gl-profile-org', {
+
+    props: ['authUser', 'usertype', 'permissions', 'title'],
+
+    template: '<div class="panel hbox hbox-auto-xs no-border">\
+                <div class="col wrapper">\
+                    <i class="fa fa-circle-o text-info m-r-sm pull-right"></i>\
+                    <h4 class="font-thin m-t-none m-b-none text-primary-lt">{{ title }}</h4>\
+                    <br/>\
+                    <spark-error-alert :form="forms.updateProfile"></spark-error-alert>\
+                    <form class="form-horizontal " role="form">\
+                        <div class="row">\
+                            <div class="col-md-6">\
+                                <gl-textarea :required="true" :id="\'poeSummary\'" :display="\'Summary\'" :form="forms.updateProfile" :name="\'summary\'" :placeholder="\'Something interesting about you...\'" :input.sync="forms.updateProfile.summary">\
+                                </gl-textarea>\
+\
+                                <gl-text :display="\'Street\'" :form="forms.updateProfile" :name="\'street\'" :input.sync="forms.updateProfile.street" :minlength="3" :placeholder="\'e.g. 5 mango ln\'"></gl-text>\
+\
+                                <gl-location :id="\'poeLoc\'"\
+                                  :display="\'Address (Area, City, Country)\'"\
+                                  :form="forms.updateProfile"\
+                                  :name="\'location\'"\
+                                  :input.sync="location"\
+                                  :placeholder="\'e.g. North legon, Accra, Ghana\'">\
+                                  </gl-location>\
+\
+                                <gl-file :display="\'Logo\'" :form="forms.updateProfile" v-on:updated="setFileName" :name="\'icon_file\'" :warning="\'File must be less than 20MB. Must be an image file\'" :filename.sync="forms.updateProfile.file_name" :input.sync="forms.updateProfile.icon_file">\
+                                </gl-file>\
+\
+                            </div>\
+                            <div class="col-md-6">\
+                                <gl-text v-show="isCompany" :display="\'Description*\'" :form="forms.updateProfile" :name="\'description\'" :input.sync="forms.updateProfile.description"></gl-text>\
+\
+                                <gl-text v-show="isCompany" :display="\'Number of Employees\'" :form="forms.updateProfile" :name="\'num_employees\'" :input.sync="forms.updateProfile.num_employees" :placeholder="\'Number of employees e.g. 300\'"></gl-text>\
+\
+                                <gl-text v-show="isCompany" :display="\'Website\'" :form="forms.updateProfile" :name="\'website\'" :input.sync="forms.updateProfile.website" :placeholder="\'http://\'"></gl-text>\
+\
+                                <gl-text v-show="isCompany" :display="\'Job Types*\'" :form="forms.updateProfile" :name="\'jobtypes\'" :input.sync="forms.updateProfile.jobtypes"></gl-text>\
+\
+                                <gl-text v-show="isCompany" :display="\'Industries*\'" :form="forms.updateProfile" :name="\'industries\'" :input.sync="forms.updateProfile.industries"></gl-text>\
+                            </div>\
+                        </div>\
+                    </form>\
+                    <div class="panel-footer">\
+                        <button v-if="isSchool" type="button" class="btn btn-primary pull-right" @click.prevent="updateSchoolProfile" :disabled="forms.updateProfile.busy">\
+                            <span v-if="forms.updateProfile.busy"><i class="fa fa-btn fa-spinner fa-spin"></i> Updating</span>\
+                            <span v-else> <i class="fa fa-btn fa-save"></i> Update </span>\
+                        </button>\
+                        <button v-else type="button" class="btn btn-primary pull-right" @click.prevent="updateCompanyProfile" :disabled="forms.updateProfile.busy">\
+                            <span v-if="forms.updateProfile.busy"><i class="fa fa-btn fa-spinner fa-spin"></i> Updating</span>\
+                            <span v-else> <i class="fa fa-btn fa-save"></i> Update </span>\
+                        </button>\
+                    </div>\
+                </div>\
+            </div>',
+
+    notifications: {
+        showError: {
+            title: 'Profile Error',
+            message: 'Failed to reach server',
+            type: 'error'
+        },
+        showSuccess: {
+            title: 'Profile success',
+            message: 'Successfully modified profile',
+            type: 'success'
+        }
+    },
+
+    mounted: function mounted() {
+        this.setProfile(this.authUser.organization.profile);
+        this.setupListeners();
+    },
+
+    data: function data() {
+        return {
+            baseUrl: '/',
+            modname: 'Org Profile',
+
+            profile: {},
+            avatar: 'img/a0.jpg',
+            location: '',
+
+            forms: {
+                updateProfile: new SparkForm({
+                    id: '',
+                    organization_id: '',
+                    summary: '',
+                    description: '',
+                    country: '',
+                    city: '',
+                    street: '',
+                    jobtypes: '',
+                    industries: '',
+                    website: '',
+                    num_employees: '',
+                    icon_file: '',
+                    file_name: ''
+                })
+            }
+        };
+    },
+
+    watch: {},
+
+    events: {},
+
+    computed: {
+        everythingLoaded: function everythingLoaded() {
+            return this.authUser != null;
+        },
+        isSchool: function isSchool() {
+            return this.usertype.isSchool || this.usertype.isGradlead;
+        },
+        isCompany: function isCompany() {
+            return !this.usertype.isSchool && !this.usertype.isGradlead;
+        }
+    },
+
+    methods: {
+        setFileName: function setFileName(name) {
+            this.forms.updateProfile.file_name = name;
+        },
+
+        getImageUrl: function getImageUrl() {
+            if (this.profile != null) {
+                var p = this.isSchool ? 'crest' : 'logo';
+                return '/profiles/' + p + '/' + this.profile.id + '?' + new Date();
+            }
+        },
+
+        getLocation: function getLocation(e) {
+            var add = [];
+            //if (e.street!='') { add.push(e.street); }
+            if (e.neighborhood != '') {
+                add.push(e.neighborhood);
+            }
+            if (e.city != '') {
+                add.push(e.city);
+            }
+            if (e.country != '') {
+                add.push(e.country);
+            }
+            return add.length > 0 ? add.join(', ') : '';
+        },
+
+        setProfile: function setProfile(p) {
+            this.profile = p;
+            if (this.profile != null) {
+                this.location = this.getLocation(this.profile);
+                this.avatar = this.getImageUrl();
+                this.forms.updateProfile.id = this.profile.id;
+                this.forms.updateProfile.organization_id = this.profile.organization_id;
+                this.forms.updateProfile.summary = this.profile.summary;
+                this.forms.updateProfile.country = this.profile.country;
+                this.forms.updateProfile.city = this.profile.city;
+                this.forms.updateProfile.neighborhood = this.profile.neighborhood;
+                this.forms.updateProfile.street = this.profile.street;
+
+                if (this.isCompany) {
+                    this.forms.updateProfile.description = this.profile.description;
+                    this.forms.updateProfile.website = this.profile.website;
+                    this.forms.updateProfile.num_employees = this.profile.num_employees;
+                    this.forms.updateProfile.jobtypes = this.profile.jobtypes;this.forms.updateProfile.industries = this.profile.industries;
+                }
+            }
+        },
+
+        setupListeners: function setupListeners() {
+            var self = this;
+            bus.$on('authUserSet', function (user) {
+                self.setProfile(user.organization.profile);
+            });
+            bus.$emit('screenLoaded', self.modname);
+        },
+
+        updateSchoolProfile: function updateSchoolProfile() {
+            var self = this;
+            Spark.put(self.baseUrl + 'profiles/schools/' + this.profile.id, this.forms.updateProfile).then(function () {
+                self.showSuccess({ message: 'Profile updated' });
+                bus.$emit('updateAuthUser');
+                bus.$emit('updateOrganizations');
+            }, function (resp) {
+                self.forms.updateProfile.busy = false;
+                self.showError({ 'message': resp[0] });
+            });
+        },
+
+        updateCompanyProfile: function updateCompanyProfile() {
+            var self = this;
+            Spark.put(self.baseUrl + 'profiles/employees/' + this.profile.id, this.forms.updateProfile).then(function () {
+                self.showSuccess({ message: 'Profile updated' });
+                bus.$emit('updateAuthUser');
+                bus.$emit('updateOrganizations');
+            }, function (resp) {
+                self.forms.updateProfile.busy = false;
+                self.showError({ 'message': resp[0] });
+            });
+        }
+    },
+
+    filters: {}
+});
+
+},{}],111:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-profile-preferences', {
@@ -71786,7 +72293,8 @@ Vue.component('spark-profile-preferences', {
 
         getValuesAsArray: function getValuesAsArray(value) {
             var self = this;
-            var vals = typeof value == 'undefined' || value == null ? [] : value.split(',');
+            console.log(value);
+            var vals = typeof value == 'undefined' || value == null || value == '' ? [] : value.split(',');
             $.each(vals, function (i, v) {
                 vals[i] = { id: v, name: v };
             });
@@ -71864,7 +72372,7 @@ Vue.component('spark-profile-preferences', {
     filters: {}
 });
 
-},{}],110:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-profile-skills', {
@@ -71940,7 +72448,7 @@ Vue.component('spark-profile-skills', {
     methods: {
         setList: function setList(l) {
             this.list = l;
-            if (this.list.length > 0) {
+            if (this.list != null && this.list.length > 0) {
                 this.mode = 'edit';
                 this.id = this.list[0].id;
                 this.multiCSK_val = this.getMultiValues(this.list[0].skills);
@@ -72000,11 +72508,11 @@ Vue.component('spark-profile-skills', {
     filters: {}
 });
 
-},{}],111:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-profile-summary', {
-    props: ['profileid', 'userid', 'uuid', 'summary', 'title'],
+    props: ['profileid', 'userid', 'summary', 'title'],
 
     template: '<div class="panel hbox hbox-auto-xs no-border">\
                 <div class="col wrapper">\
@@ -72018,7 +72526,6 @@ Vue.component('spark-profile-summary', {
     mounted: function mounted() {
         var self = this;
         this.forms.updateForm.id = this.profileid;
-        this.forms.updateForm.uuid = this.uuid;
         this.forms.updateForm.user_id = this.userid;
         this.forms.updateForm.summary = this.summary;
         this.initQuill(this.summary);
@@ -72056,7 +72563,6 @@ Vue.component('spark-profile-summary', {
             forms: {
                 updateForm: new SparkForm({
                     id: '',
-                    uuid: '',
                     user_id: '',
                     summary: ''
                 })
@@ -72101,7 +72607,174 @@ Vue.component('spark-profile-summary', {
     }
 });
 
-},{}],112:[function(require,module,exports){
+},{}],114:[function(require,module,exports){
+'use strict';
+
+Vue.component('gl-profile-user', {
+    props: ['authUser', 'title'],
+
+    template: '<div class="panel hbox hbox-auto-xs no-border">\
+        <div class="col wrapper">\
+            <i class="fa fa-circle-o text-info m-r-sm pull-right"></i>\
+                        <h4 class="font-thin m-t-none m-b-none text-primary-lt">{{ title }}</h4>\
+                        <br/>\
+                        <spark-error-alert :form="forms.updateProfile"></spark-error-alert>\
+                        <form class="form-horizontal " role="form">\
+                            <div class="row">\
+                                <div class="col-md-6">\
+                                    <gl-textarea :required="true" :id="\'pueSummary\'" :display="\'Summary\'" :form="forms.updateProfile" :name="\'summary\'" :placeholder="\'Something interesting about you...\'" :input.sync="forms.updateProfile.summary">\
+                                    </gl-textarea>\
+                                 </div>\
+                            </div>\
+                            <div class="row">\
+                                <div class="col-md-6">\
+                                    <gl-text :display="\'Phone*\'" :form="forms.updateProfile" :name="\'phone\'"\ :input.sync="forms.updateProfile.phone" :required="true" :minlength="10"></gl-text>\
+                                </div>\
+                            </div>\
+                            <div class="row">\
+                                <div class="col-md-6">\
+                                    <gl-text :display="\'Street\'" :form="forms.updateProfile" :name="\'street\'"\ :input.sync="forms.updateProfile.street" :minlength="3" :placeholder="\'e.g. 5 mango ln\'"></gl-text>\
+                                </div>\
+                            </div>\
+                            <div class="row">\
+                                <div class="col-md-6">\
+                                    <gl-location :id="\'pueLoc\'"\
+                                                  :display="\'Address (Area, City, Country)\'"\
+                                                  :form="forms.updateProfile"\
+                                                  :name="\'location\'"\
+                                                  :input.sync="location"\
+                                                  :placeholder="\'e.g. North legon, Accra, Ghana\'">\
+                                      </gl-location>\
+                                 </div>\
+                            </div>\
+                            <div class="row">\
+                                <div class="col-md-6">\
+                                    <gl-file :display="\'Avatar\'"\
+                                             :form="forms.updateProfile" v-on:updated="setFileName"\ :name="\'icon_file\'"\
+                                             :warning="\'File must be less than 20MB. Must be an image file\'"\ :filename.sync="forms.updateProfile.file_name"\ :input.sync="forms.updateProfile.icon_file">\
+                                    </gl-file>\
+                                 </div>\
+                            </div>\
+                        </form>\
+                        <div class="panel-footer">\
+                            <button type="button" class="btn btn-primary pull-right" @click.prevent="updateUserProfile" :disabled="forms.updateProfile.busy || forms.updateProfile.inValid()">\
+                                <span v-if="forms.updateProfile.busy"><i class="fa fa-btn fa-spinner fa-spin"></i> Updating</span>\
+                                <span v-else> <i class="fa fa-btn fa-save"></i> Update </span>\
+                            </button>\
+                        </div>\
+                    </div>\
+                </div>',
+
+    mounted: function mounted() {
+        this.setProfile(this.authUser.profile);
+        this.setupListeners();
+    },
+
+    watch: {},
+
+    events: {},
+
+    notifications: {
+        showError: {
+            title: 'Profile Error',
+            message: 'Failed to reach server',
+            type: 'error'
+        },
+        showSuccess: {
+            title: 'Profile success',
+            message: 'Successfully modified profile',
+            type: 'success'
+        }
+    },
+
+    data: function data() {
+        return {
+            baseUrl: '/',
+
+            profile: {},
+            avatar: 'img/a0.jpg',
+            location: '',
+
+            forms: {
+                updateProfile: new SparkForm({
+                    id: '',
+                    user_id: '',
+                    summary: '',
+                    country: '',
+                    city: '',
+                    neighborhood: '',
+                    street: '',
+                    phone: '',
+                    icon_file: '',
+                    file_name: ''
+                })
+            }
+        };
+    },
+
+    methods: {
+        setFileName: function setFileName(name) {
+            this.forms.updateProfile.file_name = name;
+        },
+
+        getImageUrl: function getImageUrl() {
+            if (this.profile != null) {
+                return '/profiles/avatar/' + this.profile.id + '?' + new Date();
+            }
+        },
+
+        getLocation: function getLocation(e) {
+            var add = [];
+            //if (e.street!='') { add.push(e.street); }
+            if (e.neighborhood != '') {
+                add.push(e.neighborhood);
+            }
+            if (e.city != '') {
+                add.push(e.city);
+            }
+            if (e.country != '') {
+                add.push(e.country);
+            }
+            return add.length > 0 ? add.join(', ') : '';
+        },
+
+        setProfile: function setProfile(a) {
+            this.profile = a;
+            if (a != null) {
+                this.location = this.getLocation(this.profile);
+                this.avatar = this.getImageUrl();
+                this.forms.updateProfile.id = this.profile.id;
+                this.forms.updateProfile.user_id = this.profile.user_id;
+                this.forms.updateProfile.phone = this.profile.phone;
+                this.forms.updateProfile.summary = this.profile.summary;
+                this.forms.updateProfile.country = this.profile.country;
+                this.forms.updateProfile.city = this.profile.city;
+                this.forms.updateProfile.neighborhood = this.profile.neighborhood;
+                this.forms.updateProfile.street = this.profile.street;
+            }
+        },
+
+        setupListeners: function setupListeners() {
+            var self = this;
+            bus.$on('authUserSet', function (user) {
+                self.setProfile(user.profile);
+            });
+        },
+
+        updateUserProfile: function updateUserProfile() {
+            var self = this;
+            Spark.put(self.baseUrl + 'profiles/users/' + this.profile.id, this.forms.updateProfile).then(function () {
+                self.showSuccess({ message: 'Profile updated' });
+                bus.$emit('updateAuthUser');
+            }, function (resp) {
+                self.forms.updateProfile.busy = false;
+                self.showError({ 'message': resp[0] });
+            });
+        }
+    }
+});
+
+},{}],115:[function(require,module,exports){
 'use strict';
 
 var _moment = require('moment');
@@ -72486,7 +73159,7 @@ Vue.component('spark-profile-work', {
 
 });
 
-},{"moment":64}],113:[function(require,module,exports){
+},{"moment":64}],116:[function(require,module,exports){
 'use strict';
 
 Vue.component('gl-questionnaire', {

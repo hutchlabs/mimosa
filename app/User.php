@@ -18,8 +18,7 @@ class User extends Authenticatable
 
     protected $hidden = ['password', 'remember_token',];
 
-    protected $with = ['role','organization','bookmarks','alerts',
-                       'address','achievements','applications'];
+    protected $with = ['role','organization','bookmarks','alerts','achievements','applications'];
     
     protected function getArrayableAppends()
     {
@@ -34,7 +33,15 @@ class User extends Authenticatable
     
     protected function getEducationAttribute()
     {
-        return DB::table('profiles_student_education')->select(DB::raw('*'))->where('user_id',$this->id)->get(); 
+        $ed= DB::table('profiles_student_education')->select(DB::raw('*'))->where('user_id',$this->id)->get(); 
+        
+        if (!is_null($ed) && sizeof($ed)) {
+            foreach($ed as $key => $val) {     
+                $monthName = date('F', mktime(0, 0, 0, $val->graduation_month, 10));
+                $ed[$key]->graduation = $monthName.', '.$val->graduation_year;  
+            }
+        }
+        return $ed;
     }
     
     protected function getLanguagesAttribute()
@@ -73,7 +80,19 @@ class User extends Authenticatable
             $profile->summary = "This is the default profile text. Please update your profile.";
             $profile->modified_by = 1;
             $profile->save();
+        } else {
+            $profile->avatar = 'img/a0.jpg';
+            if ($profile->file_name<>'') {
+                $profile->avatar = '/profiles/avatar/'.$profile->id.'?'.date('Y-m-d');
+            }
         }
+        
+        $address = [];
+        if ($profile->street<>'') { array_push($address, $profile->street); }
+        if ($profile->neighborhood<>'') { array_push($address, $profile->neighborhood); }
+        if ($profile->city<>'') { array_push($address, $profile->city); }
+        if ($profile->country<>'') { array_push($address, $profile->country); }
+        $profile->address = (sizeof($address)>0) ? join('<br/> ',$address) : 'No address given';
         return $profile;
     }
     
@@ -91,12 +110,7 @@ class User extends Authenticatable
     {
         return $this->hasMany('\App\Gradlead\Alert', 'user_id', 'id');
     }
-
-    public function address()
-    {
-        return $this->hasOne('\App\Gradlead\Address', 'user_id', 'id');
-    }
-    
+  
     public function applications()
     {
         return $this->hasMany('\App\Gradlead\Application', 'user_id', 'id');

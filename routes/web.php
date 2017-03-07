@@ -20,9 +20,19 @@ Route::group(['middleware' => 'web'], function ($router) {
 
 
         $router->get('/',           'WelcomeController@index');
+        $router->get('/vjobs',      'WelcomeController@jobs');
+        $router->post('/vjobs',     'WelcomeController@jobs');
+        $router->get('/employers',  'WelcomeController@employers');
+        $router->post('/employers', 'WelcomeController@employers');
+
         $router->get('/schools',    'WelcomeController@schools');
         $router->get('/contact',    'WelcomeController@contact');
-        $router->get('/login',      'WelcomeController@index');
+        $router->get('/login',      'WelcomeController@index');     
+        $router->get('/u/{id}',     'WelcomeController@publicProfile');
+        $router->get('/o/{id}',     'WelcomeController@publicOrg');
+        $router->get('/j/{id}',     'WelcomeController@publicJob');
+
+    
         $router->get('/home',       'HomeController@index');
         $router->get('/fauthuser',  'ApiController@authuser');
         $router->get('/flogout',    'ApiController@logout');
@@ -54,15 +64,12 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->post('users/alert',                       'UserController@alert');
         $router->post('users/badge',                       'UserController@merit');
         $router->post('users/bookmark',                    'UserController@bookmark');
-        $router->post('users/address',                     'UserController@storeAddress');
         $router->put('users/{id}',                         'UserController@update');
         $router->put('users/alert/{aid}',                  'UserController@updateAlert');
-        $router->put('users/address/{aid}',                'UserController@updateAddress');
         $router->delete('users/{id}',                      'UserController@destroy');
         $router->delete('users/alert/{aid}',               'UserController@unalert');
         $router->delete('users/badge/{aid}',               'UserController@demerit');
         $router->delete('users/bookmark/{bid}',            'UserController@unbookmark');
-        $router->delete('users/address/{aid}',             'UserController@destroyAddress');
 
         // Organizations
         $router->get('organizations',                       'OrganizationController@index');
@@ -82,7 +89,7 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->get('profiles/crest/{id}',                 'ProfileController@crest');
         $router->get('profiles/avatar/{id}',                'ProfileController@avatar');
         $router->get('profiles/pic/{id}',                   'ProfileController@pic');
-        $router->get('profiles/pdf/{id}',                   'ProfileController@pdf');
+        $router->get('profiles/pdf/{id}',                   'ProfileController@pdf');    
         $router->post('profiles/users',                     'ProfileController@storeUserProfile');
         $router->post('profiles/users/education',           'ProfileController@storeUserEducation');
         $router->post('profiles/users/experience',          'ProfileController@storeUserExperience');

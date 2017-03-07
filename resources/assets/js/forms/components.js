@@ -144,6 +144,17 @@ Vue.component('gl-file', {
     },
 });
 
+Vue.component('gl-hidden', {
+    props: ['display', 'form', 'name', 'input'],
+    template: '<input type="hidden" class="form-control" v-model="fieldValue" />',
+    watch: {
+        'fieldValue': function (v) { this.form[this.name] = v; },
+        'input': function (v) { this.fieldValue = this.input; }
+    },
+    mounted: function () { this.fieldValue = this.input; },
+    data: function () { return { fieldValue: '' } }
+});
+
 Vue.component('gl-location', {
 
     props: ['display', 'form', 'name', 'id', 'input', 'placeholder'],
@@ -172,20 +183,21 @@ Vue.component('gl-location', {
 
 	computed: { },
 
-    mounted: function() {
-        //Loader.load(() => { return this.boot(this); });
-        this.boot();
-	},
+    mounted: function() { this.boot(); },
 
 	watch: {
         'place': function(address) {
            if (Object.keys(address).length > 0) {
                this.address = address;
+               if (typeof this.form['street'] != 'undefined') {
+                   //this.form['street'] = this.address.street_number + ' '+this.address.route;
+               }
                this.form['country'] = address.country;
                this.form['city'] = address.locality;
                this.form['neighborhood'] = address.neighborhood;
            }
-		}
+		},
+        'input': function(v) { this.ref.value = v; },
 	},
 
 	methods:
@@ -214,8 +226,7 @@ Vue.component('gl-location', {
                             }
                     });
                 }
-                //console.log("Location: "+this.input);
-                if (this.input != '')  { this.ref.value= this.input; }
+                if (this.input != '')  { this.ref.value= this.input;  }
         },
         isValid: function() { return (this.place!=null) && (Object.keys(this.place).length > 0); },
         isInValid: function() { return !this.isInValid(); },
@@ -223,8 +234,65 @@ Vue.component('gl-location', {
 	}
 });
 
+Vue.component('gl-password', {
+    props: ['display', 'form', 'name', 'input', 'placeholder','similar','minlength','required'],
+
+    template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
+                <div class="col-sm-12">\
+                    <label class="control-label">{{ display }}</label>\
+                    <input type="password" :placeholder="placeholder" class="form-control" v-model="fieldValue">\
+                    <span class="help-block" v-show="form.errors.has(name)"><small style="color:red">The password needs to be more than {{ minlength }} characters</small></span>\
+                    <span class="help-block" v-show="sameError"><small style="color:red">This does not match the given password</small></span>\
+                </div>\
+            </div>',
+    watch: {
+        'fieldValue': function (v) { 
+                this.form[this.name] = v;
+                this.form.errors.forget();
+                this.form.errors.rforget(this.name);
+
+                if (v.length==0 && this.isRequired && !this.firstLoad) {
+                    this.form.errors.set(this.reqError);
+                } else if (v.length==0 && !this.isRequired) { // do nothing
+                } else if (!this.isValidLength && !this.firstLoad) {
+                    this.form.errors.set(this.textError);
+                }
+
+                this.firstLoad = false;
+        },
+        'input': function (v) { this.fieldValue = this.input; },
+        'similar': function (v) { this.fieldSame = this.similar; }
+    },
+    computed: {
+        sameError: function() { return (this.fieldSame!=null && this.fieldSame!=this.fieldValue); },
+        isRequired: function() { return (typeof this.required != 'undefined'); },
+        isValid: function() { return (this.isValidLength && this.fieldValue!=''); },
+        isValidLength: function() { return (this.fieldValue.length >= this.minTextLength);  }, 
+    },
+    mounted: function () { 
+        this.reqError[this.name] = ['This field is required'];
+
+        if (this.isRequired && !this.isValid) {  this.form.errors.rset(this.name); }
+
+        this.fieldSame = (typeof this.similar != 'undefined') ? this.similar : this.fieldSame;
+        this.minTextLength = (typeof this.minlength != 'undefined') ? this.minlength : this.minTextLength;
+        this.textError[this.name] = ['The password needs to be more than '+this.textLength+' characters'];
+    },
+    data: function () { 
+        return { 
+            firstLoad: true,
+            reqError: {},
+
+            fieldValue: '',
+            fieldSame: null,
+            minTextLength: 6,
+            textError: {},
+        } 
+    },
+});
+
 Vue.component('gl-text', {
-    props: ['display', 'form', 'name', 'input','maxlength','placeholder'],
+    props: ['display', 'form', 'name', 'input','maxlength','minlength','placeholder','required'],
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                     <div class="col-sm-12">\
@@ -239,33 +307,52 @@ Vue.component('gl-text', {
     watch: {
         'fieldValue': function (v) {
             if (v!=null) {
-                if (v.length > this.textLength) {
-                    this.form.set(this.textError);
-                } else {
-                    this.form[this.name] = v;
+                this.form.errors.forget();
+                this.form.errors.rforget(this.name);
+                this.form[this.name] = v;
+
+                if (v.length==0 && this.isRequired && !this.firstLoad) {
+                    this.form.errors.set(this.reqError);
+                } else if (v.length==0 && !this.isRequired) { // do nothing
+                } else if (! this.isValidLength && !this.firstLoad) {
+                    this.form.errors.set(this.textError);
                 }
+
+                this.firstLoad = false;
             }
         },
-        'input': function (v) {
-            this.fieldValue = this.input;
-        }
+        'input': function (v) { this.fieldValue = this.input; }
+    },
+    computed: {
+        isRequired: function() { return (typeof this.required != 'undefined'); },
+        isValid: function() { return (this.isValidLength && this.fieldValue!=''); },
+        isValidLength: function() { return ((this.fieldValue.length >= this.minTextLength) &&  
+                                            (this.fieldValue.length <= this.maxTextLength)); } 
     },
     mounted: function () {
+        this.reqError[this.name] = ['This field is required'];
+        if (this.isRequired && !this.isValid) {  this.form.errors.rset(this.name); }
+
+        this.maxTextLength = (typeof this.maxlength != 'undefined') ? this.maxlength : this.maxTextLength;
+        this.minTextLength = (typeof this.minlength != 'undefined') ? this.minlength : this.minTextLength;
+        this.textError[this.name] = ['This needs to be between '+this.minTextLength+' and '+this.maxTextLength+' characters'];
         this.fieldValue = this.input;
-        this.textLength = (typeof this.maxlength != 'Undefined') ? this.maxlength : this.textLength;
-        this.textError[this.name] = ['Value cannot be longer than '+this.textLength+' characters'];
     },
     data: function () {
         return {
+            firstLoad: true,
+            reqError: {},
+
             fieldValue: '',
-            textLength: 255,
+            minTextLength: 0,
+            maxTextLength: 255,
             textError: {},
         }
     }
 });
 
 Vue.component('gl-textarea', {
-    props: ['id','display', 'form', 'name', 'input', 'placeholder'],
+    props: ['id','display', 'form', 'name', 'input', 'placeholder', 'required'],
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                 <div class="col-sm-12">\
@@ -277,9 +364,19 @@ Vue.component('gl-textarea', {
                 </div>\
                </div>',
 
-    watch: {},
+    computed: {
+        isRequired: function() { return (typeof this.required != 'undefined'); },
+        isValid: function() { return (this.isRequired) ? (this.form[this.name].length>0) : true; },
+    },
+
+    watch: {
+        'input': function(v) { this.quill.setText(v); },
+    },
 
     mounted: function () {
+        this.reqError[this.name] = ['This field is required'];
+        if (this.isRequired && !this.isValid) {  this.form.errors.rset(this.name); }
+
         this.config.placeholder = this.placeholder;
         this.initQuill(this.input);
     },
@@ -287,6 +384,10 @@ Vue.component('gl-textarea', {
     data: function () {
         return {
             quill: '',
+            
+            firstLoad: true,
+            reqError: {},
+
             config: {
                     placeholder: '',
                     theme: 'snow',
@@ -304,13 +405,29 @@ Vue.component('gl-textarea', {
     methods: {
         initQuill: function(text) {
             var self = this;
-            this.quill = new Quill('#'+this.id, this.config);
-            this.quill.setText(text);
-            this.quill.on('text-change', function(change) {
-                self.form[self.name] = self.quill.getText();
-            });
-        }
-    },
+            if (this.id!='') {
+                this.quill = new Quill('#'+this.id, this.config);
+                this.quill.setText(text);
+                this.quill.on('text-change', function(change) {
+                    var v = self.quill.getText();
+
+                    self.form.errors.rforget(self.name);
+                    self.form.errors.forget();
+
+                    self.form[self.name] = v; 
+
+                    if (v.length==0 && self.isRequired && !self.firstLoad) {
+                        self.form.errors.set(self.reqError);
+                    } else if (v.length==0 && !self.isRequired) { // do nothing
+                    }
+
+                    self.firstLoad = false;
+                });
+            } else { 
+                console.log('Quill id issue. Id is '+this.id); 
+            }
+        },
+    }
 });
 
 Vue.component('gl-select', {
@@ -364,7 +481,7 @@ Vue.component('spark-text', {
         'fieldValue': function (v) {
             if (v!=null) {
                 if (v.length > this.textLength) {
-                    this.form.set(this.textError);
+                    this.form.errors.set(this.textError);
                 } else {
                     this.form[this.name] = v;
                 }
@@ -376,7 +493,7 @@ Vue.component('spark-text', {
     },
     mounted: function () {
         this.fieldValue = this.input;
-        this.textLength = (typeof this.maxlength != 'Undefined') ? this.maxlength : this.textLength;
+        this.textLength = (typeof this.maxlength != 'undefined') ? this.maxlength : this.textLength;
         this.textError[this.name] = ['Value cannot be longer than '+this.textLength+' characters'];
     },
     data: function () {

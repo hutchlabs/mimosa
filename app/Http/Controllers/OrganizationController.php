@@ -32,18 +32,10 @@ class OrganizationController extends Controller
         $user = $request->user();
 
         $this->validate($request, [
-                                   'subdomain' => 'required|max:255',
                                    'name' => 'required|max:255',
                                    'type' => 'required|in:employer,gradlead,school',
                                   ]
                                 );
-
-        if ($request->type=='school') {
-            $o = Organization::where('subdomain',$request->subdomain)->first();
-            if ($o) {
-                return $this->json_response(['subdomain' => ['The subdomain already exists for another organization.']], true, 422);
-            } 
-        }
 
         $o = Organization::whereRaw('name=? and type=?',array($request->name, $request->subdomain))->first();
 
@@ -51,7 +43,8 @@ class OrganizationController extends Controller
             $o = new Organization();
             $o->name = $request->name;
             $o->type = $request->type;
-            $o->subdomain = (in_array($request->type, array('employer','gradlead'))) ? 'localhost' : $request->subdomain; 
+            list($sub) = explode(' ', strtolower(trim($request->name)), 1);
+            $o->subdomain = (in_array($request->type, array('employer','gradlead'))) ? 'localhost' : $sub;
             $o->modified_by = $user->id;
             $o->save();
         
@@ -123,24 +116,16 @@ class OrganizationController extends Controller
         $o = Organization::findOrFail($orgId);
 
         $this->validate($request, [
-                                   'subdomain' => 'required|max:255',
                                    'name' => 'required|max:255',
                                    'type' => 'required|in:employer,gradlead,school',
                                   ]
                                 );
 
-        if ($request->type=='school') {
-            $t = Organization::where('subdomain',$request->subdomin)->first();
-            if ($t && ($o->id != $t->id)) {
-                $this->json_response(
-                    ['subdomain' => ['The subdomain already exists for another organization.']],true,422);
-            } 
-        }
-
         // update org
         $o->name = $request->name;
         $o->type = $request->type;
-        $o->subdomain = (in_array($request->type, array('employer','gradlead'))) ? 'localhost' : $request->subdomain; 
+        list($sub) = explode(' ', strtolower(trim($request->name)), 1);
+        $o->subdomain = (in_array($request->type, array('employer','gradlead'))) ? 'localhost' : $sub;
         $o->modified_by = $user->id;
         $o->save();
 

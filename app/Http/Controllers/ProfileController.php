@@ -21,7 +21,7 @@ class ProfileController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth',['except'=>['avatar','pic','logo','crest','pdf']]);
+        $this->middleware('auth',['except'=>['avatar','pic','logo','crest','pdf','publicProfile']]);
         $this->middleware('tenant');
     }
 
@@ -73,6 +73,7 @@ class ProfileController extends Controller
         return $this->json_response($items);
     }
 
+    
     // STORE
     public function storeEmployeeProfile(Request $request)
     {
@@ -90,7 +91,8 @@ class ProfileController extends Controller
         $i->num_employees = isset($request->num_employees) ? $request->num_employees:null;
         $i->country = $request->country;
         $i->city = $request->city;
-        $i->address = $request->address;
+        $i->neighborhood = $request->neighborhood;
+        $i->street = $request->street;
         $i->job_types = $request->job_types;
         $i->industries = $request->industries;
         $i->website = isset($request->website) ? $request->website:null;
@@ -144,6 +146,10 @@ class ProfileController extends Controller
 
        	$i->organization_id = $request->organization_id;
        	$i->summary = $request->summary;
+        $i->country = $request->country;
+        $i->city = $request->city;
+        $i->neighborhood = $request->neighborhood;
+        $i->street = $request->street;
        	$i->modified_by = $user->id;
        	$i->save();
 
@@ -163,11 +169,12 @@ class ProfileController extends Controller
 
         $i = new Profile();
         $i->user_id = $request->user_id;
-        $i->uuid = md5($request->user_id.time());
+        $i->phone = $request->phone;
         $i->summary = $request->summary;
         $i->country = $request->country;
         $i->city = $request->city;
         $i->neighborhood = $request->neighborhood;
+        $i->street = $request->street;
         
         if ($request->icon_file<>'') {
             $fInfo = $this->handleNewFileUpload($request, 'files/avatars/');
@@ -372,7 +379,7 @@ class ProfileController extends Controller
             'description' => 'required',
             'country' => 'required|max:255',
             'city' => 'required',
-            'address' => 'required',
+            'street' => 'required',
             'jobtypes' => 'required',
             'industries' => 'required',
             'num_employees'=>'numeric',
@@ -388,7 +395,8 @@ class ProfileController extends Controller
         $i->num_employees = isset($request->num_employees) ? $request->num_employees:null;
         $i->country = $request->country;
         $i->city = $request->city;
-        $i->address = $request->address;
+        $i->neighborhood = $request->neighborhood;
+        $i->street = $request->street;
         $i->job_types = $request->job_types;
         $i->industries = $request->industries;
         $i->website = isset($request->website) ? $request->website:null;
@@ -428,6 +436,10 @@ class ProfileController extends Controller
         $i = ProfileSchool::find($request->id);
         $i->organization_id = $request->organization_id;
         $i->summary = $request->summary;
+        $i->country = $request->country;
+        $i->city = $request->city;
+        $i->neighborhood = $request->neighborhood;
+        $i->street = $request->street;
 
  		if ($request->icon_file<>'') {
             Storage::delete($i->file_path);
@@ -455,7 +467,7 @@ class ProfileController extends Controller
 
         $this->validate($request, [
             'user_id' => 'required|exists:users,id',
-            'uuid' => 'required|max:255',
+            'summary' => 'required|max:255',
             'file_name' => 'string',
             'icon_file' => 'string'
         ]);
@@ -463,11 +475,12 @@ class ProfileController extends Controller
         $u = User::find($request->user_id);
         $i = Profile::find($u->profile->id);
         $i->user_id = $request->user_id;
-        $i->uuid = $request->uuid;
+        $i->phone = $request->phone;
         $i->summary = $request->summary;
         $i->country = $request->country;
         $i->city = $request->city;
         $i->neighborhood = $request->neighborhood;
+        $i->street = $request->street;
 
  		if ($request->icon_file<>'') {
             Storage::delete($i->file_path);

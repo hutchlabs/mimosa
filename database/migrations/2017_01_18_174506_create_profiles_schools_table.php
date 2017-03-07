@@ -20,6 +20,7 @@ class CreateProfilesSchoolsTable extends Migration
             $table->string('country')->nullable();
             $table->string('city')->nullable();
             $table->string('neighborhood')->nullable();
+            $table->string('street')->nullable();
             $table->string('file_name')->nullable();
             $table->string('file_path')->nullable();
             $table->string('file_url')->nullable();

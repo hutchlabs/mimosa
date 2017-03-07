@@ -18,8 +18,6 @@
                             <spark-text :display="'Name*'" :form="forms.updateOrganization" :name="'name'" :input.sync="forms.updateOrganization.name">
                             </spark-text>
 
-                             <spark-text :display="'Sub Domain*'" :form="forms.updateOrganization" :name="'subdomain'" :input.sync="forms.updateOrganization.subdomain">
-                            </spark-text>
                         </div>
                     </div>
                 </form>

@@ -2,6 +2,19 @@ Vue.component('gradlead-orgs-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
 
+    notifications: {
+      /*showError: {
+          title: 'Organization Error',
+          message: 'Failed to reach server',
+          type: 'error'
+        },
+        showSuccess: {
+          title: 'Profile success',
+          message: 'Successfully modified organization',
+          type: 'success'
+        },*/
+    },
+    
     // TODO: handle approval
 
     mounted: function() {
@@ -16,7 +29,8 @@ Vue.component('gradlead-orgs-screen', {
             organizations: [],
             employers: [],
             schools: [],
-
+            
+            profilingOrganization: {'name':'none'},
             editingOrganization: {'name':'none'},
             removingOrganizationId: null,
 
@@ -24,13 +38,11 @@ Vue.component('gradlead-orgs-screen', {
                 addOrganization: new SparkForm ({
                     name: '',
                     type: '',
-                    subdomain: '',
                 }),
 
                 updateOrganization: new SparkForm ({
                     name: '',
                     type: '',
-                    subdomain: '',
                 }),
             }
         };
@@ -49,7 +61,6 @@ Vue.component('gradlead-orgs-screen', {
         addOrganization: function (type) {
             this.forms.addOrganization.name = '';
             this.forms.addOrganization.type = type;
-            this.forms.addOrganization.subdomain = (type!='gradlead')?'':'localhost';
             this.forms.addOrganization.errors.forget();
             $('#modal-add-'+type+'-org').modal('show');
         },
@@ -57,9 +68,14 @@ Vue.component('gradlead-orgs-screen', {
             this.editingOrganization = org;
             this.forms.updateOrganization.name = org.name;
             this.forms.updateOrganization.type = org.type;
-            this.forms.updateOrganization.subdomain = org.subdomain;
             this.forms.updateOrganization.errors.forget();
             $('#modal-edit-'+org.type+'-org').modal('show');
+        },
+        
+        viewProfile: function(org) {
+            this.profilingOrganization = org;
+
+            $('#modal-'+org.type+'-view-profile').modal('show');
         },
 
         removingOrganization: function(id) { return (this.removingOrganizationId == id); },
@@ -76,16 +92,18 @@ Vue.component('gradlead-orgs-screen', {
             Spark.post(self.baseUrl+'organizations', this.forms.addOrganization)
                 .then(function () {
                     $('#modal-add-'+type+'-org').modal('hide');
+                    self.showSuccess({message: 'Organization added'});
                     bus.$emit('updateOrganizations');
                 }, function(resp) {
                     self.forms.addOrganization.busy = false;
-                    //NotificationStore.addNotification({ text: resp.statusText, type: "btn-danger", timeout: 5000,});
+                    self.showError({'message': resp[0]});
                 });
         },
         updateOrganization: function (type) {
             var self = this;
             Spark.put(self.baseUrl+'organizations/' + this.editingOrganization.id, this.forms.updateOrganization)
                 .then(function () {
+                    self.showSuccess({message: 'Organization updated'});
                     bus.$emit('updateOrganizations');
                     $('#modal-edit-'+type+'-org').modal('hide');
                 });
@@ -101,7 +119,7 @@ Vue.component('gradlead-orgs-screen', {
                     bus.$emit('updateOrganizations');
                 }, function(resp) {
                     self.removingOrganizationId = 0;
-                    //NotificationStore.addNotification({ text: resp.error[0], type: "btn-danger", timeout: 5000,});
+                    self.showError({'message': resp[0]});
                 });
         },
 

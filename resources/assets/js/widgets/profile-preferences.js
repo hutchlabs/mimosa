@@ -105,7 +105,8 @@ Vue.component('spark-profile-preferences', {
 
         getValuesAsArray: function (value) {
             var self = this;
-            var vals = (typeof value == 'undefined' || value==null) ? [] : value.split(',');
+            console.log(value);
+            var vals = (typeof value == 'undefined' || value==null || value=='') ? [] : value.split(',');
             $.each(vals, function(i, v) {  vals[i] = {id:v, name:v}});
             return vals;
         },

@@ -1,6 +1,3 @@
-/**
- * SparkForm helper class. Used to set common properties on all forms.
- */
 window.SparkForm = function (data) {
     var form = this;
 
@@ -9,6 +6,8 @@ window.SparkForm = function (data) {
     this.errors = new SparkFormErrors();
     this.busy = false;
     this.successful = false;
+
+    this.inValid = function() { return form.errors.hasErrors() || form.errors.hasrErrors(); };
 
     this.startProcessing = function () {
         form.errors.forget();

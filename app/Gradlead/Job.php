@@ -17,7 +17,7 @@ class Job extends Model
 
     protected function getArrayableAppends()
     {
-        $this->appends = array_merge($this->appends, ['numapplications','orgname','orglogo']);
+        $this->appends = array_merge($this->appends, ['numapplications','orgname','orglogo','address']);
         return parent::getArrayableAppends();
     }
 
@@ -59,6 +59,15 @@ class Job extends Model
         return $logo;
     }
     
+    public function getAddressAttribute()
+    {      
+        $address = [];
+        if ($this->street<>'') { array_push($address, $this->street); }
+        if ($this->neighborhood<>'') { array_push($address, $this->neighborhood); }
+        if ($this->city<>'') { array_push($address, $this->city); }
+        if ($this->country<>'') { array_push($address, $this->country); }
+        return (sizeof($address)>0) ? join(', ',$address) : 'No address given';
+    }
     
     public function organization()
     {
@@ -108,7 +117,7 @@ class Job extends Model
     
     public static function search($user, $keywords, $loc, $dates=null, $remote=null)
     {   
-         DB::enableQueryLog();      
+        //DB::enableQueryLog();      
         $results = ['count'=>0, 'all'=>[], 'school'=>[], 'other'=>[],'featured'=>[]];
         
         $cases = Job::query();
@@ -121,6 +130,8 @@ class Job extends Model
             $locs = explode(' ', $loc);
             $terms = array_merge($terms, $locs);
             
+            foreach($terms as $key=>$val) { if ($val==''){ unset($terms[$key]); }}
+
             $cases = $cases->where(function($q) use ($terms, $fields) {
                          foreach($terms as $term) {
                             foreach($fields as $field) {
@@ -140,14 +151,14 @@ class Job extends Model
         }
         
         $res = $cases->get();
-        $dd = DB::getQueryLog();
+        //$dd = DB::getQueryLog();
+        //dd($dd);exit;
         
         $results['count'] = $cases->count();
-        
+
         $checkSchool = (is_null($user)) ? false : true;
         $sid = 0;
         if ($checkSchool) { $sid = $user->organization_id; }
-        
         foreach($res as $j) {
                 $item = [
                             'id'=> $j->id,

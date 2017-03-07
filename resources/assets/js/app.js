@@ -20,7 +20,6 @@ require('./components/Stats.vue');
 require('./components/Users.vue');
 require('./components/Organizations.vue');
 require('./components/Permissions.vue');
-require('./components/Profiles.vue');
 require('./components/Badges.vue');
 require('./components/Plans.vue');
 require('./components/Screening.vue');

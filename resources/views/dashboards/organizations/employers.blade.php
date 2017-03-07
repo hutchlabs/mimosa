@@ -34,9 +34,9 @@
                     <tr>
                         <th>Name</th>
                         <th v-if="usertype.isSchool && 0">Approved?</th>
-                        <th v-if="usertype.isGradlead">Subdomain</th>
                         <th v-if="usertype.isGradlead"># of Users</th>
                         <th v-if="usertype.isGradlead">School Affiliations</th>
+                        <th>Profile</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -45,11 +45,15 @@
 
                         <td class="spark-table-pad"> @{{ o.name }} </td>
                         <td class="spark-table-pad" v-if="usertype.isSchool && 0"> @{{ o.approved }} </td>
-                        <td class="spark-table-pad" v-if="usertype.isGradlead"> @{{ o.subdomain }} </td>
                         <td class="spark-table-pad" v-if="usertype.isGradlead"> @{{ o.numusers }} </td>
                         <td class="spark-table-pad" v-if="usertype.isGradlead"> @{{ o | affiliations }} </td>
 
                         <td class="spark-table-pad">
+                            <button class="btn btn-default btn-addon btn-sm btn-circle" @click.prevent="viewProfile(o)">
+                                <i class="fa fa-building"></i> Profile</button>
+                        </td>
+                        <td class="spark-table-pad">
+
                             <button class="btn btn-warning btn-addon btn-sm btn-circle" @click.prevent="editOrganization(o)">
                                 <i class="fa fa-pencil"></i> Edit
                             </button>
@@ -70,8 +74,7 @@
             </div>
 
         </div>
-        
-        @include('dashboards.organizations.employers-add') @include('dashboards.organizations.employers-edit')
+
       </div>
         <!-- / Employers -->
 
@@ -79,6 +82,9 @@
   
   </div>
   <!-- / main -->
+          @include('dashboards.organizations.employers-add') @include('dashboards.organizations.employers-edit')
+        @include('dashboards.organizations.employers-profile-view')
 </div>
+        
 
 </gradlead-orgs-screen>

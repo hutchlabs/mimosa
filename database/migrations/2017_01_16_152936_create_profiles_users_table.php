@@ -16,11 +16,12 @@ class CreateProfilesUsersTable extends Migration
         Schema::create('profiles_users', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
-            $table->string('uuid');
+            $table->string('phone',20);
             $table->string('summary')->nullable();
             $table->string('country')->nullable();
             $table->string('city')->nullable();
             $table->string('neighborhood')->nullable();
+            $table->string('street')->nullable();
             $table->string('file_name')->nullable();
             $table->string('file_path')->nullable();
             $table->string('file_url')->nullable();

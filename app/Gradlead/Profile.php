@@ -14,6 +14,23 @@ class Profile extends Model
 
     protected $with = ['preference','skill','resumes','education','languages','experiences'];
 
+    protected function getArrayableAppends()
+    {
+        $appends = ['avatar'];        
+        $this->appends = array_merge($this->appends, $appends);
+        return parent::getArrayableAppends();
+    }
+    
+    public function getAvatarAttribute() 
+    {
+        $logo = 'img/a0.jpg';
+        if ($this->file_name<>'') {
+            $logo = '/profiles/avatar/'.$this->id.'?'.date('Y-m-d');
+        }
+        return $logo;
+    }
+    
+    
     public function preference()
     {
         return $this->hasOne('\App\Gradlead\ProfileStudentPreference', 'user_id', 'user_id');
@@ -42,5 +59,10 @@ class Profile extends Model
     public function experiences()
     {
         return $this->hasMany('\App\Gradlead\ProfileStudentExperience', 'user_id', 'user_id');
+    }
+    
+    public static function getPublicProfile($uuid) 
+    {
+        return \App\User::where('uuid',$uuid)->first();    
     }
 }

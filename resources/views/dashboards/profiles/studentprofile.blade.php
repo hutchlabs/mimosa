@@ -41,7 +41,7 @@
                     <div class="tab-content">
 
                         <div role="tabpanel" class="tab-pane active" id="userprofile">
-                            <spark-profile-summary :title="'Summary'" :profileid:="authUser.profile.id" :userid="authUser.id" :uuid="authUser.profile.uuid" :summary="authUser.profile.summary">
+                            <spark-profile-summary :title="'Summary'" :profileid:="authUser.profile.id" :userid="authUser.id" :summary="authUser.profile.summary">
                             </spark-profile-summary>
 
                             <spark-profile-work :title="'Professional Experience'" :userid="authUser.id" :work="authUser.work">
