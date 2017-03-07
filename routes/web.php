@@ -90,12 +90,15 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->get('profiles/avatar/{id}',                'ProfileController@avatar');
         $router->get('profiles/pic/{id}',                   'ProfileController@pic');
         $router->get('profiles/pdf/{id}',                   'ProfileController@pdf');    
+        $router->get('profiles/doc/{id}',                   'ProfileController@doc');    
+
         $router->post('profiles/users',                     'ProfileController@storeUserProfile');
         $router->post('profiles/users/education',           'ProfileController@storeUserEducation');
         $router->post('profiles/users/experience',          'ProfileController@storeUserExperience');
         $router->post('profiles/users/language',            'ProfileController@storeUserLanguage');
         $router->post('profiles/users/preference',          'ProfileController@storeUserPreference');
         $router->post('profiles/users/resume',              'ProfileController@storeUserResume');
+        $router->post('profiles/users/doc',                 'ProfileController@storeUserDoc');
         $router->post('profiles/users/skill',               'ProfileController@storeUserSkill');
         $router->post('profiles/employees',                 'ProfileController@storeEmployeeProfile');
         $router->post('profiles/schools',                   'ProfileController@storeSchoolProfile');
@@ -106,6 +109,8 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->put('profiles/users/preference/{id}',      'ProfileController@updateUserPreference');
         $router->put('profiles/users/resume/{id}',          'ProfileController@updateUserResume');
         $router->put('profiles/users/resume/default/{id}',          'ProfileController@updateUserResumeDefault');
+        $router->put('profiles/users/doc/{id}',          'ProfileController@updateUserDoc');
+
         $router->put('profiles/users/skill/{id}',           'ProfileController@updateUserSkill');
         $router->put('profiles/employees/{id}',             'ProfileController@updateEmployeeProfile');
         $router->put('profiles/schools/{id}',               'ProfileController@updateSchoolProfile');
@@ -114,6 +119,7 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->delete('profiles/users/language/{id}',     'ProfileController@destroyUserLanguage');
         $router->delete('profiles/users/preference/{id}',   'ProfileController@destroyUserPreference');
         $router->delete('profiles/users/resume/{id}',       'ProfileController@destroyUserResume');
+        $router->delete('profiles/users/doc/{id}',       'ProfileController@destroyUserDoc');
         $router->delete('profiles/users/skill/{id}',        'ProfileController@destroyUserSkill');
 
         // Plans & Contracts

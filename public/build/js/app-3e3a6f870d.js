@@ -67858,6 +67858,7 @@ Vue.component('gradlead-resumes-screen', {
             modname: 'Resumes',
 
 			resumes: [],
+            docs: [],
             defaults: [],
 
  			forms: {
@@ -67866,6 +67867,13 @@ Vue.component('gradlead-resumes-screen', {
                     user_id: '',
                     description: '',
                     default: '',
+                    pdf_file: '',
+                    file_name: '',
+                }),
+                addDoc: new SparkForm({
+                    name: '',
+                    user_id: '',
+                    description: '',
                     pdf_file: '',
                     file_name: '',
                 }),
@@ -67902,19 +67910,33 @@ Vue.component('gradlead-resumes-screen', {
             this.forms.addResume.pdf_file = '';
             $('#modal-add-resume').modal('show');
         },
+        addDoc: function() {
+            this.forms.addDoc.name = '';
+            this.forms.addDoc.user_id = this.authUser.id;
+            this.forms.addDoc.description = '';
+            this.forms.addDoc.pdf_file = '';
+            $('#modal-add-doc').modal('show');
+        },
 
         setFileName: function(name) {
             this.forms.addResume.file_name = name;
         },
+        setDocFileName: function(name) {
+            this.forms.addDoc.file_name = name;
+        },
 
 		getFileUrl: function(rid) {
             return '/profiles/pdf/'+rid+'?'+new Date(); 
+        },
+		getDocUrl: function(rid) {
+            return '/profiles/doc/'+rid+'?'+new Date(); 
         },
 
         setupListeners: function () {
             var self = this;
             bus.$on('authUserSet', function (user) { 
                 self.resumes = user.resumes; 
+                self.docs = user.docs;
                 self.setDefaults();
             });
             bus.$emit('screenLoaded',self.modname);
@@ -67924,11 +67946,35 @@ Vue.component('gradlead-resumes-screen', {
             var self = this;
             Spark.post(self.baseUrl+'profiles/users/resume', this.forms.addResume)
                 .then(function () {
+                    $('#modal-add-resume').modal('hide');
+                    bus.$emit('updateAuthUser');
+            });
+        },
+        addNewDoc: function() { 
+            var self = this;
+            Spark.post(self.baseUrl+'profiles/users/doc', this.forms.addDoc)
+                .then(function () {
+                    $('#modal-add-doc').modal('hide');
                     bus.$emit('updateAuthUser');
             });
         },
         
-        updateDefault: function (resume) {
+       removeResume: function(r) { 
+            var self = this;
+            Spark.delete(self.baseUrl+'profiles/users/resume/'+r.id)
+                .then(function () {
+                    bus.$emit('updateAuthUser');
+            });
+       },
+       removeDoc: function(doc) { 
+            var self = this;
+            Spark.delete(self.baseUrl+'profiles/users/doc/'+doc.id)
+                .then(function () {
+                    bus.$emit('updateAuthUser');
+            });
+       },
+
+       updateDefault: function (resume) {
             var self = this;
             this.forms.updateDefault.id = resume.id; 
 

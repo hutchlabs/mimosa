@@ -42,7 +42,7 @@
                     <li>
                         <a href="#resumes" aria-controls="resumes" role="tab" data-toggle="tab">
                             <i class="fa fa-paperclip icon text-info-lter"></i>
-                            <span class="font-bold">Resumes</span>
+                            <span class="font-bold">Job Profile</span>
                         </a>
                     </li>
 

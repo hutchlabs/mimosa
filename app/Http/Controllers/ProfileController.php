@@ -14,6 +14,7 @@ use App\Gradlead\ProfileStudentExperience;
 use App\Gradlead\ProfileStudentLanguage;
 use App\Gradlead\ProfileStudentPreference;
 use App\Gradlead\ProfileStudentResume;
+use App\Gradlead\ProfileStudentDoc;
 use App\Gradlead\ProfileStudentSkill;
 
 
@@ -52,6 +53,12 @@ class ProfileController extends Controller
     public function pdf(Request $request, $profileId)
     {
         $b = ProfileStudentResume::findOrFail($profileId);
+        return $this->display_image_new($b->file_path);
+    }
+    
+    public function doc(Request $request, $profileId)
+    {
+        $b = ProfileStudentDoc::findOrFail($profileId);
         return $this->display_image_new($b->file_path);
     }
 
@@ -342,6 +349,43 @@ class ProfileController extends Controller
         return $this->json_response($i);
     }
 
+    public function storeUserDoc(Request $request)
+    {
+        $user = $request->user();
+
+        $this->validate($request, [
+            'user_id' => 'required|exists:users,id',
+            'name' => 'required|max:255',
+            'description' => 'required|max:255',
+            'file_name' => 'string',
+            'icon_file' => 'string'
+        ]);
+
+        $i = new ProfileStudentDoc();
+        $i->user_id = $request->user_id;
+        $i->description = $request->description;
+        $i->name = $request->name;
+
+        if ($request->pdf_file<>'') {
+            $fInfo = $this->handleNewFileUpload($request, 'files/docs/');
+            if (is_array($fInfo)) {
+                $i->file_name = $fInfo['name'];
+                $i->file_path = $fInfo['path'];
+                $i->file_url = $fInfo['url'];
+            } else {
+                return $this->json_response (
+                    ['pdf_file' => ['The file size cannot exceed 20MB.']],true, 422
+                );
+            }
+        }
+
+        $i->modified_by = $user->id;
+        $i->save();
+
+
+        return $this->json_response($i);
+    }
+    
 
     public function storeUserSkill(Request $request)
     {
@@ -669,6 +713,45 @@ class ProfileController extends Controller
 
         return $this->json_response($i);
     }
+    
+    
+    public function updateUserDoc(Request $request, $itemId)
+    {
+        $user = $request->user();
+
+        $this->validate($request, [
+            'id'=>'required|exists:profiles_student_resumes,id',
+            'user_id' => 'required|exists:users,id',
+            'name' => 'required|max:255',
+            'description' => 'required|max:255',
+            'file_name' => 'string',
+            'icon_file' => 'string'
+        ]);
+
+        $i = ProfileStudentDoc::find($request->id);
+        $i->user_id = $request->user_id;
+        $i->name = $request->name;
+
+        if ($request->pdf_file<>'') {
+            $fInfo = $this->handleNewFileUpload($request, 'files/docs/');
+            if (is_array($fInfo)) {
+                $i->file_name = $fInfo['name'];
+                $i->file_path = $fInfo['path'];
+                $i->file_url = $fInfo['url'];
+            } else {
+                return $this->json_response (
+                    ['pdf_file' => ['The file size cannot exceed 20MB.']],true, 422
+                );
+            }
+        }
+
+        $i->modified_by = $user->id;
+        $i->save();
+
+        return $this->json_response($i);
+    }
+
+
 
     public function updateUserSkill(Request $request, $itemId)
     {
@@ -718,6 +801,11 @@ class ProfileController extends Controller
     public function destroyUserResume(Request $request, $itemId)
     {
         return $this->processDestroy(ProfileStudentResume::find($itemId));
+    }
+    
+    public function destroyUserDoc(Request $request, $itemId)
+    {
+        return $this->processDestroy(ProfileStudentDoc::find($itemId));
     }
 
     public function destroyUserSkill(Request $request, $itemId)

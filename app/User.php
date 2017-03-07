@@ -24,7 +24,7 @@ class User extends Authenticatable
     {
         $appends = ['profile'];
         if ($this->isStudent()) {
-            $appends = array_merge($appends, ['education','languages','preferences','resumes','skills','work']);
+            $appends = array_merge($appends, ['education','languages','preferences','resumes','skills','work','docs']);
         }
         
         $this->appends = array_merge($this->appends, $appends);
@@ -57,6 +57,11 @@ class User extends Authenticatable
     protected function getResumesAttribute()
     {
         return DB::table('profiles_student_resumes')->select(DB::raw('*'))->where('user_id',$this->id)->get(); 
+    }
+    
+    protected function getDocsAttribute()
+    {
+        return DB::table('profiles_student_docs')->select(DB::raw('*'))->where('user_id',$this->id)->get(); 
     }
     
     protected function getSkillsAttribute()
