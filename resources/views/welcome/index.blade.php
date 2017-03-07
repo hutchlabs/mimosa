@@ -72,12 +72,14 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-10">
-          <span class="sub">© Copright 2014 Medium Rare</span>
+          <span class="sub">&copy; 2017 Gradlead </span>
+         <!--
           <ul>
             <li><a href="#">Terms Of Use</a></li>
             <li><a href="#">Privacy &amp; Security Statement</a></li>
             <li><a href="#">Sitemap</a></li>
           </ul>
+-->
         </div>
 
         <div class="col-sm-2 text-right">
