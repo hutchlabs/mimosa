@@ -44,11 +44,18 @@
                                     </div>
                                     
                                     <div class="form-group m-b-sm">
-                                      <label class="col-sm-3 control-label">Number of employeers</label>
+                                      <label class="col-sm-3 control-label">Number of employees</label>
                                       <div class="col-sm-9">
                                         <div class="form-control-static">
                                             {{ $profile->profile->num_employees }}
                                         </div>
+                                      </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                      <label class="col-sm-3 control-label">Job Types</label>
+                                      <div class="col-sm-9">
+                                        <div class="form-control-static">{{$profile->profile->job_types}}</div>
                                       </div>
                                     </div>
                                     

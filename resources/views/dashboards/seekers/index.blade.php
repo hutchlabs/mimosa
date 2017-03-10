@@ -42,6 +42,8 @@
                     <tr>
                         <th>Name</th>
                         <th>Email</th>
+                        <th>Badges</th>
+                        <th>Profile</th>
                         <th>Type</th>
                         <th></th>
                     </tr>
@@ -51,9 +53,17 @@
 
                         <td class="spark-table-pad"> @{{ u.name }} </td>
                         <td class="spark-table-pad"> @{{ u.email }} </td>
+                        <td class="spark-table-pad"> <gl-achievement-display :user="u" :tiny="true"></gl-achievement-display></td>
+                        <td class="spark-table-pad">
+                            <button class="btn btn-default btn-addon btn-sm btn-circle" @click.prevent="viewProfile(u)"><i class="fa fa-user"></i> Profile</button>
+                        </td>
+
                         <td class="spark-table-pad"> @{{ u.type | ucwords }} </td>
 
                         <td class="spark-table-pad">
+                            <button class="btn btn-info btn-addon btn-sm btn-circle" @click.prevent="manageBadges(u)">
+                                <i class="fa fa-certificate"></i>Manage  Badge</button>
+
                             <button class="btn btn-warning btn-addon btn-sm btn-circle" @click.prevent="editUser(u)">
                                 <i class="fa fa-pencil"></i> Edit</button>
 
@@ -77,7 +87,8 @@
 
         </div>
         
-        @include('dashboards.seekers.add') @include('dashboards.seekers.edit')
+        @include('dashboards.seekers.add') @include('dashboards.seekers.edit') 
+        @include('dashboards.seekers.badges') @include('dashboards.seekers.profile') 
       </div>
         <!-- / Users -->
 

@@ -82,7 +82,7 @@ class ProfileController extends Controller
 
     
     // STORE
-    public function storeEmployeeProfile(Request $request)
+    public function storeEmployerProfile(Request $request)
     {
         $user = $request->user();
 
@@ -100,7 +100,7 @@ class ProfileController extends Controller
         $i->city = $request->city;
         $i->neighborhood = $request->neighborhood;
         $i->street = $request->street;
-        $i->job_types = $request->job_types;
+        $i->job_types = $request->jobtypes;
         $i->industries = $request->industries;
         $i->website = isset($request->website) ? $request->website:null;
 
@@ -412,7 +412,7 @@ class ProfileController extends Controller
 
 
     // UPDATE
-    public function updateEmployeeProfile(Request $request, $itemId)
+    public function updateEmployerProfile(Request $request, $itemId)
     {
         $user = $request->user();
 
@@ -441,7 +441,7 @@ class ProfileController extends Controller
         $i->city = $request->city;
         $i->neighborhood = $request->neighborhood;
         $i->street = $request->street;
-        $i->job_types = $request->job_types;
+        $i->job_types = $request->jobtypes;
         $i->industries = $request->industries;
         $i->website = isset($request->website) ? $request->website:null;
 

@@ -1,0 +1,60 @@
+    <div class="hbox hbox-auto-xs hbox-auto-sm">
+        <div class="col">
+
+            <div class="wrapper bg-white b-b">
+                <ul class="nav nav-pills nav-sm">
+                    <li role="presentation" class="active">
+                        <a href="#gusrprofile" aria-controls="gusrprofile" role="tab" data-toggle="tab">&nbsp;Profile</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#guresumes" aria-controls="guresumes" role="tab" data-toggle="tab">&nbsp;Resumes</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#gudocs" aria-controls="gudocs" role="tab" data-toggle="tab">&nbsp;Documents</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="hbox hbox-auto-xs no-border">
+
+                <div class="col wrapper">
+
+                    <div class="tab-content">
+
+                        <div role="tabpanel" class="tab-pane active" id="gusrprofile">
+                            <spark-profile-summary :title="'Summary'" :profileid:="authUser.profile.id" :userid="authUser.id" :summary="authUser.profile.summary">
+                            </spark-profile-summary>
+
+                            <spark-profile-work :title="'Professional Experience'" :userid="authUser.id" :work="authUser.work">
+                            </spark-profile-work>
+
+                            <spark-profile-education :title="'Education'" :userid="authUser.id" :education="authUser.education">
+                            </spark-profile-education>
+
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <spark-profile-languages :title="'Languages'" :userid="authUser.id" :languages="authUser.languages">
+                                    </spark-profile-languages>
+                                </div>
+                                <div class="col-sm-6">
+                                    <spark-profile-skills :title="'Skills'" :userid="authUser.id" :skills="authUser.skills">
+                                    </spark-profile-skills>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane" id="guresumes">
+                              @include('dashboards.resumes.resume')
+                      
+                        </div>
+
+                        <div role="tabpanel" class="tab-pane" id="gudocs">
+                            @include('dashboards.resumes.docs')
+
+                        </div>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+    </div>

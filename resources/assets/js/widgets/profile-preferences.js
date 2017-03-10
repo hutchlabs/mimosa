@@ -1,3 +1,4 @@
+//TODO: move to multiselect component
 Vue.component('spark-profile-preferences', {
     props: ['userid','preferences','title'],
 
@@ -105,7 +106,6 @@ Vue.component('spark-profile-preferences', {
 
         getValuesAsArray: function (value) {
             var self = this;
-            console.log(value);
             var vals = (typeof value == 'undefined' || value==null || value=='') ? [] : value.split(',');
             $.each(vals, function(i, v) {  vals[i] = {id:v, name:v}});
             return vals;

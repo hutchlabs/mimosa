@@ -2,18 +2,7 @@ Vue.component('gradlead-orgs-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
 
-    notifications: {
-      /*showError: {
-          title: 'Organization Error',
-          message: 'Failed to reach server',
-          type: 'error'
-        },
-        showSuccess: {
-          title: 'Profile success',
-          message: 'Successfully modified organization',
-          type: 'success'
-        },*/
-    },
+    notifications: { },
     
     // TODO: handle approval
 
@@ -29,6 +18,9 @@ Vue.component('gradlead-orgs-screen', {
             organizations: [],
             employers: [],
             schools: [],
+
+            jtList: [],
+            jpList: [],
             
             profilingOrganization: {'name':'none'},
             editingOrganization: {'name':'none'},
@@ -74,7 +66,6 @@ Vue.component('gradlead-orgs-screen', {
         
         viewProfile: function(org) {
             this.profilingOrganization = org;
-
             $('#modal-'+org.type+'-view-profile').modal('show');
         },
 
@@ -143,6 +134,17 @@ Vue.component('gradlead-orgs-screen', {
                        }
                 });
             });
+
+            bus.$on('jobTypesSet', function (items) {
+                self.jtList = [];
+                $.each(items, function(i,j){ self.jtList.push({id:j.name, name:j.name}); });
+            });
+
+            bus.$on('industriesSet', function (items) {
+                self.jpList = [];
+                $.each(items, function(i,j){ self.jpList.push({id:j.name, name:j.name}); });
+            });
+
             bus.$emit('screenLoaded',self.modname);
         },
     },

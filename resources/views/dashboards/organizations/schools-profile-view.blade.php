@@ -11,12 +11,14 @@
                            :organization.sync="profilingOrganization"
                            :auth-user="authUser"
                            :usertype="usertype"
-                           :permissions="permissions">
+                           :permissions="permissions"
+                           :industries="jpList"
+                           :jobtypes="jtList">
                     </gl-view-profile-org>
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

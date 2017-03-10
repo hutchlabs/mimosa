@@ -90,6 +90,64 @@ Vue.component('gl-date', {
     },
 });
 
+Vue.component('gl-email', {
+    props: ['display', 'form', 'name', 'input','placeholder','required'],
+
+    template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
+                    <div class="col-sm-12">\
+                        <label class="control-label">{{ display }}</label>\
+                        <input :placeholder="placeholder" :name="name" type="email" class="form-control" v-model="fieldValue">\
+                        <span class="help-block" v-show="form.errors.has(name)">\
+                            <small>{{ form.errors.get(name) }}</small>\
+                        </span>\
+                    </div>\
+                </div>',
+
+    watch: {
+        'fieldValue': function (v) {
+            if (v!=null) {
+                this.form.errors.forget();
+                this.form.errors.rforget(this.name);
+                this.form[this.name] = v;
+
+                if (v.length==0 && this.isRequired && !this.firstLoad) {
+                    this.form.errors.set(this.reqError);
+                } else if (v.length==0 && !this.isRequired) { // do nothing
+                } else if (! this.isValid && !this.firstLoad) {
+                    this.form.errors.set(this.textError);
+                }
+                this.firstLoad = false;
+            }
+        },
+        'input': function (v) { this.fieldValue = this.input; }
+    },
+    computed: {
+        isRequired: function() { return (typeof this.required != 'undefined'); },
+        isValid: function() { return this.validateEmail(this.fieldValue);  },
+    },
+    mounted: function () {
+        this.reqError[this.name] = ['This field is required'];
+        if (this.isRequired && !this.isValid) {  this.form.errors.rset(this.name); }
+        this.textError[this.name] = ['Please enter a valid email address'];
+        this.fieldValue = this.input;
+    },
+    data: function () {
+        return {
+            firstLoad: true,
+            reqError: {},
+            fieldValue: '',
+            textError: {},
+        }
+    },
+    methods: {
+  		validateEmail: function(email) {
+    		var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    		return re.test(email);
+		}  
+    },
+});
+
+
 Vue.component('gl-file', {
     props: ['display', 'form', 'name', 'input','filename', 'warning'],
 
@@ -234,6 +292,51 @@ Vue.component('gl-location', {
 	}
 });
 
+Vue.component('gl-multiselect', {
+    props: ['display', 'form', 'name', 'items', 'input', 'placetext','multiple'],
+
+    components: { Multiselect },
+
+    template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
+                    <div class="col-sm-12">\
+                       <label class="control-label">{{ display }}</label><br/>\
+                       <multiselect :options="items" :multiple="multiple" :hide-selected="true"\
+                          :value="fieldValue" v-model="fieldModel" :close-on-select="true" :placeholder="placetext" label="name" key="id"></multiselect>\
+                       <span class="help-block" v-show="form.errors.has(name)">\
+                          <small>{{ form.errors.get(name) }}</small>\
+                       </span>\
+                    </div>\
+                </div>',
+    watch: {
+        'items': function(v) { this.fieldValue = this.getValuesAsArray(this.input);},
+        'fieldModel': function (v) { this.form[this.name] = this.getValuesAsString(this.fieldModel); },
+        'input': function(v) { this.fieldValue = this.getValuesAsArray(v); }
+    },
+    mounted: function () {
+        this.fieldValue = this.getValuesAsArray(this.input);
+    },
+    methods: {
+        getValuesAsArray: function (value) {
+            var self = this;
+            var vals = (typeof value == 'undefined' || value==null || value=='') ? [] : value.split(',');
+            $.each(vals, function(i, v) {  vals[i] = {id:v, name:v}});
+            return vals;
+        },
+
+        getValuesAsString: function(nw) {
+            var vals = '';
+            for (var i = 0; i < nw.length; i++) { vals += nw[i].name + ((i < nw.length - 1) ? ',' : ''); }
+            return vals;
+        },
+    },
+    data: function () {
+        return {
+            fieldValue: '',
+            fieldModel: [],
+        }
+    },
+});
+
 Vue.component('gl-password', {
     props: ['display', 'form', 'name', 'input', 'placeholder','similar','minlength','required'],
 
@@ -370,7 +473,14 @@ Vue.component('gl-textarea', {
     },
 
     watch: {
-        'input': function(v) { this.quill.setText(v); },
+        'input': function(v) { 
+            if (!this.preloaded) {
+                if (typeof v != 'undefined') {
+                    this.quill.setText(v); 
+                    this.preloaded = true;
+                }
+            }
+        },
     },
 
     mounted: function () {
@@ -386,6 +496,7 @@ Vue.component('gl-textarea', {
             quill: '',
             
             firstLoad: true,
+            preloaded: false,
             reqError: {},
 
             config: {
@@ -407,7 +518,10 @@ Vue.component('gl-textarea', {
             var self = this;
             if (this.id!='') {
                 this.quill = new Quill('#'+this.id, this.config);
-                this.quill.setText(text);
+                if (typeof text != 'undefined' && text!=null) {
+                    console.log("setting text 2");
+                    this.quill.setText(text);
+                }
                 this.quill.on('text-change', function(change) {
                     var v = self.quill.getText();
 
@@ -416,9 +530,11 @@ Vue.component('gl-textarea', {
 
                     self.form[self.name] = v; 
 
-                    if (v.length==0 && self.isRequired && !self.firstLoad) {
-                        self.form.errors.set(self.reqError);
-                    } else if (v.length==0 && !self.isRequired) { // do nothing
+                    if (typeof v != 'undefined') {
+                        if (v.length==0 && self.isRequired && !self.firstLoad) {
+                            self.form.errors.set(self.reqError);
+                        } else if (v.length==0 && !self.isRequired) { // do nothing
+                        }
                     }
 
                     self.firstLoad = false;
@@ -469,7 +585,7 @@ Vue.component('spark-text', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                     <div class="col-sm-12">\
-                        <label>{{ display }}</label>\
+                        <label class="control-label">{{ display }}</label><br>\
                         <input :placeholder="placeholder" :name="name" type="text" class="form-control" v-model="fieldValue">\
                         <span class="help-block" v-show="form.errors.has(name)">\
                             <small>{{ form.errors.get(name) }}</small>\

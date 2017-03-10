@@ -154,7 +154,7 @@
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label class="control-label">Positions</label>
+                                                    <label class="control-label">Area of Work</label>
                                                     <multiselect :options="skills" :multiple="true" :hide-selected="true" :value="multiSK_val" :close-on-select="true" placeholder="Required skills..." v-model="multiSK" label="name" key="id">
                                                     </multiselect>
                                                     <input type="hidden" name="positions" id="positions" />

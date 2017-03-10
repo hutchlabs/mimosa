@@ -10,9 +10,25 @@ Vue.component('gl-profile-account', {
                         <form class="form-horizontal " role="form">\
                             <div class="row">\
                                 <div class="col-md-6">\
-                                    <gl-text :required="true" :display="\'Name*\'"\
-                                    :form="forms.updateAccount" :name="\'name\'"\
-                                    :placeholder="\'Enter your name e.g. First Last\'":input.sync="forms.updateAccount.name">\
+                                    <gl-email :required="true" :display="\'Email*\'"\
+                                    :form="forms.updateAccount" :name="\'email\'"\
+                                    :placeholder="\'Enter your email\'":input.sync="forms.updateAccount.email">\
+                                    </gl-email>\
+                                 </div>\
+                            </div>\
+                            <div class="row">\
+                                <div class="col-md-6">\
+                                    <gl-text :required="true" :display="\'First Name*\'"\
+                                    :form="forms.updateAccount" :name="\'first\'"\
+                                    :placeholder="\'Enter your first name\'":input.sync="forms.updateAccount.first">\
+                                    </gl-text>\
+                                 </div>\
+                            </div>\
+                            <div class="row">\
+                                <div class="col-md-6">\
+                                    <gl-text :required="true" :display="\'Last Name*\'"\
+                                    :form="forms.updateAccount" :name="\'last\'"\
+                                    :placeholder="\'Enter your last name\'":input.sync="forms.updateAccount.last">\
                                     </gl-text>\
                                  </div>\
                             </div>\
@@ -82,7 +98,8 @@ Vue.component('gl-profile-account', {
                     id: '',
                     uuid: '',
                     email: '',
-                    name: '',
+                    first: '',
+                    last: '',
                     role_id: '',
                     organization_id:'',
                     type:'',
@@ -103,7 +120,8 @@ Vue.component('gl-profile-account', {
                 this.forms.updateAccount.role_id = a.role_id;                
                 this.forms.updateAccount.type = a.type;                
                 this.forms.updateAccount.uuid = a.uuid;
-                this.forms.updateAccount.name = a.name;
+                this.forms.updateAccount.first = a.first;
+                this.forms.updateAccount.last = a.last;
                 this.forms.updateAccount.errors.forget();
             }
         },

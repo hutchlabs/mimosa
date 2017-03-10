@@ -16,6 +16,6 @@ class Achievement extends Model
     protected $with = ['badge'];
 
     public function badge() {
-        return $this->hasOne('\App\Gradlead\Badge');
+        return $this->belongsTo('\App\Gradlead\Badge');
     }    
 }

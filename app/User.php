@@ -14,7 +14,7 @@ class User extends Authenticatable
 {
     use Notifiable, BelongsToTenants;
 
-    protected $fillable = ['name', 'email', 'password',];
+    protected $fillable = ['first', 'last', 'email', 'password',];
 
     protected $hidden = ['password', 'remember_token',];
 
@@ -22,13 +22,23 @@ class User extends Authenticatable
     
     protected function getArrayableAppends()
     {
-        $appends = ['profile'];
+        $appends = ['profile','name','profile_url'];
         if ($this->isStudent()) {
             $appends = array_merge($appends, ['education','languages','preferences','resumes','skills','work','docs']);
         }
         
         $this->appends = array_merge($this->appends, $appends);
         return parent::getArrayableAppends();
+    }
+    
+    protected function getNameAttribute()
+    {
+        return trim($this->first.' '.$this->last);
+    }
+    
+    protected function getProfileUrlAttribute()
+    {
+       return '/u/'.$this->uuid;
     }
     
     protected function getEducationAttribute()

@@ -67,7 +67,8 @@ Vue.component('gradlead-users-screen', {
 
             forms: {
                 addUser: new SparkForm({
-                    name: '',
+                    first: '',
+                    last: '',
                     email: '',
                     password: '',
                     type: '',
@@ -76,7 +77,8 @@ Vue.component('gradlead-users-screen', {
                 }),
 
                 updateUser: new SparkForm({
-                    name: '',
+                    first: '',
+                    last: '',
                     email: '',
                     password: '',
                     current_password: '',
@@ -99,7 +101,8 @@ Vue.component('gradlead-users-screen', {
 
     methods: {
         addUser: function () {
-            this.forms.addUser.name = '';
+            this.forms.addUser.first = '';
+            this.forms.addUser.last = '';
             this.forms.addUser.email = '';
             this.forms.addUser.password = '';
             this.forms.addUser.role_id = '';
@@ -110,7 +113,8 @@ Vue.component('gradlead-users-screen', {
         },
         editUser: function (user) {
             this.editingUser = user;
-            this.forms.updateUser.name = user.name;
+            this.forms.updateUser.first = user.first;
+            this.forms.updateUser.last = user.last;
             this.forms.updateUser.email = user.email;
             this.forms.updateUser.password = '';
             this.forms.updateUser.current_password = user.password;

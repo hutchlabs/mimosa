@@ -22,7 +22,10 @@
                             </spark-select>
 
 
-                            <spark-text :display="'Name*'" :form="forms.updateUser" :name="'name'" :input.sync="forms.updateUser.name">
+                            <spark-text :display="'First*'" :form="forms.updateUser" :name="'first'" :input.sync="forms.updateUser.first">
+                            </spark-text>
+
+                            <spark-text :display="'Last*'" :form="forms.updateUser" :name="'last'" :input.sync="forms.updateUser.last">
                             </spark-text>
 
                             <spark-email :display="'Email*'" :form="forms.updateUser" :name="'email'" :input.sync="forms.updateUser.email">

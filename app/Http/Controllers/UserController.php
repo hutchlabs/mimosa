@@ -29,12 +29,14 @@ class UserController extends Controller
         
         $this->validate($request, 
                         ['user_id' => 'required|exists:users,id',
-                         'name' => 'required:max:255',
+                         'first' => 'required:max:255',
+                         'last' => 'required:max:255',
                          'frequency' => 'required']);
         
         $i = new Alert();
         $i->user_id = $request->user_id;
-        $i->name = $request->name;
+        $i->first = $request->first;
+        $i->last = $request->last;
         $i->location = $request->location;
         $i->category = $request->category;
         $i->job_type = $request->job_type;
@@ -55,12 +57,14 @@ class UserController extends Controller
         $this->validate($request, 
                         ['id'=>'required|exists:users_alerts,id',
                          'user_id' => 'required|exists:users,id',
-                         'name' => 'required:max:255',
+                         'first' => 'required:max:255',
+                         'last' => 'required:max:255',
                          'frequency' => 'required']);
         
         $i = Alert::find($request->id);
         $i->user_id = $request->user_id;
-        $i->name = $request->name;
+        $i->first = $request->first;
+        $i->last = $request->last;        
         $i->location = $request->location;
         $i->category = $request->category;
         $i->job_type = $request->job_type;
@@ -144,9 +148,18 @@ class UserController extends Controller
     
     //--------------------
     
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();        
+        $users = [];
+        
+        $user = $request->user();
+        
+        if (!$user->isSuperAdmin()) {
+            $users = User::all();   
+        } else {
+            $users = User::allTenants()->get();
+        }
+        
         return $this->json_response($users);
     }
 
@@ -155,7 +168,8 @@ class UserController extends Controller
         $user = $request->user();
 
         $this->validate($request, ['email' => 'required|email|unique:users,email',
-                                   'name' => 'required|max:255',
+                                   'first' => 'required|max:255',
+                                   'last' => 'required|max:255',
                                    'password'=> 'required|min:6',
                                    'role_id' => 'required|exists:system_roles,id',
                                    'organization_id' => 'required|exists:organizations,id',
@@ -165,7 +179,8 @@ class UserController extends Controller
 
         // Add user
         $u = new User();
-        $u->name = $request->name;
+        $u->first = $request->first;
+        $u->last = $request->last;  
         $u->email = $request->email;
         $u->password = Hash::make($request->password);
         $u->uuid = md5($request->user_id.time());
@@ -194,7 +209,8 @@ class UserController extends Controller
 
         $this->validate($request, [
                                    'email' => 'required|email|unique:users,email,'.$u->id,
-                                   'name' => 'required|max:255',
+                                   'first' => 'required|max:255',
+                                    'last' => 'required|max:255',
                                    'uuid' => 'required|max:255|unique:users,uuid,'.$u->id,
                                    'role_id' => 'required|exists:system_roles,id',
                                    'organization_id' => 'required|exists:organizations,id',
@@ -212,7 +228,8 @@ class UserController extends Controller
         }
 
         // update user
-        $u->name = $request->name;
+        $u->first = $request->first;
+        $u->last = $request->last;  
         $u->email = $request->email;
         $u->organization_id = $request->organization_id;
         $u->uuid = $request->uuid;

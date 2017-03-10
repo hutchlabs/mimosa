@@ -118,6 +118,15 @@
                                         </div>
                                       </div>
                                     </div>
+
+                                    <div class="form-group m-b-sm">
+                                      <label class="col-sm-3 control-label">Achievements</label>
+                                      <div class="col-sm-9">
+                                        <div class="form-control-static">
+                                            <gl-achievement-display :user="{{ json_encode($profile)}}"></gl-achievement-display>
+                                        </div>
+                                      </div>
+                                    </div>
                                     
                                     @endif
                                 </div>

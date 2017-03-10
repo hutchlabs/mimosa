@@ -23,7 +23,7 @@
             <div class="wrapper bg-white b-b">
                 <ul class="nav nav-pills nav-sm">
                     <li role="presentation" class="active">
-                        <a href="#userprofile" aria-controls="userprofile" role="tab" data-toggle="tab">&nbsp;Profile</a>
+                        <a href="#usrprofile" aria-controls="usrprofile" role="tab" data-toggle="tab">&nbsp;Profile</a>
                     </li>
                     <li role="presentation">
                         <a href="#uresumes" aria-controls="uresumes" role="tab" data-toggle="tab">&nbsp;Resumes</a>
@@ -40,26 +40,8 @@
 
                     <div class="tab-content">
 
-                        <div role="tabpanel" class="tab-pane active" id="userprofile">
-                            <spark-profile-summary :title="'Summary'" :profileid:="authUser.profile.id" :userid="authUser.id" :summary="authUser.profile.summary">
-                            </spark-profile-summary>
-
-                            <spark-profile-work :title="'Professional Experience'" :userid="authUser.id" :work="authUser.work">
-                            </spark-profile-work>
-
-                            <spark-profile-education :title="'Education'" :userid="authUser.id" :education="authUser.education">
-                            </spark-profile-education>
-
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <spark-profile-languages :title="'Languages'" :userid="authUser.id" :languages="authUser.languages">
-                                    </spark-profile-languages>
-                                </div>
-                                <div class="col-sm-6">
-                                    <spark-profile-skills :title="'Skills'" :userid="authUser.id" :skills="authUser.skills">
-                                    </spark-profile-skills>
-                                </div>
-                            </div>
+                        <div role="tabpanel" class="tab-pane active" id="usrprofile">
+                            <gl-student-profile :user="authUser"></gl-student-profile>
                         </div>
 
                         <div role="tabpanel" class="tab-pane" id="uresumes">

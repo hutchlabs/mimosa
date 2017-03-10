@@ -3,6 +3,7 @@ Vue.component('gradlead-seekers-screen', {
     props: ['authUser', 'usertype', 'permissions'],
 
     mounted: function () {
+        this.profilingUser = this.authUser;
         this.setupListeners();
     },
 
@@ -14,14 +15,18 @@ Vue.component('gradlead-seekers-screen', {
             roles: [],
             users: [],
             organizations: [],
+            jtList: [],
+            jpList: [],
 
-            editingUser: {
-                'name': 'none'
-            },
+            editingUser: { 'name': 'none' },
+            badgesUser: { 'name': 'none' },
+            profilingUser: { 'name': 'none', 'id':0, profile:{'id':0}},
             removingUserId: null,
 
             roleOptions: [],
             orgsOptions: [],
+            badgeOptions: [],
+
             allTypeOptions: [
                 {
                     'text': 'Gradlead Employee',
@@ -63,7 +68,8 @@ Vue.component('gradlead-seekers-screen', {
 
             forms: {
                 addUser: new SparkForm({
-                    name: '',
+                    first: '',
+                    last: '',
                     email: '',
                     password: '',
                     type: '',
@@ -72,7 +78,8 @@ Vue.component('gradlead-seekers-screen', {
                 }),
 
                 updateUser: new SparkForm({
-                    name: '',
+                    first: '',
+                    last: '',
                     email: '',
                     password: '',
                     current_password: '',
@@ -94,7 +101,8 @@ Vue.component('gradlead-seekers-screen', {
 
     methods: {
         addUser: function () {
-            this.forms.addUser.name = '';
+            this.forms.addUser.first = '';
+            this.forms.addUser.last = '';
             this.forms.addUser.email = '';
             this.forms.addUser.password = '';
             this.forms.addUser.role_id = 4;
@@ -105,7 +113,8 @@ Vue.component('gradlead-seekers-screen', {
         },
         editUser: function (user) {
             this.editingUser = user;
-            this.forms.updateUser.name = user.name;
+            this.forms.updateUser.first = user.first;
+            this.forms.updateUser.last = user.last;
             this.forms.updateUser.email = user.email;
             this.forms.updateUser.password = '';
             this.forms.updateUser.current_password = user.password;
@@ -114,6 +123,16 @@ Vue.component('gradlead-seekers-screen', {
             this.forms.updateUser.organization_id = user.organization_id;
             this.forms.updateUser.errors.forget();
             $('#modal-edit-seeker').modal('show');
+        },
+
+        manageBadges: function(user) {
+            this.badgesUser = user;
+            $('#modal-manage-badges').modal('show');
+        },
+
+        viewProfile: function(user) {
+            this.profilingUser = user;
+            $('#modal-user-view-profile').modal('show');
         },
 
         removingUser: function (id) {
@@ -243,6 +262,25 @@ Vue.component('gradlead-seekers-screen', {
                     });
                 }
 
+            });
+
+            bus.$on('jobTypesSet', function (items) {
+                self.jtList = [];
+                $.each(items, function(i,j){ self.jtList.push({id:j.name, name:j.name}); });
+            });
+
+            bus.$on('industriesSet', function (items) {
+                self.jpList = [];
+                $.each(items, function(i,j){ self.jpList.push({id:j.name, name:j.name}); });
+            });
+
+
+            bus.$on('badgesSet', function (items) {
+                self.badges = items;
+                $.each(items, function(x, i) {        
+                    self.badgeOptions.push({ 'text': i.name, 'value': i.id });
+                });
+                //console.log("Got badges in "+ self.modname);
             });
 
             bus.$emit('screenLoaded',self.modname);

@@ -8,7 +8,7 @@
       <div class="row">
         <div class="col-md-10 col-md-offset-1 col-sm-12 text-center">
             <h2 class="text-white">
-                Get your career started! Explore our extensive network of local and foreign Employers.
+                Get your career started! Explore our extensive network of local and foreign employers.
             </h2>
         </div>
       </div>
@@ -65,9 +65,11 @@
                   <h5 class="real-h5"> {{ $org->name }}</h5>
                   <div class="post-meta">
                     <div class="sub alt-font">
-                        {{ $org->profile->address}}<br>
-                        <small>Jobs Posted: {{ sizeof($org->jobs) }}</small>
-                    
+                        <small>
+                            Jobs Posted: {{ sizeof($org->jobs) }}<br>
+                            {{ str_limit((($org->profile->job_types=='') ? '' : $org->profile->job_types.' jobs'),25,'...')}}<br>
+                        </small>
+                        {{ str_limit($org->profile->industries, 15 ,'...') }}<br>
                     </div>
                   </div>
                 </div>

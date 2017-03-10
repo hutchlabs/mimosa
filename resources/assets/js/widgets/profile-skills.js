@@ -1,3 +1,4 @@
+//TODO: move to  multiselect comppnent
 Vue.component('spark-profile-skills', {
     props: ['userid','skills','title'],
 

@@ -1,16 +1,3 @@
-Vue.component('gradlead-sparkline-bar', {
-    props: ['data'],
-    template: '<div ui-jq="sparkline" ui-options="data, {type:\'bar\', height:20, barWidth:5, barSpacing:1, barColor:\'#dce5ec\'}" class="sparkline inline">loading...</div>', 
-    mounted: function () {
-        this.d = this.data;
-    },
-    data: function () {
-        return {
-            d: [],
-        }
-    }
-});
-
 Vue.component('gradlead-plot', {
     props: ['data','showSpline', 'colors','tips'],
     template: '<div ui-jq="plot" ui-refresh="refresh" ui-options="options" style="height:246px"></div>', 

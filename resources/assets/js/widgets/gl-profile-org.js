@@ -1,17 +1,39 @@
 Vue.component('gl-view-profile-org', {
 
-    props: ['organization', 'authUser', 'usertype', 'permissions'],
+    props: ['organization', 'authUser', 'usertype', 'permissions','jobtypes','industries'],
 
     template: '<div class="hbox hbox-auto-xs no-border">\
                 <div class="col wrapper">\
                     <spark-error-alert :form="forms.updateProfile"></spark-error-alert>\
                     <form class="form-horizontal " role="form">\
                         <div class="row">\
-                            <div class="col-md-6">\
+                            <div class="col-md-12">\
                                 <gl-textarea :required="true" :id="idSum" :display="\'Summary\'" :form="forms.updateProfile" :name="\'summary\'" :placeholder="\'Something interesting about you...\'" :input.sync="forms.updateProfile.summary">\
                                 </gl-textarea>\
-                                <gl-text :display="\'Street\'" :form="forms.updateProfile" :name="\'street\'" :input.sync="forms.updateProfile.street" :minlength="3" :placeholder="\'e.g. 5 mango ln\'"></gl-text>\
+                            </div>\
+                        </div>\
+                        <div class="row">\
+                            <div class="col-md-6">\
+                                <gl-text v-show="isCompany" :display="\'Description*\'" :form="forms.updateProfile" :name="\'description\'" :input.sync="forms.updateProfile.description"></gl-text>\
+                            </div>\
+                            <div class="col-md-6">\
+                                <gl-text v-show="isCompany" :display="\'Number of Employees\'" :form="forms.updateProfile" :name="\'num_employees\'" :input.sync="forms.updateProfile.num_employees" :placeholder="\'Number of employees e.g. 300\'"></gl-text>\
+                            </div>\
+                        </div>\
+                        <div class="row">\
+                            <div class="col-md-6">\
+                                <gl-multiselect v-show="isCompany" :display="\'Job Types*\'" :form="forms.updateProfile" :name="\'jobtypes\'" :input.sync="forms.updateProfile.jobtypes" :multiple="true" :items="jtList" :placetext="\'Choose preferred job types...\'"></gl-multiselect>\
 \
+                            </div>\
+                            <div class="col-md-6">\
+                                <gl-multiselect v-show="isCompany" :display="\'Industries*\'" :form="forms.updateProfile" :name="\'industries\'" :input.sync="forms.updateProfile.industries" :multiple="true" :items="jpList" :placetext="\'Choose area of work...\'"></gl-multiselect>\
+                            </div>\
+                        </div>\
+                        <div class="row">\
+                            <div class="col-md-6">\
+                                <gl-text :display="\'Street\'" :form="forms.updateProfile" :name="\'street\'" :input.sync="forms.updateProfile.street" :minlength="3" :placeholder="\'e.g. 5 mango ln\'"></gl-text>\
+                            </div>\
+                            <div class="col-md-6">\
                                 <gl-location :id="idLoc"\
                                   :display="\'Address (Area, City, Country)\'"\
                                   :form="forms.updateProfile"\
@@ -19,21 +41,15 @@ Vue.component('gl-view-profile-org', {
                                   :input.sync="location"\
                                   :placeholder="\'e.g. North legon, Accra, Ghana\'">\
                                   </gl-location>\
-\
-                                <gl-file :display="\'Logo\'" :form="forms.updateProfile" v-on:updated="setFileName" :name="\'icon_file\'" :warning="\'File must be less than 20MB. Must be an image file\'" :filename.sync="forms.updateProfile.file_name" :input.sync="forms.updateProfile.icon_file">\
                                 </gl-file>\
-\
+                            </div>\
+                        </div>\
+                        <div class="row">\
+                            <div class="col-md-6">\
+                                <gl-file :display="\'Logo\'" :form="forms.updateProfile" v-on:updated="setFileName" :name="\'icon_file\'" :warning="\'File must be less than 20MB. Must be an image file\'" :filename.sync="forms.updateProfile.file_name" :input.sync="forms.updateProfile.icon_file">\
                             </div>\
                             <div class="col-md-6">\
-                                <gl-text v-show="isCompany" :display="\'Description*\'" :form="forms.updateProfile" :name="\'description\'" :input.sync="forms.updateProfile.description"></gl-text>\
-\
-                                <gl-text v-show="isCompany" :display="\'Number of Employees\'" :form="forms.updateProfile" :name="\'num_employees\'" :input.sync="forms.updateProfile.num_employees" :placeholder="\'Number of employees e.g. 300\'"></gl-text>\
-\
                                 <gl-text v-show="isCompany" :display="\'Website\'" :form="forms.updateProfile" :name="\'website\'" :input.sync="forms.updateProfile.website" :placeholder="\'http://\'"></gl-text>\
-\
-                                <gl-text v-show="isCompany" :display="\'Job Types*\'" :form="forms.updateProfile" :name="\'jobtypes\'" :input.sync="forms.updateProfile.jobtypes"></gl-text>\
-\
-                                <gl-text v-show="isCompany" :display="\'Industries*\'" :form="forms.updateProfile" :name="\'industries\'" :input.sync="forms.updateProfile.industries"></gl-text>\
                             </div>\
                         </div>\
                     </form>\
@@ -51,8 +67,10 @@ Vue.component('gl-view-profile-org', {
             </div>',
     
     mounted: function () {
-        this.idSum = Math.random().toString(36).substr(2, 5);
-        this.idLoc = Math.random().toString(36).substr(2, 5);
+        this.idSum = this.makeid();
+        this.idLoc = this.makeid(); 
+        this.jtList = this.jobtypes;
+        this.jpList = this.industries;
         this.boot();
     },
 
@@ -63,8 +81,10 @@ Vue.component('gl-view-profile-org', {
 			profile: {},
             avatar: 'img/a0.jpg',
             location: '',
-            idSum: Math.random().toString(36).substr(2, 5),
-            idLoc: Math.random().toString(36).substr(2, 5),
+            idSum: this.makeid(),
+            idLoc: this.makeid(), 
+
+            jtList: [], jpList: [],
 
  			forms: {
                 updateProfile: new SparkForm({
@@ -87,9 +107,9 @@ Vue.component('gl-view-profile-org', {
     },
 
     watch: {
-        'organization': function(v) {
-            this.boot();
-        }
+        'organization': function(v) { this.boot(); },
+        'jobtypes': function(v) { this.jtList = v; },
+        'industries': function(v) { this.jpList = v; },
     },
 
     events: {},
@@ -101,9 +121,18 @@ Vue.component('gl-view-profile-org', {
 
     methods: {
         boot: function() {
-              this.setProfile(this.organization.profile);
+           this.setProfile(this.organization.profile);
         },
-            
+
+		makeid: function() {
+    		var text = "";
+    		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    		for( var i=0; i < 5; i++ )
+        		text += possible.charAt(Math.floor(Math.random() * possible.length));
+    		return text;
+        },
+ 
         setFileName: function(name) {
             this.forms.updateProfile.file_name = name;
         },
@@ -142,7 +171,9 @@ Vue.component('gl-view-profile-org', {
                     this.forms.updateProfile.description  = this.profile.description;
                     this.forms.updateProfile.website  = this.profile.website;
                     this.forms.updateProfile.num_employees  = this.profile.num_employees;
-                    this.forms.updateProfile.jobtypes  = this.profile.jobtypes;                   this.forms.updateProfile.industries  = this.profile.industries;
+                    console.log("Setting it...");
+                    this.forms.updateProfile.jobtypes  = this.profile.job_types;
+                    this.forms.updateProfile.industries  = this.profile.industries;
                 }
             }
         },

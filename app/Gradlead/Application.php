@@ -25,7 +25,7 @@ class Application extends Model
     public function getApplicantAttribute() 
     {
         $user = DB::table('users')
-                ->select(DB::raw('name'))
+                ->select(DB::raw("CONCAT(first,' ',last) as name"))
                 ->where('id',$this->user_id)
                 ->first(); 
         return $user->name;

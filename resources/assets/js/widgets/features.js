@@ -1,7 +1,6 @@
 Vue.component('spark-featured-jobs', {
     props: [],
 
-    // TODO: Finish onclick 
     template: '<div> \
         <div v-for="job in jobs" class="col-md-4 col-sm-6 blog-masonry-item development card" style="cursor:pointer; height:162px">\
           <div @click.prevent="show(job.id)" v-if="job.organization.profile!=null" class="item-inner quote-post">\
@@ -49,7 +48,6 @@ Vue.component('spark-featured-jobs', {
 Vue.component('spark-featured-employers', {
     props: [],
 
-    // TODO: Finish onclick 
     template: '<div> \
                 <div v-for="o in orgs" class="col-md-2 col-sm-4" style="cursor:pointer">\
                     <img @click.prevent="show(o.id)" alt="Client Logo" :src="o.logo_url">\

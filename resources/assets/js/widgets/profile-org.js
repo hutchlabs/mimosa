@@ -35,9 +35,9 @@ Vue.component('gl-profile-org', {
 \
                                 <gl-text v-show="isCompany" :display="\'Website\'" :form="forms.updateProfile" :name="\'website\'" :input.sync="forms.updateProfile.website" :placeholder="\'http://\'"></gl-text>\
 \
-                                <gl-text v-show="isCompany" :display="\'Job Types*\'" :form="forms.updateProfile" :name="\'jobtypes\'" :input.sync="forms.updateProfile.jobtypes"></gl-text>\
+                                <gl-multiselect v-show="isCompany" :display="\'Job Types*\'" :form="forms.updateProfile" :name="\'jobtypes\'" :input.sync="forms.updateProfile.jobtypes" :multiple="true" :items="jtList" :placetext="\'Choose preferred job types...\'"></gl-multiselect>\
 \
-                                <gl-text v-show="isCompany" :display="\'Industries*\'" :form="forms.updateProfile" :name="\'industries\'" :input.sync="forms.updateProfile.industries"></gl-text>\
+                                <gl-multiselect v-show="isCompany" :display="\'Industries*\'" :form="forms.updateProfile" :name="\'industries\'" :input.sync="forms.updateProfile.industries" :multiple="true" :items="jpList" :placetext="\'Choose area of work...\'"></gl-multiselect>\
                             </div>\
                         </div>\
                     </form>\
@@ -81,6 +81,7 @@ Vue.component('gl-profile-org', {
             avatar: 'img/a0.jpg',
             location: '',
 
+            jtList: [], jpList: [],
 
  			forms: {
                 updateProfile: new SparkForm({
@@ -151,7 +152,8 @@ Vue.component('gl-profile-org', {
                     this.forms.updateProfile.description  = this.profile.description;
                     this.forms.updateProfile.website  = this.profile.website;
                     this.forms.updateProfile.num_employees  = this.profile.num_employees;
-                    this.forms.updateProfile.jobtypes  = this.profile.jobtypes;                   this.forms.updateProfile.industries  = this.profile.industries;
+                    this.forms.updateProfile.jobtypes  = this.profile.job_types;                   
+                    this.forms.updateProfile.industries  = this.profile.industries;
                 }
             }
         },
@@ -159,6 +161,18 @@ Vue.component('gl-profile-org', {
         setupListeners: function () {
             var self = this;
             bus.$on('authUserSet', function (user) { self.setProfile(user.organization.profile); });
+            bus.$on('jobTypesSet', function (items) {
+                self.jtList = [];
+                $.each(items, function(i,j){ self.jtList.push({id:j.name, name:j.name}); });
+                self.forms.updateProfile.jobtypes  = self.profile.job_types;                   
+            });
+
+            bus.$on('industriesSet', function (items) {
+                self.jpList = [];
+                $.each(items, function(i,j){ self.jpList.push({id:j.name, name:j.name}); });
+                self.forms.updateProfile.industries  = self.profile.industries;
+            });
+
             bus.$emit('screenLoaded',self.modname);
         },
 

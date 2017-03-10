@@ -83,7 +83,7 @@ Route::group(['middleware' => 'web'], function ($router) {
 
         // Profiles
         $router->get('profiles/users',                      'ProfileController@userProfiles');
-        $router->get('profiles/employees',                  'ProfileController@employeeProfiles');
+        $router->get('profiles/employees',                  'ProfileController@employerProfiles');
         $router->get('profiles/schools',                    'ProfileController@schoolProfiles');
         $router->get('profiles/logo/{id}',                  'ProfileController@logo');
         $router->get('profiles/crest/{id}',                 'ProfileController@crest');
@@ -100,7 +100,7 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->post('profiles/users/resume',              'ProfileController@storeUserResume');
         $router->post('profiles/users/doc',                 'ProfileController@storeUserDoc');
         $router->post('profiles/users/skill',               'ProfileController@storeUserSkill');
-        $router->post('profiles/employees',                 'ProfileController@storeEmployeeProfile');
+        $router->post('profiles/employees',                 'ProfileController@storeEmployerProfile');
         $router->post('profiles/schools',                   'ProfileController@storeSchoolProfile');
         $router->put('profiles/users/{id}',                 'ProfileController@updateUserProfile');
         $router->put('profiles/users/education/{id}',       'ProfileController@updateUserEducation');
@@ -112,7 +112,7 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->put('profiles/users/doc/{id}',          'ProfileController@updateUserDoc');
 
         $router->put('profiles/users/skill/{id}',           'ProfileController@updateUserSkill');
-        $router->put('profiles/employees/{id}',             'ProfileController@updateEmployeeProfile');
+        $router->put('profiles/employees/{id}',             'ProfileController@updateEmployerProfile');
         $router->put('profiles/schools/{id}',               'ProfileController@updateSchoolProfile');
         $router->delete('profiles/users/education/{id}',    'ProfileController@destroyUserEducation');
         $router->delete('profiles/users/experience/{id}',   'ProfileController@destroyUserExperience');
