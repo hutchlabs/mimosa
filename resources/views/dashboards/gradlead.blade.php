@@ -26,7 +26,7 @@
                         <span>Job Board</span>
                     </li>
 
-                    <li class="active">
+                    <li :class="listClass('#jobs')">
                         <a href="#jobs" aria-controls="jobs" role="tab" data-toggle="tab">
                             <i class="fa fa-suitcase icon text-info-lter"></i>
                             <span class="font-bold">Job Postings</span>

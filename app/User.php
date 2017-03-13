@@ -24,7 +24,7 @@ class User extends Authenticatable
     {
         $appends = ['profile','name','profile_url'];
         if ($this->isStudent()) {
-            $appends = array_merge($appends, ['education','languages','preferences','resumes','skills','work','docs']);
+            $appends = array_merge($appends, ['education','languages','preferences','resumes','skills','work','docs','primary','clubs']);
         }
         
         $this->appends = array_merge($this->appends, $appends);
@@ -51,6 +51,25 @@ class User extends Authenticatable
                 $ed[$key]->graduation = $monthName.', '.$val->graduation_year;  
             }
         }
+        return $ed;
+    }
+
+    protected function getPrimaryAttribute()
+    {
+        $ed= DB::table('profiles_student_education_primary')->select(DB::raw('*'))->where('user_id',$this->id)->get(); 
+        
+        if (!is_null($ed) && sizeof($ed)) {
+            foreach($ed as $key => $val) {     
+                $monthName = date('F', mktime(0, 0, 0, $val->graduation_month, 10));
+                $ed[$key]->graduation = $monthName.', '.$val->graduation_year;  
+            }
+        }
+        return $ed;
+    }
+    
+    protected function getClubsAttribute()
+    {
+        $ed= DB::table('profiles_student_clubs')->select(DB::raw('*'))->where('user_id',$this->id)->get(); 
         return $ed;
     }
     

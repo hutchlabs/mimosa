@@ -51,7 +51,7 @@
                             </span>
                         </td>
                         <td class="spark-table-pad">@{{ u.created_at }}</td>
-                        <td class="spark-table-pad">@{{ u.status }}</td>
+                        <td class="spark-table-pad">@{{ u.status | status_text}}</td>
                         <td class="spark-table-pad">
                             <button class="btn btn-danger btn-addon btn-sm btn-cirlce" @click.prevent="removeApp(u)">
                                 <span>

@@ -286,5 +286,9 @@ Vue.component('gradlead-applications-user-screen', {
 
     },
 
-    filters: {},
+    filters: {
+        status_text: function(v) {
+            return (v!='Hired') ? 'Received' : status;
+        }
+    },
 });

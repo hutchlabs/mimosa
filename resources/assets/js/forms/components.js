@@ -519,7 +519,6 @@ Vue.component('gl-textarea', {
             if (this.id!='') {
                 this.quill = new Quill('#'+this.id, this.config);
                 if (typeof text != 'undefined' && text!=null) {
-                    console.log("setting text 2");
                     this.quill.setText(text);
                 }
                 this.quill.on('text-change', function(change) {

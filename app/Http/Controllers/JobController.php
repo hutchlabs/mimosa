@@ -283,8 +283,6 @@ class JobController extends Controller
         return $this->json_response($i);
     }
 
-
-
     public function destroy(Request $request, $itemId)
     {
         $i = Job::find($itemId);

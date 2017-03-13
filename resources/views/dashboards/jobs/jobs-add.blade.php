@@ -147,14 +147,14 @@
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label class="control-label">Job Type</label>
+                                                    <label class="control-label">Job Type*</label>
                                                     <multiselect :options="jobTypes" :multiple="true" :value="multiJT_val" :close-on-select="true" :hide-selected="true" placeholder="Select Job types" v-model="multiJT" label="name" key="id">
                                                     </multiselect>
                                                     <input type="hidden" name="jobtypes" id="jobtypes" />
                                                 </div>
 
                                                 <div class="form-group">
-                                                    <label class="control-label">Area of Work</label>
+                                                    <label class="control-label">Area of Work*</label>
                                                     <multiselect :options="skills" :multiple="true" :hide-selected="true" :value="multiSK_val" :close-on-select="true" placeholder="Required skills..." v-model="multiSK" label="name" key="id">
                                                     </multiselect>
                                                     <input type="hidden" name="positions" id="positions" />

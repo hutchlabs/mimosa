@@ -91,7 +91,7 @@
                                 <a class="btn btn-sm btn-danger  btn-addon pull-right" v-show="canRejectApp" @click.prevent="setStatus('Rejected')"><i class="fa fa-trash-o"></i> Reject</a>
 
                             <div v-show="isPending">
-                                <a class="btn btn-sm btn-success btn-addon" @click.prevent="setStatus('Approved')"><i class="fa fa-thumbs-up"></i>Approve</a>
+                                <a class="btn btn-sm btn-success btn-addon" @click.prevent="setStatus('Approved')"><i class="fa fa-thumbs-up"></i>Shortlist</a>
                             </div> 
                             <div v-show='isApproved'>
                                 <a class="btn btn-sm btn-default btn-addon" @click.prevent="setStatus('Pending')"><i class="fa fa-mail-reply"></i> Back to Pending</a>  
@@ -99,12 +99,12 @@
                             </div>
                             <div v-show='isInterviewed'>
                                 <a class="btn btn-sm btn-default btn-addon" @click.prevent="setStatus('Pending')"><i class="fa fa-mail-reply"></i> Back to Pending</a>   
-                                 <a class="btn btn-sm btn-default btn-addon" @click.prevent="setStatus('Approved')"><i class="fa fa-mail-reply"></i> Back to Approved</a>  
+                                 <a class="btn btn-sm btn-default btn-addon" @click.prevent="setStatus('Approved')"><i class="fa fa-mail-reply"></i> Back to Shortlisted</a>  
                                 <a class="btn btn-sm btn-success btn-addon" @click.prevent="setStatus('Hired')"><i class="fa fa-gavel"></i> Hire</a>                  
                             </div>
                             <div v-show='isHired'>
                                 <a class="btn btn-sm btn-default btn-addon" @click.prevent="setStatus('Pending')"><i class="fa fa-mail-reply"></i> Back to Pending</a>   
-                                 <a class="btn btn-sm btn-default btn-addon" @click.prevent="setStatus('Approved')"><i class="fa fa-mail-reply"></i> Back to Approved</a>    
+                                 <a class="btn btn-sm btn-default btn-addon" @click.prevent="setStatus('Approved')"><i class="fa fa-mail-reply"></i> Back to Shortlisted</a>    
                                 <a class="btn btn-sm btn-default btn-addon" @click.prevent="setStatus('Interviewed')"><i class="fa fa-mail-reply"></i> Back to Interviewed</a>              
                             </div>
                             <div v-show='isRejected'>

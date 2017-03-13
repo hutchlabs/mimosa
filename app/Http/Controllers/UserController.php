@@ -123,14 +123,36 @@ class UserController extends Controller
         
         $this->validate($request, 
                         ['user_id' => 'required|exists:users,id',
+                         'description' => 'required|max:255',
                          'url' => 'required|max:255']);
         
         $i = new Bookmark();
         $i->user_id = $request->user_id;
+        $i->description = $request->description;
         $i->url = $request->url;
         $i->modified_by = $user->id;
         $i->save();
               
+        return $this->ok();
+    }
+    
+    public function editBookmark(Request $request, $bookmarkId) 
+    {
+        $user = $request->user();
+        
+        $this->validate($request, 
+                        ['user_id' => 'required|exists:users,id',
+                         'description' => 'required|max:255',
+                         'url' => 'required|max:255']);
+        
+        $i = Bookmark::find($bookmarkId);
+        if ($i) {
+            $i->user_id = $request->user_id;
+            $i->description = $request->description;
+            $i->url = $request->url;
+            $i->modified_by = $user->id;
+            $i->save();
+        }        
         return $this->ok();
     }
     

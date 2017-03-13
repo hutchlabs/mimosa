@@ -65,7 +65,9 @@ Vue.component('spark-profile-summary', {
     methods: {
         initQuill: function(text) {
             this.quill = new Quill('#editor-container', this.config);
-            this.quill.setText(text);
+            if (typeof text!='undefined') {
+                this.quill.setText(text);
+            }
             this.dehighlight();
             $('.ql-save').on('click', function() { self.doUpdate(); });
             this.quill.on('text-change', function(change) {  this.highlight(); });

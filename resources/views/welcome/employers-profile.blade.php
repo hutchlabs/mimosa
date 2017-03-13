@@ -25,7 +25,7 @@
                             </div>
                             <div class="col-md-6 pull-left">
                                 <h5 class="real-h5"> {{ $profile->name }}</h5>
-                                <h3>{{$profile->profile->summary}}</h3>
+                                <h3>{{ ($profile->type=='employer') ? $profile->summary: ''}}</h3>
                                  <div class="sub alt-font">
                                     <small>Jobs Posted: {{ sizeof($profile->jobs) }}</small>
                                 </div>
@@ -38,11 +38,12 @@
                                       <label class="col-sm-3 control-label">About</label>
                                       <div class="col-sm-9">
                                         <div class="form-control-static">
-                                            {{ $profile->profile->description}}
+                                            {{ ($profile->type=='employer') ? $profile->profile->description: $profile->profile->summary}}
                                         </div>
                                       </div>
                                     </div>
                                     
+                                    @if ($profile->type=='employer')
                                     <div class="form-group m-b-sm">
                                       <label class="col-sm-3 control-label">Number of employees</label>
                                       <div class="col-sm-9">
@@ -65,6 +66,7 @@
                                         <div class="form-control-static">{{$profile->profile->industries}}</div>
                                       </div>
                                     </div>
+                                    @endif
                                     
                                     <div class="form-group m-b-sm">
                                       <label class="col-sm-3 control-label">Address</label>

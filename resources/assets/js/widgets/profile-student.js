@@ -1,7 +1,7 @@
 Vue.component('gl-student-profile', {
-    props: ['user','def'],
+    props: ['user'],
 
-    template: '<div>\
+    template: '<div v-if="everythingLoaded">\
                   <spark-profile-summary :title="\'Summary\'" :profileid:="myuser.profile.id" :myuserid="myuser.id" :summary="myuser.profile.summary">\
                   </spark-profile-summary>\
                   <spark-profile-work :title="\'Professional Experience\'" :myuserid="myuser.id" :work="myuser.work">\
@@ -20,13 +20,22 @@ Vue.component('gl-student-profile', {
                   </div>\
                 </div>',
 
-    mounted: function () { this.myuser = this.def; }, 
+    mounted: function () { 
+        this.myuser = this.user; 
+        console.log(this.user);
+    }, 
+    computed: {
+        everythingLoaded: function() { return this.myuser.id > 0; }
+    },
     watch: { 
-        'user': function(u) { this.myuser = u; }
+        'user': function(u) { console.log('updating'); this.myuser = u; }
     },
     events: {},
-    data: function () { return { baseUrl: '/', myuser: { 'name': 'none', 'id':0, profile:{'id':0}},
-    
-    } },
+    data: function () { 
+        return { 
+            baseUrl: '/',
+            myuser: { 'name': 'none', 'id':0, profile:{'id':0}},
+        } 
+    },
     methods: { }
 });

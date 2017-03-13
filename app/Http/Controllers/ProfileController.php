@@ -214,6 +214,7 @@ class ProfileController extends Controller
             'degree_major' => 'required|max:255',
             'graduation_month' => 'required|numeric',
             'graduation_year' => 'required|numeric',
+            'gpa' => 'required|numeric',
             'visible' => 'required|in:0,1'
         ]);
 
@@ -225,6 +226,55 @@ class ProfileController extends Controller
         $i->degree_major = $request->degree_major;
         $i->graduation_year = $request->graduation_year;
         $i->graduation_month = $request->graduation_month;
+        $i->gpa = $request->gpa;
+        $i->visible = $request->visible;
+        $i->modified_by = $user->id;
+        $i->save();
+
+        return $this->json_response($i);
+    }
+    
+    public function storeUserPrimary(Request $request)
+    {
+        $user = $request->user();
+
+        $this->validate($request, [
+            'user_id' => 'required|exists:users,id',
+            'school' => 'required|max:255',
+            'country' => 'required|max:255',
+            'graduation_month' => 'required|numeric',
+            'graduation_year' => 'required|numeric',
+            'visible' => 'required|in:0,1'
+        ]);
+
+        $i = new ProfileStudentEducationPrimary();
+        $i->user_id = $request->user_id;
+        $i->school = $request->school;
+        $i->country = $request->country;
+        $i->graduation_year = $request->graduation_year;
+        $i->graduation_month = $request->graduation_month;
+        $i->visible = $request->visible;
+        $i->modified_by = $user->id;
+        $i->save();
+
+        return $this->json_response($i);
+    }
+    
+    public function storeUserClub(Request $request)
+    {
+        $user = $request->user();
+
+        $this->validate($request, [
+            'user_id' => 'required|exists:users,id',
+            'name' => 'required|max:255',
+            'position' => 'required|max:255',
+            'visible' => 'required|in:0,1'
+        ]);
+
+        $i = new ProfileStudentClub();
+        $i->user_id = $request->user_id;
+        $i->name = $request->name;
+        $i->position = $request->position;
         $i->visible = $request->visible;
         $i->modified_by = $user->id;
         $i->save();
@@ -559,6 +609,7 @@ class ProfileController extends Controller
             'degree_major' => 'required|max:255',
             'graduation_month' => 'required|numeric',
             'graduation_year' => 'required|numeric',
+            'gpa' => 'required|numeric',
             'visible' => 'required|in:0,1',
         ]);
 
@@ -570,6 +621,7 @@ class ProfileController extends Controller
         $i->degree_major = $request->degree_major;
         $i->graduation_year = $request->graduation_year;
         $i->graduation_month = $request->graduation_month;
+        $i->gpa = $request->gpa;
         $i->visible = $request->visible;
         $i->modified_by = $user->id;
         $i->save();
@@ -577,6 +629,57 @@ class ProfileController extends Controller
         return $this->json_response($i);
     }
 
+    public function updateUserPrimary(Request $request, $itemId)
+    {
+        $user = $request->user();
+
+        $this->validate($request, [
+            'id'=>'required|exists:profiles_student_education_primary,id',
+            'user_id' => 'required|exists:users,id',
+            'school' => 'required|max:255',
+            'country' => 'required|max:255',
+            'graduation_month' => 'required|numeric',
+            'graduation_year' => 'required|numeric',
+            'visible' => 'required|in:0,1',
+        ]);
+
+        $i = ProfileStudentEducationPrimary::find($request->id);
+        $i->user_id = $request->user_id;
+        $i->school = $request->school;
+        $i->country = $request->country;
+        $i->graduation_year = $request->graduation_year;
+        $i->graduation_month = $request->graduation_month;
+        $i->visible = $request->visible;
+        $i->modified_by = $user->id;
+        $i->save();
+
+        return $this->json_response($i);
+    }
+    
+    public function updateUserClub(Request $request, $itemId)
+    {
+        $user = $request->user();
+
+        $this->validate($request, [
+            'id'=>'required|exists:profiles_student_clubs,id',
+            'user_id' => 'required|exists:users,id',
+            'name' => 'required|max:255',
+            'position' => 'required|max:255',
+            'visible' => 'required|in:0,1',
+        ]);
+
+        $i = ProfileStudentClub::find($request->id);
+        $i->user_id = $request->user_id;
+        $i->name = $request->name;
+        $i->position = $request->position;
+        $i->visible = $request->visible;
+        $i->modified_by = $user->id;
+        $i->save();
+
+        return $this->json_response($i);
+    }
+
+   
     public function updateUserExperience(Request $request, $itemId)
     {
         $user = $request->user();
@@ -713,8 +816,7 @@ class ProfileController extends Controller
 
         return $this->json_response($i);
     }
-    
-    
+     
     public function updateUserDoc(Request $request, $itemId)
     {
         $user = $request->user();
@@ -751,8 +853,6 @@ class ProfileController extends Controller
         return $this->json_response($i);
     }
 
-
-
     public function updateUserSkill(Request $request, $itemId)
     {
         $user = $request->user();
@@ -781,6 +881,16 @@ class ProfileController extends Controller
     public function destroyUserEducation(Request $request, $itemId)
     {
         return $this->processDestroy(ProfileStudentEducation::find($itemId));
+    }
+    
+    public function destroyUserPrimary(Request $request, $itemId)
+    {
+        return $this->processDestroy(ProfileStudentEducationPrimary::find($itemId));
+    }
+
+    public function destroyUserClub(Request $request, $itemId)
+    {
+        return $this->processDestroy(ProfileStudentClub::find($itemId));
     }
 
     public function destroyUserExperience(Request $request, $itemId)

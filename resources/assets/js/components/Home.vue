@@ -7,6 +7,7 @@ Vue.component('gradlead-home-screen', {
     mounted: function() {
         this.setupListeners();
         this.getAuthUser();
+        this.setPaths();
         bus.$emit('screenLoaded', 'Home');
     },
 
@@ -18,6 +19,8 @@ Vue.component('gradlead-home-screen', {
             authUser: null,
             avatar: 'img/a0.jpg',
             logo: 'img/a0.jpg',
+            hpath: '',
+            hsearch: {},
 
             usertype: {'isGradlead': false, 'isCompany':false, 'isSchool':false, 'isAdmin':false, 'canEdit': false},
             permissions: {'canDoEvents': false, 'canDoScreening':false, 'canDoPreselect': false, 'canDoTracking':false},
@@ -29,8 +32,7 @@ Vue.component('gradlead-home-screen', {
         };
     },
 
-    events: {
-    },
+    events: { },
 
     computed: {
         everythingLoaded: function() {
@@ -41,6 +43,45 @@ Vue.component('gradlead-home-screen', {
     },
 
     methods: {
+        listClass: function(name) {
+            if (this.hpath=='' && name=='#jobs') { return 'active'; }
+            return (name==this.hpath) ? 'active' : '';
+        },
+        tabClass: function(name) {
+            if (this.hpath=='' && name=='#jobs') { return 'tab-pane active'; }
+            var x= (name==this.hpath) ? 'tab-pane active' : 'tab-pane';
+            //console.log('Path: '+this.hpath+' Name: '+name+' Class: '+x);
+            return x;
+        },
+
+        setPaths: function() {
+            this.hpath  = window.location.hash;
+            var query  = window.location.search.substr(1);
+			
+			var result = {};
+  			query.split("&").forEach(function(part) {
+    			if(!part) return;
+    			part = part.split("+").join(" "); 
+    			var eq = part.indexOf("=");
+    			var key = eq>-1 ? part.substr(0,eq) : part;
+    			var val = eq>-1 ? decodeURIComponent(part.substr(eq+1)) : "";
+    			var from = key.indexOf("[");
+    			if(from==-1) {
+					result[decodeURIComponent(key)] = val;
+    			} else {
+      				var to = key.indexOf("]");
+      				var index = decodeURIComponent(key.substring(from+1,to));
+      				key = decodeURIComponent(key.substring(0,from));
+      				if(!result[key]) result[key] = [];
+      				if(!index) result[key].push(val);
+      				else result[key][index] = val;
+    			}
+  			});
+  			this.hsearch = result;
+            //console.log('hash '+this.hpath);
+            //console.log(this.hsearch);
+        },
+
         icCounter: function() {
             this.completedCalls++;
             bus.$emit('allLoaded');

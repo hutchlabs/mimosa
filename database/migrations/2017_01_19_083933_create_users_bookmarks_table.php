@@ -16,6 +16,7 @@ class CreateUsersBookmarksTable extends Migration
         Schema::create('users_bookmarks', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
+            $table->string('description');
             $table->string('url'); 
             $table->integer('modified_by');
             $table->timestamp('created_at')->useCurrent();

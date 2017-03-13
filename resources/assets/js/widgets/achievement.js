@@ -157,7 +157,7 @@ Vue.component('gl-achievement', {
 });
 
 Vue.component('gl-achievement-display', {
-    props: ['user', 'tiny'],
+    props: ['user', 'tiny','message'],
 
     template: '<div v-if="list.length>0">\
                     <div v-for="a in list">\
@@ -165,10 +165,11 @@ Vue.component('gl-achievement-display', {
                         <img v-else :src="getImage(a.badge)">\
                     </div>\
                </div>\
-               <div v-else>No badges</div>',
+               <div v-else>{{ msg }}</div>',
 
     mounted: function () {
         this.setupListeners();
+        this.msg = ((typeof this.message !='undefined') && this.message!='') ? this.message : this.msg;
         this.setList(this.user.achievements);
     },
 
@@ -182,6 +183,7 @@ Vue.component('gl-achievement-display', {
         return {
             baseUrl: '/',
             list: [],
+            msg: 'No badges',
         }
     },
 
