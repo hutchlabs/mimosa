@@ -32,7 +32,16 @@ Vue.component('gradlead-welcome-screen', {
         showJob: function(id) {
             window.location.href= this.baseUrl+'j/'+id;
         },
-        
+
+        showReg: function(id) {
+            var url = this.baseUrl+'home?page=detail&id='+id+'&action=apply#jobs';
+            bus.$emit('showRegistration',url);
+        },
+
+        showApply: function(id) {
+            window.location.href= this.baseUrl+'home?page=detail&id='+id+'&action=apply#jobs';
+        },
+
         getFeaturedJobs: function () {
             this.$http.get(self.baseUrl+'jobs/featured')
                 .then(function (resp) {

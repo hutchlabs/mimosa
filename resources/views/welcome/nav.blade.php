@@ -27,7 +27,7 @@
             </ul>
 
              <div class="pull-right">
-                  <spark-authenticate></spark-authenticate>
+                  <gradlead-authenticate></gradlead-authenticate>
              </div>
             </div>
         </div>

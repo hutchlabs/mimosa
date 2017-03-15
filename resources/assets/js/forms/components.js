@@ -35,7 +35,7 @@ Vue.component('gl-date', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
           <div class="col-sm-12">\
-            <label class="control-label">{{ display }}</label>\
+            <label class="control-label" style="margin-bottom:10px;">{{ display }}</label>\
             <date-picker :name="name" :date="startTime" :option="option" :limit="limit"></date-picker>\
         	<span class="help-block" v-show="form.errors.has(name)">\
             	<small>{{ form.errors.get(name) }}</small>\
@@ -95,7 +95,7 @@ Vue.component('gl-email', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                     <div class="col-sm-12">\
-                        <label class="control-label">{{ display }}</label>\
+                        <label class="control-label" style="margin-bottom:10px;">{{ display }}</label>\
                         <input :placeholder="placeholder" :name="name" type="email" class="form-control" v-model="fieldValue">\
                         <span class="help-block" v-show="form.errors.has(name)">\
                             <small>{{ form.errors.get(name) }}</small>\
@@ -153,7 +153,7 @@ Vue.component('gl-file', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                 <div class="col-md-12">\
-                    <label class="control-label">{{ display }}</label>\
+                    <label class="control-label"  style="margin-bottom:10px;">{{ display }}</label>\
                     <input type="file" class="form-control" @change="onFileChange">\
                     <p class="help-block"><span style="color: red">{{ warning }}</span> </p>\
                     <span class="help-block" v-show="form.errors.has(name)">\
@@ -219,7 +219,7 @@ Vue.component('gl-location', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                     <div class="col-sm-12">\
-                       <label class="control-label">{{ display }}</label>\
+                       <label class="control-label"  style="margin-bottom:10px;">{{ display }}</label>\
                        <input class="form-control" :placeholder="placeholder" :id="id" type="text">\
                         <span class="help-block" v-show="form.errors.has(name) || (sent && isInValid())">\
                             <small v-if="sent && isInValid()">Please enter correct address</small>\
@@ -299,7 +299,7 @@ Vue.component('gl-multiselect', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                     <div class="col-sm-12">\
-                       <label class="control-label">{{ display }}</label><br/>\
+                       <label class="control-label"  style="margin-bottom:10px;">{{ display }}</label><br/>\
                        <multiselect :options="items" :multiple="multiple" :hide-selected="true"\
                           :value="fieldValue" v-model="fieldModel" :close-on-select="true" :placeholder="placetext" label="name" key="id"></multiselect>\
                        <span class="help-block" v-show="form.errors.has(name)">\
@@ -309,7 +309,7 @@ Vue.component('gl-multiselect', {
                 </div>',
     watch: {
         'items': function(v) { this.fieldValue = this.getValuesAsArray(this.input);},
-        'fieldModel': function (v) { this.form[this.name] = this.getValuesAsString(this.fieldModel); },
+        'fieldModel': function (v) {  this.form[this.name] = this.getValuesAsString(this.fieldModel); },
         'input': function(v) { this.fieldValue = this.getValuesAsArray(v); }
     },
     mounted: function () {
@@ -342,7 +342,7 @@ Vue.component('gl-password', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                 <div class="col-sm-12">\
-                    <label class="control-label">{{ display }}</label>\
+                    <label class="control-label"  style="margin-bottom:10px;">{{ display }}</label>\
                     <input type="password" :placeholder="placeholder" class="form-control" v-model="fieldValue">\
                     <span class="help-block" v-show="form.errors.has(name)"><small style="color:red">The password needs to be more than {{ minlength }} characters</small></span>\
                     <span class="help-block" v-show="sameError"><small style="color:red">This does not match the given password</small></span>\
@@ -399,7 +399,7 @@ Vue.component('gl-text', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                     <div class="col-sm-12">\
-                        <label class="control-label">{{ display }}</label>\
+                        <label class="control-label"  style="margin-bottom:10px;">{{ display }}</label>\
                         <input :placeholder="placeholder" :name="name" type="text" class="form-control" v-model="fieldValue">\
                         <span class="help-block" v-show="form.errors.has(name)">\
                             <small>{{ form.errors.get(name) }}</small>\
@@ -459,7 +459,7 @@ Vue.component('gl-textarea', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                 <div class="col-sm-12">\
-                    <label class="control-label">{{ display }}</label><br/>\
+                    <label class="control-label"  style="margin-bottom:10px;">{{ display }}</label><br/>\
                     <div :id="id" :name="name" style="height: 100px"></div>\
                     <span class="help-block" v-show="form.errors.has(name)">\
                         <small>{{ form.errors.get(name) }}</small>\
@@ -475,7 +475,7 @@ Vue.component('gl-textarea', {
     watch: {
         'input': function(v) { 
             if (!this.preloaded) {
-                if (typeof v != 'undefined') {
+                if (typeof v != 'undefined' && v!=null && v!='') {
                     this.quill.setText(v); 
                     this.preloaded = true;
                 }
@@ -518,7 +518,7 @@ Vue.component('gl-textarea', {
             var self = this;
             if (this.id!='') {
                 this.quill = new Quill('#'+this.id, this.config);
-                if (typeof text != 'undefined' && text!=null) {
+                if (typeof text != 'undefined' && text!=null && text!='') {
                     this.quill.setText(text);
                 }
                 this.quill.on('text-change', function(change) {
@@ -550,7 +550,7 @@ Vue.component('gl-select', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                     <div class="col-sm-12">\
-                       <label class="control-label">{{ display }}</label><br/>\
+                       <label class="control-label"  style="margin-bottom:10px;">{{ display }}</label><br/>\
                         <select :name="name" class="form-control" v-model="fieldValue" :placeholder="placetext">\
                             <option v-for="item in items" :value="item.value">\
                                 {{ item.text }}\

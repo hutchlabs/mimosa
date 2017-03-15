@@ -16,6 +16,7 @@ import miniToastr from 'mini-toastr';
 
 require('./components/Welcome.vue');
 require('./components/Home.vue');
+require('./components/Inbox.vue');
 require('./components/Stats.vue');
 require('./components/Users.vue');
 require('./components/Organizations.vue');

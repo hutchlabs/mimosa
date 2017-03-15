@@ -60,7 +60,11 @@ Vue.component('gradlead-search-screen', {
 
     watch: {
         'jobs': function(v) {
-          this.$refs.resultsText.innerHTML = this.getResultsText();
+            if (v.length==0) {
+                this.$refs.resultsText.innerHTML = 'No Jobs found.';
+            } else {
+                this.$refs.resultsText.innerHTML = this.getResultsText();
+            }
         },
         'q': function(v) {
           this.searching = true;
@@ -99,22 +103,30 @@ Vue.component('gradlead-search-screen', {
             this.jobsSchool= [];
             this.jobsOther= [];
 
-            $.each(this.jobs, function(i, j) {
-                self.jobsAll.push(j);
-                if (self.detailSet && (j.id==self.hsearch.id)) { self.currentJob = j; console.log('setting current job'); }
+            if (this.jobs.length>0) {
+                $.each(this.jobs, function(i, j) {
+                    self.jobsAll.push(j);
+                    if (self.detailSet && (j.id==self.hsearch.id)) { self.currentJob = j;  }
+                    if (j.featured) { self.jobsFeatured.push(j); }
+                    if (self.isLoggedIn) {
+                        if  (self.isInArray(self.authUser.organization_id, j.school_ids.split(','))) {
+                            self.jobsSchool.push(j); 
+                        }
+                    }
+                });
 
-                if (j.featured) { self.jobsFeatured.push(j); }
-                if (self.isLoggedIn) {
-                    if  (self.isInArray(self.authUser.organization_id, j.school_ids.split(','))) {
-                        self.jobsSchool.push(j); }
-                }
-            });
+                // show apply modal if needed
+                if (this.detailSet && this.isDefined(this.hsearch.action) && (this.hsearch.action=='apply')) { this.apply(this.currentJob); }
 
-            this.$refs.resultsText.innerHTML = this.getResultsText();
+                this.$refs.resultsText.innerHTML = this.getResultsText();
+            } else {
+                this.$refs.resultsText.innerHTML = 'No Jobs found.';
+            }
         },
 
         setResumes: function(resumes) {
             var self = this;
+            self.resumes = [];
             resumes = (resumes==null) ? [] : resumes;
             $.each(resumes, function(i,r) {
                 self.resumes.push({text:r.name, value:r.id});       
@@ -236,22 +248,19 @@ Vue.component('gradlead-search-screen', {
         setupListeners: function () {
             var self = this;
 
-            bus.$on('authUserSet', function (user) { 
-                self.setResumes(user.resumes);
-            });
+            bus.$on('authUserSet', function (user) { self.setResumes(user.resumes); });
             
             bus.$on('jobsSet', function (items) {
                 self.jobs = [];
                 if (items!==null) {
                     $.each(items, function (idx, job) {
                         if (self.usertype.isGradlead || self.usertype.isSchool) { self.jobs.push(job) }
-                        else if (self.authUser.organization_id==job.organziation_id) { self.jobs.push(job); }
+                        else if (self.authUser.organization_id==job.organiation_id) { self.jobs.push(job); }
                     });
                     
                     if (self.detailSet && self.hsearch.page=='sp') {
                         self.q = self.hsearch.q;
                         self.l = self.hsearch.l;
-                        console.log("Setting search to "+self.q+ " "+self.l);
                         self.search();
                     } else {
                         self.processJobs();
@@ -277,6 +286,8 @@ Vue.component('gradlead-search-screen', {
         },
 
         // Helpers
+        isDefined: function(i) { return (typeof i !='undefined'); },
+
         getOrgUrl: function(job) {
             return this.baseUrl+'o/'+job.organization_id;
         },

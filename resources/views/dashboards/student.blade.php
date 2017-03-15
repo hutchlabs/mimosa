@@ -37,14 +37,21 @@
                         <span>Tracking</span>
                     </li>
 
-<!--
+                    <li :class="listClass('#messages')">
+                        <a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">
+                            <b class="badge bg-info pull-right">@{{ newMessageLength }}</b>
+                            <i class="glyphicon glyphicon-envelope icon"></i>
+                            <span class="font-bold">Messages</span>
+                        </a>
+                    </li>
+
                     <li :class="listClass('#alerts')">
                         <a href="#alerts" aria-controls="alerts" role="tab" data-toggle="tab">
                             <i class="glyphicon glyphicon-bell icon"></i>
                             <span class="font-bold">Alerts</span>
                         </a>
                     </li>
--->
+
                     <li :class="listClass('#bookmarks')">
                         <a href="#bookmarks" aria-controls="bookmarks" role="tab" data-toggle="tab">
                             <i class="glyphicon glyphicon-bookmark icon"></i>
@@ -87,7 +94,12 @@
             @include('dashboards.resumes.index')
         </div>
 
+        <div role="tabpanel" :class="tabClass('#messages')" id="messages">
+            @include('dashboards.messages.index')
+        </div>
+
         <div role="tabpanel" :class="tabClass('#alerts')" id="alerts">
+            @include('dashboards.jobs.alerts')
         </div>
 
         <div role="tabpanel" :class="tabClass('#bookmarks')" id="bookmarks">

@@ -65038,6 +65038,7 @@ require('./bootstrap');
 
 require('./components/Welcome.vue');
 require('./components/Home.vue');
+require('./components/Inbox.vue');
 require('./components/Stats.vue');
 require('./components/Users.vue');
 require('./components/Organizations.vue');
@@ -65069,7 +65070,7 @@ var app = new Vue({
     data: {}
 });
 
-},{"./bootstrap":78,"./components/Applications.vue":79,"./components/Badges.vue":80,"./components/Events.vue":81,"./components/Home.vue":82,"./components/Jobs.vue":83,"./components/Lists.vue":84,"./components/Organizations.vue":85,"./components/Permissions.vue":86,"./components/Plans.vue":87,"./components/Resumes.vue":88,"./components/Screening.vue":89,"./components/Search.vue":90,"./components/Seekers.vue":91,"./components/Stats.vue":92,"./components/Themes.vue":93,"./components/Users.vue":94,"./components/Welcome.vue":95,"mini-toastr":63}],78:[function(require,module,exports){
+},{"./bootstrap":78,"./components/Applications.vue":79,"./components/Badges.vue":80,"./components/Events.vue":81,"./components/Home.vue":82,"./components/Inbox.vue":83,"./components/Jobs.vue":84,"./components/Lists.vue":85,"./components/Organizations.vue":86,"./components/Permissions.vue":87,"./components/Plans.vue":88,"./components/Resumes.vue":89,"./components/Screening.vue":90,"./components/Search.vue":91,"./components/Seekers.vue":92,"./components/Stats.vue":93,"./components/Themes.vue":94,"./components/Users.vue":95,"./components/Welcome.vue":96,"mini-toastr":63}],78:[function(require,module,exports){
 'use strict';
 
 var _vuejsDatepicker = require('vuejs-datepicker');
@@ -65206,7 +65207,7 @@ window.bus = new Vue({});
 require('./widgets/bootstrap');
 require('./forms/bootstrap');
 
-},{"./forms/bootstrap":96,"./widgets/bootstrap":104,"bootstrap-sass":4,"jquery":61,"lodash":62,"mini-toastr":63,"quill":66,"vue-datepicker":67,"vue-multiselect":69,"vue-notifications":70,"vue-resource":71,"vue-spinner/dist/vue-spinner.min":72,"vue/dist/vue.js":73,"vuejs-datepicker":76}],79:[function(require,module,exports){
+},{"./forms/bootstrap":97,"./widgets/bootstrap":106,"bootstrap-sass":4,"jquery":61,"lodash":62,"mini-toastr":63,"quill":66,"vue-datepicker":67,"vue-multiselect":69,"vue-notifications":70,"vue-resource":71,"vue-spinner/dist/vue-spinner.min":72,"vue/dist/vue.js":73,"vuejs-datepicker":76}],79:[function(require,module,exports){
 Vue.component('gradlead-applications-screen', {
     
     props: ['authUser', 'usertype', 'permissions'],
@@ -65791,14 +65792,21 @@ Vue.component('gradlead-home-screen', {
             usertype: {'isGradlead': false, 'isCompany':false, 'isSchool':false, 'isAdmin':false, 'canEdit': false},
             permissions: {'canDoEvents': false, 'canDoScreening':false, 'canDoPreselect': false, 'canDoTracking':false},
 
+            newMessageLength: 0,
             loadedScreens: 0,
-            expectedScreens: 19,
+            expectedScreens: 20,
             expectedCalls: 16,
             completedCalls: 0,
         };
     },
 
     events: { },
+
+    watch: { 
+        'authUser': function() {
+            this.newMessageLength =  _.filter(this.authUser.inbox, function (i) { return i.seen==0; }).length;
+        },
+    },
 
     computed: {
         everythingLoaded: function() {
@@ -65883,14 +65891,14 @@ Vue.component('gradlead-home-screen', {
                     self.authUser = user.data;
                     self.usertype.canEdit = (self.authUser.role.name=='Member') ? false : true;
                     self.usertype.isAdmin = (self.authUser.role.name=='Super Administrator' || self.authUser.role.name=='Administrator');
-                    self.usertype.isGradlead = (self.authUser.organization.id==1) ? true : false;
+                    self.usertype.isGradlead = (self.authUser.organization.id==1 && (self.authUser.type!='student'&&self.authUser.type!='graduate')) ? true : false;
                     self.usertype.isCompany = (self.authUser.organization.type=='employer') ? true : false;
                     self.usertype.isSchool = (self.authUser.organization.type=='school') ? true : false;
                     self.permissions.canDoEvents = self.authUser.organization.permissions.events;
                     self.permissions.canDoScreening = self.authUser.organization.permissions.screening;
                     self.permissions.canDoPreselect = self.authUser.organization.permissions.preselect;
                     self.permissions.canDoTracking = self.authUser.organization.permissions.tracking;
-                    self.expectedScreens = (self.usertype.isGradlead) ? 19 : ((self.usertype.isCompany) ? 6 : 3);
+                    self.expectedScreens = (self.usertype.isGradlead) ? 20 : ((self.usertype.isCompany) ? 7 : 4);
                     self.logo = self.getLogoUrl();
                     self.avatar = self.getImageUrl();
                     bus.$emit('authUserSet', self.authUser);
@@ -66100,6 +66108,192 @@ Vue.component('gradlead-home-screen', {
 });
 
 },{}],83:[function(require,module,exports){
+var _moment = require('moment');
+
+//TODO: finish up methods
+Vue.component('gradlead-inbox-screen', {
+    
+    props: ['authUser', 'usertype', 'permissions'],
+
+    mounted: function () {
+        this.setupListeners();
+        this.currentMsg = this.defaultMsg;
+        this.setList(this.authUser);
+    },
+
+    data: function () {
+        return {
+            baseUrl: '/',
+            modname: 'Inbox',
+            
+            inbox: [],
+            trash: [],
+            sent: [],
+            availableMsgs: [],
+
+            filter: '',
+            bins: [ { name: 'Sent' }, { name: 'Trash' }, ],
+            listView: true,
+            messageView: false,
+            composeView: false,
+            reply: false,
+
+            defaultMsg: { 'id': 'default', 'title': 'none', from:{type:'gradlead'}},
+            currentMsg: { 'id': 0, from:{type:'gradlead'}},
+        };
+    },
+
+    watch: {
+        'filter': function (name) { 
+            if (name=='Sent') { this.availableMsgs =  this.sent; }
+            else if (name=='Trash') { this.availableMsgs =  this.trash; }
+            else { this.availableMsgs = this.inbox; };
+            this.showList();
+        },
+    },
+
+    events: {},
+
+    computed: {
+        everythingLoaded: function () { return this.authUser != null; },
+        hasMsgs: function () { return this.availableMsgs.length > 0; },
+    },
+
+    methods: {
+        setList: function(user) {
+            this.inbox = [];
+            this.trash = [];
+            this.sent = [];
+            var self = this;
+            if (user.inbox.length>0) {
+                $.each(user.inbox, function(i, x) {
+                    if (self.isTrash(x)) { self.trash.push(x); }
+                    else if (self.isInbox(x)) { self.inbox.push(x); }
+                });
+            }
+            if (user.outbox.length>0) {
+                $.each(user.outbox, function(i, x) {
+                    if (self.isTrash(x)) { self.trash.push(x); }
+                    else if (self.isSent(x)) { self.sent.push(x); }
+                });
+            }
+            this.selectBin({'name':this.filter});
+        },
+
+        selectBin: function (bin) { this.filter = bin.name; },
+
+        filterInbox: function(f) {
+            var x = [];
+            var self = this;
+            if (f=='unread') { x =  _.filter(this.inbox, function (m) { return self.isNew(m); }); }
+            else if (f=='read') { x =  _.filter(this.inbox, function (m) { return self.isSeen(m); }); }
+            else { x = this.inbox };
+            this.availableMsgs = x;
+        },
+
+        showView: function(v) { 
+            if (v=='list') {
+                this.listView = true; this.composeView = false; this.messageView = false; 
+            }
+
+            if (v=='message') {
+                this.listView = false; this.composeView = false; this.messageView = true; 
+            }
+
+            if (v=='compose') {
+                this.listView = false; this.composeView = true; this.messageView = false; 
+            }
+        },
+
+        showList: function() { this.showView('list'); },
+        showMessage: function() { this.showView('message'); },
+        showCompose: function() { this.showView('compose'); },
+
+        compose: function() { 
+            this.showCompose();
+        },
+
+        selectMsg: function (msg) { this.currentMsg = msg; this.showMessage(); },
+
+        binCount: function (bin) {
+            var self = this;
+            if (bin=='Sent') { return this.sent.length; }
+            if (bin=='Trash') { return this.trash.length; }
+            return this.inbox.length;
+        },
+
+        binCountClass: function (bin) {
+            return (this.binCount(bin) == 0) ? 'badge bg-default pull-right' : 'badge bg-info pull-right';
+        },
+
+        labelClass: function(msg) { return (this.isNew(msg)) ? 'b-l-info' : 'b-l-default'; },
+
+        getUrl: function(msg) { return '/o/'+msg.from.organization_id; },
+
+        getImage: function(msg) {
+            return (msg.from.type=='student' || msg.from.type=='graduate') ? msg.from.avatar : msg.from.orgurl;
+        },
+
+        isSeen: function (msg) { return msg.seen > 0; },
+        isNew: function (msg) { return msg.seen == 0; },
+        isInbox: function (msg) { return (this.isNew(msg) || this.isSeen(msg)); },
+        isTrash: function (msg) { return msg.seen == 2; },
+        isSent: function (msg) { return msg.from_id == this.authUser.id; },
+
+        // Ajax calls
+        sendMsg: function(msg) {
+            this.showList();
+        },
+
+        replyMsg: function(msg) {
+            this.selecttBin({'name':''});
+            this.showList(); 
+        },
+
+        trashMsg: function(msg) {
+            msg.seen = 2;
+            this.showList(); 
+        },
+        
+        removeMsg: function (msg) {
+            var self = this;
+            this.$http.delete(self.baseUrl + 'users/inbox/' + msg.id)
+                .then(function () {
+                    self.inbox = self.removeFromList(this.inbox, msg);
+                }, function (resp) {});
+        },
+
+        setupListeners: function () {
+            var self = this;
+            bus.$on('authUserSet', function (user) { self.setList(user); });
+            bus.$emit('screenLoaded',self.modname);
+        },
+
+
+        // Helpers
+        removeFromList: function (list, item) {
+            return _.reject(list, function (i) { return i.id === item.id; });
+        },
+
+        isInArray: function (item, array) { return !!~$.inArray(item, array); },
+
+        limitTo: function(v,len) { 
+            return v.replace(/<br\/?>/g,' ').substr(0,len); 
+        },
+
+        ucwords: function (str) {
+            return str.toLowerCase().replace(/\b[a-z]/g, function (letter) {
+                return letter.toUpperCase();
+            });
+        },
+    },
+
+    filters: { 
+        fromNow: function(v) { return _moment(v).fromNow() },
+    },
+});
+
+},{"moment":64}],84:[function(require,module,exports){
 Vue.component('gradlead-jobs-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
@@ -67156,7 +67350,7 @@ Vue.component('gradlead-jobs-screen', {
     },
 });
 
-},{}],84:[function(require,module,exports){
+},{}],85:[function(require,module,exports){
 Vue.component('gradlead-lists-screen', {
 
     props: ['list','authUser', 'usertype', 'permissions'],
@@ -67368,7 +67562,7 @@ Vue.component('gradlead-lists-screen', {
     },
 });
 
-},{}],85:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
 Vue.component('gradlead-orgs-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
@@ -67530,7 +67724,7 @@ Vue.component('gradlead-orgs-screen', {
     },
 });
 
-},{}],86:[function(require,module,exports){
+},{}],87:[function(require,module,exports){
 Vue.component('gradlead-permissions-screen', {
 
     mounted: function() {
@@ -67620,7 +67814,7 @@ Vue.component('gradlead-permissions-screen', {
     },
 });
 
-},{}],87:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 Vue.component('gradlead-plans-screen', {
     props: ['authUser', 'usertype', 'permissions'],
 
@@ -67888,7 +68082,7 @@ Vue.component('gradlead-plans-screen', {
     },
 });
 
-},{}],88:[function(require,module,exports){
+},{}],89:[function(require,module,exports){
 Vue.component('gradlead-resumes-screen', {
     
     props: ['authUser', 'usertype', 'permissions'],
@@ -68047,7 +68241,7 @@ Vue.component('gradlead-resumes-screen', {
     filters: { },
 });
 
-},{}],89:[function(require,module,exports){
+},{}],90:[function(require,module,exports){
 Vue.component('gradlead-screening-screen', {
 
     mounted: function () {
@@ -68663,7 +68857,7 @@ Vue.component('gradlead-screening-screen', {
     },
 });
 
-},{}],90:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 var _moment = require('moment');
 
 Vue.component('gradlead-search-screen', {
@@ -68726,7 +68920,11 @@ Vue.component('gradlead-search-screen', {
 
     watch: {
         'jobs': function(v) {
-          this.$refs.resultsText.innerHTML = this.getResultsText();
+            if (v.length==0) {
+                this.$refs.resultsText.innerHTML = 'No Jobs found.';
+            } else {
+                this.$refs.resultsText.innerHTML = this.getResultsText();
+            }
         },
         'q': function(v) {
           this.searching = true;
@@ -68765,22 +68963,30 @@ Vue.component('gradlead-search-screen', {
             this.jobsSchool= [];
             this.jobsOther= [];
 
-            $.each(this.jobs, function(i, j) {
-                self.jobsAll.push(j);
-                if (self.detailSet && (j.id==self.hsearch.id)) { self.currentJob = j; console.log('setting current job'); }
+            if (this.jobs.length>0) {
+                $.each(this.jobs, function(i, j) {
+                    self.jobsAll.push(j);
+                    if (self.detailSet && (j.id==self.hsearch.id)) { self.currentJob = j;  }
+                    if (j.featured) { self.jobsFeatured.push(j); }
+                    if (self.isLoggedIn) {
+                        if  (self.isInArray(self.authUser.organization_id, j.school_ids.split(','))) {
+                            self.jobsSchool.push(j); 
+                        }
+                    }
+                });
 
-                if (j.featured) { self.jobsFeatured.push(j); }
-                if (self.isLoggedIn) {
-                    if  (self.isInArray(self.authUser.organization_id, j.school_ids.split(','))) {
-                        self.jobsSchool.push(j); }
-                }
-            });
+                // show apply modal if needed
+                if (this.detailSet && this.isDefined(this.hsearch.action) && (this.hsearch.action=='apply')) { this.apply(this.currentJob); }
 
-            this.$refs.resultsText.innerHTML = this.getResultsText();
+                this.$refs.resultsText.innerHTML = this.getResultsText();
+            } else {
+                this.$refs.resultsText.innerHTML = 'No Jobs found.';
+            }
         },
 
         setResumes: function(resumes) {
             var self = this;
+            self.resumes = [];
             resumes = (resumes==null) ? [] : resumes;
             $.each(resumes, function(i,r) {
                 self.resumes.push({text:r.name, value:r.id});       
@@ -68902,22 +69108,19 @@ Vue.component('gradlead-search-screen', {
         setupListeners: function () {
             var self = this;
 
-            bus.$on('authUserSet', function (user) { 
-                self.setResumes(user.resumes);
-            });
+            bus.$on('authUserSet', function (user) { self.setResumes(user.resumes); });
             
             bus.$on('jobsSet', function (items) {
                 self.jobs = [];
                 if (items!==null) {
                     $.each(items, function (idx, job) {
                         if (self.usertype.isGradlead || self.usertype.isSchool) { self.jobs.push(job) }
-                        else if (self.authUser.organization_id==job.organziation_id) { self.jobs.push(job); }
+                        else if (self.authUser.organization_id==job.organiation_id) { self.jobs.push(job); }
                     });
                     
                     if (self.detailSet && self.hsearch.page=='sp') {
                         self.q = self.hsearch.q;
                         self.l = self.hsearch.l;
-                        console.log("Setting search to "+self.q+ " "+self.l);
                         self.search();
                     } else {
                         self.processJobs();
@@ -68943,6 +69146,8 @@ Vue.component('gradlead-search-screen', {
         },
 
         // Helpers
+        isDefined: function(i) { return (typeof i !='undefined'); },
+
         getOrgUrl: function(job) {
             return this.baseUrl+'o/'+job.organization_id;
         },
@@ -69003,7 +69208,7 @@ Vue.component('gradlead-search-screen', {
     },
 });
 
-},{"moment":64}],91:[function(require,module,exports){
+},{"moment":64}],92:[function(require,module,exports){
 Vue.component('gradlead-seekers-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
@@ -69305,7 +69510,7 @@ Vue.component('gradlead-seekers-screen', {
     },
 });
 
-},{}],92:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 Vue.component('gradlead-stats-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
@@ -69422,7 +69627,7 @@ Vue.component('gradlead-stats-screen', {
     },
 });
 
-},{}],93:[function(require,module,exports){
+},{}],94:[function(require,module,exports){
 Vue.component('gradlead-themes-screen', {
 
     mounted: function() {
@@ -69530,7 +69735,7 @@ Vue.component('gradlead-themes-screen', {
     filters: { },
 });
 
-},{}],94:[function(require,module,exports){
+},{}],95:[function(require,module,exports){
 Vue.component('gradlead-users-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
@@ -69784,7 +69989,7 @@ Vue.component('gradlead-users-screen', {
     },
 });
 
-},{}],95:[function(require,module,exports){
+},{}],96:[function(require,module,exports){
 Vue.component('gradlead-welcome-screen', {
 
     mounted: function() {
@@ -69819,7 +70024,16 @@ Vue.component('gradlead-welcome-screen', {
         showJob: function(id) {
             window.location.href= this.baseUrl+'j/'+id;
         },
-        
+
+        showReg: function(id) {
+            var url = this.baseUrl+'home?page=detail&id='+id+'&action=apply#jobs';
+            bus.$emit('showRegistration',url);
+        },
+
+        showApply: function(id) {
+            window.location.href= this.baseUrl+'home?page=detail&id='+id+'&action=apply#jobs';
+        },
+
         getFeaturedJobs: function () {
             this.$http.get(self.baseUrl+'jobs/featured')
                 .then(function (resp) {
@@ -69847,7 +70061,7 @@ Vue.component('gradlead-welcome-screen', {
     filters: { },
 });
 
-},{}],96:[function(require,module,exports){
+},{}],97:[function(require,module,exports){
 'use strict';
 
 require('./instance');
@@ -69855,7 +70069,7 @@ require('./errors');
 $.extend(Spark, require('./http'));
 require('./components');
 
-},{"./components":97,"./errors":98,"./http":99,"./instance":100}],97:[function(require,module,exports){
+},{"./components":98,"./errors":99,"./http":100,"./instance":101}],98:[function(require,module,exports){
 'use strict';
 
 var _moment = require('moment');
@@ -69898,7 +70112,7 @@ Vue.component('gl-date', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
           <div class="col-sm-12">\
-            <label class="control-label">{{ display }}</label>\
+            <label class="control-label" style="margin-bottom:10px;">{{ display }}</label>\
             <date-picker :name="name" :date="startTime" :option="option" :limit="limit"></date-picker>\
         	<span class="help-block" v-show="form.errors.has(name)">\
             	<small>{{ form.errors.get(name) }}</small>\
@@ -69961,7 +70175,7 @@ Vue.component('gl-email', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                     <div class="col-sm-12">\
-                        <label class="control-label">{{ display }}</label>\
+                        <label class="control-label" style="margin-bottom:10px;">{{ display }}</label>\
                         <input :placeholder="placeholder" :name="name" type="email" class="form-control" v-model="fieldValue">\
                         <span class="help-block" v-show="form.errors.has(name)">\
                             <small>{{ form.errors.get(name) }}</small>\
@@ -70026,7 +70240,7 @@ Vue.component('gl-file', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                 <div class="col-md-12">\
-                    <label class="control-label">{{ display }}</label>\
+                    <label class="control-label"  style="margin-bottom:10px;">{{ display }}</label>\
                     <input type="file" class="form-control" @change="onFileChange">\
                     <p class="help-block"><span style="color: red">{{ warning }}</span> </p>\
                     <span class="help-block" v-show="form.errors.has(name)">\
@@ -70099,7 +70313,7 @@ Vue.component('gl-location', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                     <div class="col-sm-12">\
-                       <label class="control-label">{{ display }}</label>\
+                       <label class="control-label"  style="margin-bottom:10px;">{{ display }}</label>\
                        <input class="form-control" :placeholder="placeholder" :id="id" type="text">\
                         <span class="help-block" v-show="form.errors.has(name) || (sent && isInValid())">\
                             <small v-if="sent && isInValid()">Please enter correct address</small>\
@@ -70190,7 +70404,7 @@ Vue.component('gl-multiselect', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                     <div class="col-sm-12">\
-                       <label class="control-label">{{ display }}</label><br/>\
+                       <label class="control-label"  style="margin-bottom:10px;">{{ display }}</label><br/>\
                        <multiselect :options="items" :multiple="multiple" :hide-selected="true"\
                           :value="fieldValue" v-model="fieldModel" :close-on-select="true" :placeholder="placetext" label="name" key="id"></multiselect>\
                        <span class="help-block" v-show="form.errors.has(name)">\
@@ -70243,7 +70457,7 @@ Vue.component('gl-password', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                 <div class="col-sm-12">\
-                    <label class="control-label">{{ display }}</label>\
+                    <label class="control-label"  style="margin-bottom:10px;">{{ display }}</label>\
                     <input type="password" :placeholder="placeholder" class="form-control" v-model="fieldValue">\
                     <span class="help-block" v-show="form.errors.has(name)"><small style="color:red">The password needs to be more than {{ minlength }} characters</small></span>\
                     <span class="help-block" v-show="sameError"><small style="color:red">This does not match the given password</small></span>\
@@ -70314,7 +70528,7 @@ Vue.component('gl-text', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                     <div class="col-sm-12">\
-                        <label class="control-label">{{ display }}</label>\
+                        <label class="control-label"  style="margin-bottom:10px;">{{ display }}</label>\
                         <input :placeholder="placeholder" :name="name" type="text" class="form-control" v-model="fieldValue">\
                         <span class="help-block" v-show="form.errors.has(name)">\
                             <small>{{ form.errors.get(name) }}</small>\
@@ -70383,7 +70597,7 @@ Vue.component('gl-textarea', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                 <div class="col-sm-12">\
-                    <label class="control-label">{{ display }}</label><br/>\
+                    <label class="control-label"  style="margin-bottom:10px;">{{ display }}</label><br/>\
                     <div :id="id" :name="name" style="height: 100px"></div>\
                     <span class="help-block" v-show="form.errors.has(name)">\
                         <small>{{ form.errors.get(name) }}</small>\
@@ -70403,7 +70617,7 @@ Vue.component('gl-textarea', {
     watch: {
         'input': function input(v) {
             if (!this.preloaded) {
-                if (typeof v != 'undefined') {
+                if (typeof v != 'undefined' && v != null && v != '') {
                     this.quill.setText(v);
                     this.preloaded = true;
                 }
@@ -70444,7 +70658,7 @@ Vue.component('gl-textarea', {
             var self = this;
             if (this.id != '') {
                 this.quill = new Quill('#' + this.id, this.config);
-                if (typeof text != 'undefined' && text != null) {
+                if (typeof text != 'undefined' && text != null && text != '') {
                     this.quill.setText(text);
                 }
                 this.quill.on('text-change', function (change) {
@@ -70476,7 +70690,7 @@ Vue.component('gl-select', {
 
     template: '<div class="form-group pull-in clearfix" :class="{\'has-error\': form.errors.has(name)}">\
                     <div class="col-sm-12">\
-                       <label class="control-label">{{ display }}</label><br/>\
+                       <label class="control-label"  style="margin-bottom:10px;">{{ display }}</label><br/>\
                         <select :name="name" class="form-control" v-model="fieldValue" :placeholder="placetext">\
                             <option v-for="item in items" :value="item.value">\
                                 {{ item.text }}\
@@ -70910,7 +71124,7 @@ Vue.component('spark-checkbox', {
     }
 });
 
-},{"moment":64}],98:[function(require,module,exports){
+},{"moment":64}],99:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -70964,7 +71178,7 @@ window.SparkFormErrors = function () {
     };
 };
 
-},{}],99:[function(require,module,exports){
+},{}],100:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -70998,7 +71212,7 @@ module.exports = {
     }
 };
 
-},{}],100:[function(require,module,exports){
+},{}],101:[function(require,module,exports){
 "use strict";
 
 window.SparkForm = function (data) {
@@ -71026,7 +71240,7 @@ window.SparkForm = function (data) {
     };
 };
 
-},{}],101:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
 'use strict';
 
 Vue.component('gl-achievement', {
@@ -71264,14 +71478,349 @@ Vue.component('gl-achievement-display', {
     }
 });
 
-},{}],102:[function(require,module,exports){
+},{}],103:[function(require,module,exports){
 'use strict';
 
-Vue.component('spark-authenticate', {
-				props: [],
+Vue.component('gradlead-alert', {
+    props: ['authUser'],
 
-				// TODO: Finish logo load and onclick 
-				template: '<div><div v-if="loggedIn">\
+    template: '<div class="panel hbox hbox-auto-xs no-border">\
+                <div class="col wrapper">\
+                    <i class="fa fa-circle-o text-info m-r-sm pull-right"></i>\
+                    <a class="btn btn-sm btn-info btn-addon" @click.prevent="addAlert()"><i class="fa fa-plus"></i> Add</a>\
+                    <br/><br/>\
+                    <table class="table table-striped m-b-none"><thead>\
+                        <tr><th>Name</th><th>Jobs Matched</th><th>Created</th><th></th></tr></thead>\
+                        <tbody v-if="list.length>0">\
+                            <tr v-for="e in list">\
+                                <td class="spark-table-pad">{{ e.name }}</td>\
+                                <td class="spark-table-pad"><a :href="e.link" style="color:#336699">{{ e.jobs.length }} jobs</a></td>\
+                                <td class="spark-table-pad">{{ e.created_at }}</td>\
+                                <td class="spark-table-pad">\
+                                    <button class="btn btn-warning btn-addon btn-sm btn-circle" @click.prevent="editAlert(e)">\
+                                        <i class="fa fa-pencil"></i> Edit\
+                                    </button>\
+                                    <button class="btn btn-danger btn-addon btn-sm btn-cirlce" @click.prevent="removeAlert(e)">\
+                                        <i class="fa fa-trash-o"></i> Delete </button>\
+                                </td>\
+                            </tr>\
+                        </tbody>\
+                        <tbody v-else><tr><td colspan="4">No alerts set</td></tr></tbody>\
+                     </table>\
+                  </div>\
+                  <div class="modal fade" id="modal-add-alert" tabindex="-1" role="dialog" style="margin:auto;">\
+                      <div class="modal-dialog">\
+                          <div class="modal-content">\
+                              <div class="modal-header">\
+                                  <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
+                                  <h4 class="modal-title"><i class="fa fa-btn fa-plus"></i> Add Alert</h4>\
+                              </div>\
+                              <div class="modal-body">\
+                                  <gl-error-alert :form="forms.addForm"></gl-error-alert>\
+                                  <!-- Add Form -->\
+                                  <form class="form-horizontal" role="form">\
+                                      <div class="row">\
+                                          <div class="col-md-6">\
+                                              <gl-text :display="\'Name*\'" \
+                                                            :form="forms.addForm" \
+                                                            :name="\'name\'" \
+                                                            :input="forms.addForm.name">\
+                                              </gl-text>\
+                                          </div>\
+                                          <div class="col-md-6">\
+                                              <gl-select :display="\'Frequency*\'" \
+                                                            :form="forms.addForm" \
+                                                            :name="\'frequency\'" \
+                                                            :items="freqOptions" \
+                                                            :input="forms.addForm.frequency">\
+                                              </gl-select>\
+                                          </div>\
+                                      </div>\
+                                      <div class="row">\
+                                          <div class="col-md-6">\
+                                              <gl-location :id="\'addAlertLoc\'"\
+                                                           :display="\'Location (Area or City or Country)\'" \
+                                                           :form="forms.addForm" \
+                                                           :name="\'location\'"\
+                                                           :input="location"\
+                                                           :placeholder="\'e.g. Accra, Ghana\'">\
+                                              </gl-location>\
+                                          </div>\
+                                          <div class="col-md-6">\
+                                                <gl-multiselect :display="\'Languages\'" :form="forms.addForm" :name="\'language\'" :input="forms.addForm.language" :multiple="true" :items="languages" :placetext="\'Choose languages...\'"></gl-multiselect>\
+                                          </div>\
+                                      </div>\
+                                      <div class="row">\
+                                          <div class="col-md-6">\
+                                                <gl-multiselect :display="\'Job Types\'" :form="forms.addForm" :name="\'jobtype\'" :input="forms.addForm.jobtype" :multiple="true" :items="jobtypes" :placetext="\'Choose preferred job types...\'"></gl-multiselect>\
+                                          </div>\
+                                          <div class="col-md-6">\
+                                                <gl-multiselect :display="\'Industries\'" :form="forms.addForm" :name="\'category\'" :input.sync="forms.addForm.category" :multiple="true" :items="industries" :placetext="\'Choose area of work...\'"></gl-multiselect>\
+                                          </div>\
+                                      </div>\
+                                  </form>\
+                              </div>\
+                              <div class="modal-footer">\
+                                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>\
+                                  <button type="button" class="btn btn-primary btn-addon" @click.prevent="addNewAlert()" :disabled="forms.addForm.busy">\
+                                      <span v-if="forms.addForm.busy"> <i class="fa fa-btn fa-spinner fa-spin"></i> Adding </span>\
+                                      <span v-else> <i class="fa fa-btn fa-save"></i> Add </span>\
+                                  </button>\
+                              </div>\
+                          </div>\
+                      </div>\
+                  </div>\
+                  <div class="modal fade" id="modal-edit-alert" tabindex="-1" role="dialog" style="margin:auto;">\
+                      <div class="modal-dialog">\
+                          <div class="modal-content">\
+                              <div class="modal-header">\
+                                  <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
+                                  <h4 class="modal-title"><i class="fa fa-btn fa-plus"></i> Update Alert</h4>\
+                              </div>\
+                              <div class="modal-body">\
+                                  <gl-error-alert :form="forms.updateForm"></gl-error-alert>\
+                                  <!-- Add Form -->\
+                                  <form class="form-horizontal" role="form">\
+                                      <div class="row">\
+                                          <div class="col-md-6">\
+                                              <gl-text :display="\'Name*\'" \
+                                                            :form="forms.updateForm" \
+                                                            :name="\'name\'" \
+                                                            :input.sync="forms.updateForm.name">\
+                                              </gl-text>\
+                                          </div>\
+                                          <div class="col-md-6">\
+                                              <gl-select :display="\'Frequency*\'" \
+                                                            :form="forms.updateForm" \
+                                                            :name="\'frequency\'" \
+                                                            :items="freqOptions" \
+                                                            :input.sync="forms.updateForm.frequency">\
+                                              </gl-select>\
+                                          </div>\
+                                      </div>\
+                                      <div class="row">\
+                                          <div class="col-md-6">\
+                                              <gl-location :id="\'updateAlertLoc\'"\
+                                                           :display="\'Location (Area or City or Country)\'" \
+                                                           :form="forms.updateForm" \
+                                                           :name="\'location\'" \
+                                                           :input.sync="location"\
+                                                           :placeholder="\'e.g. Accra, Ghana\'">\
+                                              </gl-location>\
+                                          </div>\
+                                          <div class="col-md-6">\
+                                                <gl-multiselect :display="\'Languages\'" :form="forms.updateForm" :name="\'language\'" :input.sync="forms.updateForm.language" :multiple="true" :items="languages" :placetext="\'Choose languages...\'"></gl-multiselect>\
+                                          </div>\
+                                      </div>\
+                                      <div class="row">\
+                                          <div class="col-md-6">\
+                                                <gl-multiselect :display="\'Job Types\'" :form="forms.updateForm" :name="\'jobtype\'" :input.sync="forms.updateForm.jobtype" :multiple="true" :items="jobtypes" :placetext="\'Choose preferred job types...\'"></gl-multiselect>\
+                                          </div>\
+                                          <div class="col-md-6">\
+                                                <gl-multiselect :display="\'Industries\'" :form="forms.updateForm" :name="\'category\'" :input.sync="forms.updateForm.category" :multiple="true" :items="industries" :placetext="\'Choose area of work...\'"></gl-multiselect>\
+                                          </div>\
+                                      </div>\
+                                  </form>\
+                              </div>\
+                              <div class="modal-footer">\
+                                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>\
+                                  <button type="button" class="btn btn-primary btn-addon" @click.prevent="updateAlert()" :disabled="forms.updateForm.busy">\
+                                      <span v-if="forms.updateForm.busy"> <i class="fa fa-btn fa-spinner fa-spin"></i> Updating </span>\
+                                      <span v-else> <i class="fa fa-btn fa-save"></i> Update </span>\
+                                  </button>\
+                              </div>\
+                          </div>\
+                      </div>\
+                  </div>\
+               </div>',
+
+    mounted: function mounted() {
+        var self = this;
+        this.list = this.authUser.alerts;
+        this.setupListeners();
+    },
+
+    watch: {},
+
+    events: {},
+
+    notifications: {
+        showError: {
+            title: 'Alert Error',
+            message: 'Failed to reach server',
+            type: 'error'
+        },
+        showSuccess: {
+            title: 'Alert success',
+            message: 'Successfully modified alert',
+            type: 'success'
+        }
+    },
+
+    data: function data() {
+        return {
+            baseUrl: '/',
+
+            list: [],
+            location: [],
+            languages: [],
+            industries: [],
+            jobtypes: [],
+
+            freqOptions: [{ text: 'Daily', value: 'daily' }, { text: 'Weekly', value: 'weekly' }, { text: 'Monthly', value: 'monthly' }],
+
+            forms: {
+                addForm: new SparkForm({
+                    user_id: '',
+                    name: '',
+                    country: '',
+                    city: '',
+                    neighborhood: '',
+                    jobtype: '',
+                    category: '',
+                    language: '',
+                    frequency: ''
+                }),
+                updateForm: new SparkForm({
+                    id: '',
+                    user_id: '',
+                    name: '',
+                    country: '',
+                    city: '',
+                    neighborhood: '',
+                    jobtype: '',
+                    category: '',
+                    language: '',
+                    frequency: ''
+                })
+            }
+        };
+    },
+
+    methods: {
+        setList: function setList(l) {
+            this.list = l;
+        },
+
+        removeFromList: function removeFromList(list, item) {
+            return _.reject(list, function (i) {
+                return i.id === item.id;
+            });
+        },
+
+        getLocation: function getLocation(e) {
+            var add = [];
+            //if (e.street!='') { add.push(e.street); }
+            if (e.neighborhood != '') {
+                add.push(e.neighborhood);
+            }
+            if (e.city != '') {
+                add.push(e.city);
+            }
+            if (e.country != '') {
+                add.push(e.country);
+            }
+            return add.length > 0 ? add.join(', ') : '';
+        },
+
+        addAlert: function addAlert(e) {
+            this.location = '';
+            this.forms.addForm.user_id = this.authUser.id;
+            this.forms.addForm.name = '';
+            this.forms.addForm.country = '';
+            this.forms.addForm.city = '';
+            this.forms.addForm.neighborhood = '';
+            this.forms.addForm.jobtype = '';
+            this.forms.addForm.category = '';
+            this.forms.addForm.language = '';
+            this.forms.addForm.frequency = '';
+            this.forms.addForm.errors.forget();
+            $('#modal-add-alert').modal('show');
+        },
+
+        editAlert: function editAlert(e) {
+            this.location = this.getLocation(e);
+            this.forms.updateForm.id = e.id;
+            this.forms.updateForm.user_id = this.authUser.id;
+            this.forms.updateForm.name = e.name;
+            this.forms.updateForm.country = e.country;
+            this.forms.updateForm.city = e.city;
+            this.forms.updateForm.neighborhood = e.neighborhood;;
+            this.forms.updateForm.jobtype = e.job_type;
+            this.forms.updateForm.category = e.category;
+            this.forms.updateForm.language = e.language;
+            this.forms.updateForm.frequency = e.frequency;
+            this.forms.updateForm.errors.forget();
+            $('#modal-edit-alert').modal('show');
+        },
+
+        addNewAlert: function addNewAlert() {
+            var self = this;
+            Spark.post(self.baseUrl + 'users/alert', this.forms.addForm).then(function () {
+                $('#modal-add-alert').modal('hide');
+                self.showSuccess({ message: 'New alert added' });
+                bus.$emit('updateAuthUser');
+            }, function (resp) {
+                self.forms.addForm.busy = false;
+                self.showError({ 'message': resp.error[0] });
+            });
+        },
+
+        updateAlert: function updateAlert() {
+            var self = this;
+            var eid = this.forms.updateForm.id;
+            Spark.put(self.baseUrl + 'users/alert/' + eid, this.forms.updateForm).then(function () {
+                $('#modal-edit-alert').modal('hide');
+                self.showSuccess({ message: 'Alert updated' });
+                bus.$emit('updateAuthUser');
+            }, function (resp) {
+                self.forms.updateForm.busy = false;
+                self.showError({ 'message': resp.error[0] });
+            });
+        },
+
+        removeAlert: function removeAlert(e) {
+            var self = this;
+
+            this.$http.delete(self.baseUrl + 'users/alert/' + e.id).then(function () {
+                self.list = self.removeFromList(this.list, e);
+                self.showSuccess();
+                bus.$emit('updateAuthUser');
+            }, function (resp) {
+                self.showError({ 'message': resp.error[0] });
+            });
+        },
+
+        setupListeners: function setupListeners() {
+            var self = this;
+
+            bus.$on('allLoaded', function () {});
+
+            bus.$on('authUserSet', function (user) {
+                self.setList(user.alerts);
+            });
+
+            bus.$on('languagesSet', function (items) {
+                self.languages = items;
+            });
+            bus.$on('industriesSet', function (items) {
+                self.industries = items;
+            });
+            bus.$on('jobTypesSet', function (items) {
+                self.jobtypes = items;
+            });
+        }
+    }
+});
+
+},{}],104:[function(require,module,exports){
+'use strict';
+
+Vue.component('gradlead-authenticate', {
+    props: [],
+
+    // TODO: Finish logo load and onclick 
+    template: '<div><div v-if="loggedIn" class="col wrapper">\
                    <a style="cursor: pointer" @click.prevent="gotoDashboard" class="btn btn-primary btn-xs">\
                       Welcome {{user.name}}\
                     </a>\
@@ -71282,23 +71831,22 @@ Vue.component('spark-authenticate', {
                   <a style="cursor: pointer" @click.prvevent="showSignup" class="btn btn-primary btn-filled btn-xs">Signup</a>\
             	</div>\
 				<div class="modal fade" id="modal-login" tabindex="-1" role="dialog" style="margin:auto; width: 760px;">\
-				    <div class="modal-dialog">\
+				    <div class="modal-dialog" style="width:50%">\
 				        <div class="modal-content">\
 				            <div class="modal-header">\
 				                <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
 				                <h4 class="modal-title"><i class="fa fa-btn fa-plus"></i>Login</h4>\
 				            </div>\
 				            <div class="modal-body">\
-				                <spark-error-alert :form="forms.login"></spark-error-alert>\
+				                <spark-error-alert v-show="1==0" :form="forms.login"></spark-error-alert>\
 				                <form class="form-horizontal" role="form">\
-									 <div class="row">\
-				                        <div class="col-md-12">\
-				                            <spark-email :display="\'Email*\'" :form="forms.login" :name="\'email\'"\
-														 :input="forms.login.email"></spark-email>\
-				                            <spark-password :display="\'Password*\'" :form="forms.login" :name="\'password\'"\
-															:input="forms.login.password" v-on:keyup.enter="doLogin"></spark-password>\
-				                        </div>\
-				                    </div>\
+                                <div class="row">\
+                                <div class="col-md-12">\
+				                        <gl-email :required="true" :display="\'Email*\'" :form="forms.login" :name="\'email\'"\
+												  :input="forms.login.email" :placeholder="\'e.g. name@server.com\'"></gl-email>\
+				                        <gl-password :required="true" :display="\'Password*\'" :form="forms.login" :name="\'password\'"\
+													 :minlength="4" :input="forms.login.password" v-on:keyup.enter="doLogin"></gl-password>\
+                                </div></div>\
 				                </form>\
 							</div>\
 							<div class="modal-footer">\
@@ -71309,7 +71857,7 @@ Vue.component('spark-authenticate', {
 					</div>\
 				</div>\
 				<div class="modal fade" id="modal-signup" tabindex="-1" role="dialog" style="margin:auto; width: 760px;">\
-				    <div class="modal-dialog">\
+				    <div class="modal-dialog" style="width:50%">\
 				        <div class="modal-content">\
 				            <div class="modal-header">\
 				                <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
@@ -71318,19 +71866,20 @@ Vue.component('spark-authenticate', {
 				            <div class="modal-body">\
 				                <spark-error-alert :form="forms.signup"></spark-error-alert>\
 				                <form class="form-horizontal" role="form">\
-									 <div class="row">\
-				                        <div class="col-md-12">\
- 											<spark-select :display="\'Type*\'" :form="forms.signup" :name="\'type\'"\
-														  :items="typeOptions" :input="forms.signup.type">\
-                            				</spark-select>\
-				                            <spark-text :display="\'Name*\'" :form="forms.signup" :name="\'name\'"\
-														:input="forms.signup.name"></spark-text>\
-				                            <spark-email :display="\'Email*\'" :form="forms.signup" :name="\'email\'"\
-														 :input="forms.signup.email"></spark-email>\
-				                            <spark-password :display="\'Password*\'" :form="forms.signup" :name="\'password\'"\
-															:input="forms.signup.password"></spark-password>\
-				                        </div>\
-				                    </div>\
+                                <div class="row">\
+                                <div class="col-md-12">\
+ 										<gl-select :display="\'Type*\'" :form="forms.signup" :name="\'type\'"\
+												   :items="typeOptions" :input="forms.signup.type">\
+                            			</gl-select>\
+				                         <gl-text :required="true" :display="\'First name*\'" :form="forms.signup" :name="\'first\'"\
+												  :input="forms.signup.first" :placeholder="\'Your first name\'"></gl-text>\
+				                         <gl-text :required="true" :display="\'Last name*\'" :form="forms.signup" :name="\'last\'"\
+												  :input="forms.signup.last" :placeholder="\'Your last name\'"></gl-text>\
+				                          <gl-email :required="true" :display="\'Email*\'" :form="forms.signup" :name="\'email\'"\
+												    :input="forms.signup.email" :placeholder="\'e.g. name@server.com\'"></gl-email>\
+				                            <gl-password :required="true" :minlength="6" :display="\'Password*\'" :form="forms.signup" :name="\'password\'"\
+														 :input="forms.signup.password"></gl-password>\
+                                </div></div>\
 				                </form>\
 							</div>\
 							<div class="modal-footer">\
@@ -71341,96 +71890,116 @@ Vue.component('spark-authenticate', {
 					</div>\
 			</div>',
 
-				mounted: function mounted() {
-								this.getAuthUser();
-				},
+    mounted: function mounted() {
+        this.setupListeners();
+        this.getAuthUser();
+    },
 
-				data: function data() {
-								return {
-												user: null,
-												loggedIn: false,
-												baseUrl: '/',
+    data: function data() {
+        return {
+            user: null,
+            loggedIn: false,
+            baseUrl: '/',
+            redirect: 'home/',
 
-												typeOptions: [{ 'text': 'Current Student', 'value': 'student' }, { 'text': 'Graduate', 'value': 'graduate' }],
+            typeOptions: [{ 'text': 'Current Student', 'value': 'student' }, { 'text': 'Graduate', 'value': 'graduate' }],
 
-												forms: {
-																login: new SparkForm({
-																				email: '',
-																				password: ''
-																}),
+            forms: {
+                login: new SparkForm({
+                    email: '',
+                    password: ''
+                }),
 
-																signup: new SparkForm({
-																				type: '',
-																				name: '',
-																				email: '',
-																				password: ''
-																})
-												}
-								};
-				},
+                signup: new SparkForm({
+                    type: '',
+                    last: '',
+                    first: '',
+                    email: '',
+                    password: ''
+                })
+            }
+        };
+    },
 
-				methods: {
-								showLogin: function showLogin() {
-												this.forms.login.email = '';
-												this.forms.login.password = '';
-												this.forms.login.errors.forget();
-												$('#modal-signup').modal('hide');
-												$('#modal-login').modal('show');
-												$('.modal-backdrop').css('z-index', '0');
-								},
-								showSignup: function showSignup() {
-												this.forms.signup.type = '';
-												this.forms.signup.email = '';
-												this.forms.signup.password = '';
-												this.forms.signup.name = '';
-												this.forms.signup.errors.forget();
-												$('#modal-login').modal('hide');
-												$('#modal-signup').modal('show');
-												$('.modal-backdrop').css('z-index', '0');
-								},
-								doLogin: function doLogin() {
-												var self = this;
-												this.$http.post(self.baseUrl + 'flogin', this.forms.login).then(function (resp) {
-																self.gotoDashboard();
-																$('#modal-login').modal('hide');
-												}, function (resp) {
-																self.forms.login.errors.set(resp.data.errors);
-																self.forms.login.busy = false;
-												});
-								},
-								doSignup: function doSignup() {
-												var self = this;
-												this.$http.post(self.baseUrl + 'fregister', this.forms.signup).then(function (resp) {
-																self.gotoDashboard();
-																$('#modal-signup').modal('hide');
-												}, function (resp) {
-																self.forms.signup.errors.set(resp.data.errors);
-																self.forms.signup.busy = false;
-												});
-								},
-								doLogout: function doLogout() {
-												var self = this;
-												this.$http.get(self.baseUrl + 'flogout').then(function (resp) {
-																self.loggedIn = false;
-																self.user = {};
-																window.location.href = self.baseUrl;
-												});
-								},
-								gotoDashboard: function gotoDashboard() {
-												this.getAuthUser();
-												window.location.href = this.baseUrl + 'home/';
-								},
-								getAuthUser: function getAuthUser() {
-												var self = this;
-												this.$http.get(self.baseUrl + 'fauthuser').then(function (user) {
-																self.user = user.data;
-																self.loggedIn = self.user.name ? true : false;
-												});
-								}
-				}
+    methods: {
+        showLogin: function showLogin(redirect) {
+            if (typeof redirect != 'undefined') {
+                this.redirect = redirect;
+            }
+            this.forms.login.email = '';
+            this.forms.login.password = '';
+            this.forms.login.errors.forget();
+            $('#modal-signup').modal('hide');
+            $('#modal-login').modal('show');
+            $('.modal-backdrop').css('z-index', '0');
+        },
+        showSignup: function showSignup(redirect) {
+            this.forms.signup.errors.forget();
+            this.forms.signup.type = '';
+            this.forms.signup.email = '';
+            this.forms.signup.password = '';
+            this.forms.signup.first = '';
+            this.forms.signup.last = '';
+            if (typeof redirect != 'undefined') {
+                this.redirect = redirect;
+            }
+            $('#modal-login').modal('hide');
+            $('#modal-signup').modal('show');
+            $('.modal-backdrop').css('z-index', '0');
+        },
+        doLogin: function doLogin() {
+            var self = this;
+            this.$http.post(self.baseUrl + 'flogin', this.forms.login).then(function (resp) {
+                self.gotoDashboard();
+                $('#modal-login').modal('hide');
+            }, function (resp) {
+                self.forms.login.errors.set(resp.data.errors);
+                self.forms.login.busy = false;
+            });
+        },
+        doSignup: function doSignup() {
+            var self = this;
+            this.$http.post(self.baseUrl + 'fregister', this.forms.signup).then(function (resp) {
+                $('#modal-signup').modal('hide');
+                self.gotoDashboard();
+            }, function (resp) {
+                self.forms.signup.errors.set(resp.data.errors);
+                self.forms.signup.busy = false;
+            });
+        },
+        doLogout: function doLogout() {
+            var self = this;
+            this.$http.get(self.baseUrl + 'flogout').then(function (resp) {
+                self.loggedIn = false;
+                self.user = {};
+                window.location.href = self.baseUrl;
+            });
+        },
+        gotoDashboard: function gotoDashboard() {
+            this.getAuthUser();
+            window.location.href = this.redirect;
+        },
+        getAuthUser: function getAuthUser() {
+            var self = this;
+            this.$http.get(self.baseUrl + 'fauthuser').then(function (user) {
+                self.user = user.data;
+                self.loggedIn = self.user.name ? true : false;
+            });
+        },
+
+        setupListeners: function setupListeners() {
+            var self = this;
+            bus.$on('showRegistration', function (redirect) {
+                self.showSignup(redirect);
+            });
+            bus.$on('showLogin', function (redirect) {
+                self.showLogin(redirect);
+            });
+        }
+    }
 });
 
-},{}],103:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 'use strict';
 
 Vue.component('gradlead-bookmark', {
@@ -71503,7 +72072,7 @@ Vue.component('gradlead-bookmark', {
     }
 });
 
-},{}],104:[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 'use strict';
 
 require('./errors');
@@ -71511,9 +72080,11 @@ require('./gl-sparkline');
 require('./gl-plot');
 
 require('./features');
+require('./inbox');
 require('./authenticate');
 require('./questionnaire');
 require('./achievement');
+require('./alert');
 require('./bookmark');
 require('./profile-account');
 require('./profile-user');
@@ -71530,7 +72101,7 @@ require('./profile-student');
 require('./gl-profile-org');
 require('./gl-profile-seeker');
 
-},{"./achievement":101,"./authenticate":102,"./bookmark":103,"./errors":105,"./features":106,"./gl-plot":107,"./gl-profile-org":108,"./gl-profile-seeker":109,"./gl-sparkline":110,"./profile-account":111,"./profile-club":112,"./profile-education":114,"./profile-education-primary":113,"./profile-languages":115,"./profile-org":116,"./profile-preferences":117,"./profile-skills":118,"./profile-student":119,"./profile-summary":120,"./profile-user":121,"./profile-work":122,"./questionnaire":123}],105:[function(require,module,exports){
+},{"./achievement":102,"./alert":103,"./authenticate":104,"./bookmark":105,"./errors":107,"./features":108,"./gl-plot":109,"./gl-profile-org":110,"./gl-profile-seeker":111,"./gl-sparkline":112,"./inbox":113,"./profile-account":114,"./profile-club":115,"./profile-education":117,"./profile-education-primary":116,"./profile-languages":118,"./profile-org":119,"./profile-preferences":120,"./profile-skills":121,"./profile-student":122,"./profile-summary":123,"./profile-user":124,"./profile-work":125,"./questionnaire":126}],107:[function(require,module,exports){
 'use strict';
 
 /*
@@ -71578,7 +72149,7 @@ Vue.component('gl-error-alert', {
             </div></div>"
 });
 
-},{}],106:[function(require,module,exports){
+},{}],108:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-featured-jobs', {
@@ -71658,7 +72229,7 @@ Vue.component('spark-featured-employers', {
     }
 });
 
-},{}],107:[function(require,module,exports){
+},{}],109:[function(require,module,exports){
 'use strict';
 
 Vue.component('gradlead-plot', {
@@ -71691,7 +72262,7 @@ Vue.component('gradlead-plot', {
     }
 });
 
-},{}],108:[function(require,module,exports){
+},{}],110:[function(require,module,exports){
 'use strict';
 
 Vue.component('gl-view-profile-org', {
@@ -71882,7 +72453,6 @@ Vue.component('gl-view-profile-org', {
                     this.forms.updateProfile.description = this.profile.description;
                     this.forms.updateProfile.website = this.profile.website;
                     this.forms.updateProfile.num_employees = this.profile.num_employees;
-                    console.log("Setting it...");
                     this.forms.updateProfile.jobtypes = this.profile.job_types;
                     this.forms.updateProfile.industries = this.profile.industries;
                 }
@@ -71914,7 +72484,7 @@ Vue.component('gl-view-profile-org', {
     filters: {}
 });
 
-},{}],109:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
 'use strict';
 
 Vue.component('gl-view-profile-seeker', {
@@ -71973,7 +72543,7 @@ Vue.component('gl-view-profile-seeker', {
     filters: {}
 });
 
-},{}],110:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 'use strict';
 
 Vue.component('gradlead-sparkline-bar', {
@@ -71989,7 +72559,117 @@ Vue.component('gradlead-sparkline-bar', {
     }
 });
 
-},{}],111:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
+'use strict';
+
+var _moment = require('moment');
+
+Vue.component('gradlead-inbox-dropdown', {
+    props: ['user'],
+
+    template: '<li class="dropdown"><a href="#" class="dropdown-toggle clear" data-toggle="dropdown">\
+                <i class="glyphicon glyphicon-envelope icon fa-fw"> </i> <span class="visible-xs-inline">Messages</span>\
+                <span :class="((newMessages)?\'bg-danger\':\'bg-default\')" class="badge badge-sm up pull-right-xs">{{ list.length }}</span></a>\
+                <div class="dropdown-menu w-xl animated fadeInUp">\
+                    <div class="panel bg-white">\
+                        <div v-if="newMessages" class="panel-heading b-light bg-light">\
+                            <strong> You have <span> {{list.length}} </span> new messages</strong>\
+                        </div>\
+                        <div v-else class="panel-heading b-light bg-light">\
+                            <strong> You have no new messages</strong>\
+                        </div>\
+                        <div v-show="newMessages" class="list-group">\
+                            <p v-for="l in list" class="media list-group-item">\
+                                <span class="pull-left thumb-sm">\
+                                    <img :src="(l.from.type==\'student\' || l.from.type==\'graduate\')?l.from.avatar:l.from.orgurl" class="img-circle">\
+                                </span>\
+                                <span class="media-body block m-b-none">\
+                                    {{ l.subject }} <br>\
+                                    <small class="text-muted"> {{ l.created_at | fromNow }} </small>\
+                                </span>\
+                            </p>\
+                        </div>\
+                        <div class = "panel-footer text-sm">\
+                            <a href class="pull-right"> <i class="fa fa-cog"></i></a>\
+                            <a href="/home?#messages" data-toggle="class:show animated fadeInRight">See all the messages</a>\
+                        </div>\
+                    </div>\
+                </div></li>',
+
+    mounted: function mounted() {
+        this.setupListeners();
+        this.setList(this.user.inbox);
+    },
+
+    computed: {
+        newMessages: function newMessages() {
+            return this.list.length > 0;
+        }
+    },
+
+    watch: {},
+
+    events: {},
+
+    data: function data() {
+        return {
+            baseUrl: '/',
+            list: []
+        };
+    },
+
+    methods: {
+        setList: function setList(l) {
+            var self = this;
+            self.list = [];
+
+            l = typeof l == 'undefined' ? [] : l;
+
+            if (l.length > 0) {
+                l.sort(function (a, b) {
+                    var x = a.id;var y = b.id;
+                    return x < y ? -1 : x > y ? 1 : 0;
+                });
+
+                $.each(l, function (i, x) {
+                    if (!x.seen) {
+                        self.list.push(x);
+                    }
+                });
+            }
+        },
+
+        removeFromList: function removeFromList(list, item) {
+            return _.reject(list, function (i) {
+                return i.id === item.id;
+            });
+        },
+
+        setupListeners: function setupListeners() {
+            var self = this;
+
+            bus.$on('allLoaded', function () {});
+            bus.$on('usersSet', function (users) {
+                var u = self.user;
+                for (var i = 0; i < users.length; i++) {
+                    if (u.id == users[i].id) {
+                        u = users[i];
+                    }
+                }
+                self.setList(u.inbox);
+            });
+        }
+    },
+
+    filters: {
+        fromNow: function fromNow(v) {
+            return _moment(v).fromNow();
+        }
+    }
+
+});
+
+},{"moment":64}],114:[function(require,module,exports){
 'use strict';
 
 Vue.component('gl-profile-account', {
@@ -72140,7 +72820,7 @@ Vue.component('gl-profile-account', {
     }
 });
 
-},{}],112:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 'use strict';
 
 Vue.component('gradlead-profile-clubs', {
@@ -72166,7 +72846,7 @@ Vue.component('gradlead-profile-clubs', {
                                 </td>\
                             </tr>\
                         </tbody>\
-                        <tbody v-else><tr><td colspan="3">No CLub information</td></tr></tbody>\
+                        <tbody v-else><tr><td colspan="3">No Club information</td></tr></tbody>\
                      </table>\
                   </div>\
                   <div class="modal fade" id="modal-add-club" tabindex="-1" role="dialog" style="margin:auto;">\
@@ -72257,11 +72937,15 @@ Vue.component('gradlead-profile-clubs', {
 
     mounted: function mounted() {
         var self = this;
-        this.list = this.clubs;
+        this.list = typeof this.clubs == 'undefined' ? [] : this.clubs;
         this.setupListeners();
     },
 
-    watch: {},
+    watch: {
+        'clubs': function clubs(v) {
+            this.setList(v);
+        }
+    },
 
     events: {},
 
@@ -72377,7 +73061,7 @@ Vue.component('gradlead-profile-clubs', {
     }
 });
 
-},{}],113:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-profile-education-primary', {
@@ -72681,7 +73365,7 @@ Vue.component('spark-profile-education-primary', {
     }
 });
 
-},{}],114:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-profile-education', {
@@ -73080,7 +73764,7 @@ Vue.component('spark-profile-education', {
     }
 });
 
-},{}],115:[function(require,module,exports){
+},{}],118:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-profile-languages', {
@@ -73314,7 +73998,7 @@ Vue.component('spark-profile-languages', {
     filters: {}
 });
 
-},{}],116:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 'use strict';
 
 Vue.component('gl-profile-org', {
@@ -73540,7 +74224,7 @@ Vue.component('gl-profile-org', {
     filters: {}
 });
 
-},{}],117:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 'use strict';
 
 //TODO: move to multiselect component
@@ -73755,7 +74439,7 @@ Vue.component('spark-profile-preferences', {
     filters: {}
 });
 
-},{}],118:[function(require,module,exports){
+},{}],121:[function(require,module,exports){
 'use strict';
 
 //TODO: move to  multiselect comppnent
@@ -73892,7 +74576,7 @@ Vue.component('spark-profile-skills', {
     filters: {}
 });
 
-},{}],119:[function(require,module,exports){
+},{}],122:[function(require,module,exports){
 'use strict';
 
 Vue.component('gl-student-profile', {
@@ -73941,7 +74625,7 @@ Vue.component('gl-student-profile', {
     methods: {}
 });
 
-},{}],120:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-profile-summary', {
@@ -73952,7 +74636,7 @@ Vue.component('spark-profile-summary', {
                     <i class="fa fa-circle-o text-info m-r-sm pull-right"></i>\
                     <h4 class="font-thin m-t-none m-b-none text-primary-lt">{{title}}</h4>\
                     <br/>\
-                    <div id="editor-container" style="height: 100px"></div>\
+                    <gl-textarea :id="\'editor-container\'" :display="\'\'" :form="forms.updateForm" :name="\'summary\'" :placeholder="\'Describe your self and your achievements\'" :input.sync="forms.updateForm.summary"></gl-textarea>\
                 </div>\
                </div>',
 
@@ -73961,7 +74645,12 @@ Vue.component('spark-profile-summary', {
         this.forms.updateForm.id = this.profileid;
         this.forms.updateForm.user_id = this.userid;
         this.forms.updateForm.summary = this.summary;
-        this.initQuill(this.summary);
+    },
+
+    watch: {
+        'forms.updateform.summary': function formsUpdateformSummary(v) {
+            this.doUpdate();
+        }
     },
 
     events: {},
@@ -73983,16 +74672,6 @@ Vue.component('spark-profile-summary', {
         return {
             baseUrl: '/',
 
-            quill: '',
-
-            config: {
-                placeholder: 'Describe yourself and aspirations',
-                theme: 'snow',
-                modules: {
-                    toolbar: [['bold', 'italic'], ['link', 'blockquote', 'image'], [{ list: 'ordered' }, { list: 'bullet' }], ['save']]
-                }
-            },
-
             forms: {
                 updateForm: new SparkForm({
                     id: '',
@@ -74004,31 +74683,10 @@ Vue.component('spark-profile-summary', {
     },
 
     methods: {
-        initQuill: function initQuill(text) {
-            this.quill = new Quill('#editor-container', this.config);
-            if (typeof text != 'undefined') {
-                this.quill.setText(text);
-            }
-            this.dehighlight();
-            $('.ql-save').on('click', function () {
-                self.doUpdate();
-            });
-            this.quill.on('text-change', function (change) {
-                this.highlight();
-            });
-        },
-        highlight: function highlight() {
-            $('.ql-save').css({ 'background-color': '#5bc0de', 'color': 'white' });
-        },
-        dehighlight: function dehighlight() {
-            $('.ql-save').css({ 'background-color': 'white', 'color': 'black' });
-        },
         doUpdate: function doUpdate() {
             var self = this;
-            this.forms.updateForm.summary = this.quill.getText();
             this.$http.put(this.baseUrl + 'profiles/users/' + this.userid, this.forms.updateForm).then(function (resp) {
                 self.showUpdateSuccess();
-                self.dehighlight();
                 bus.$emit('updateAuthUser');
             }, function (resp) {
                 var errors = "";
@@ -74042,7 +74700,7 @@ Vue.component('spark-profile-summary', {
     }
 });
 
-},{}],121:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 'use strict';
 
 Vue.component('gl-profile-user', {
@@ -74209,7 +74867,7 @@ Vue.component('gl-profile-user', {
     }
 });
 
-},{}],122:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 'use strict';
 
 var _moment = require('moment');
@@ -74282,13 +74940,16 @@ Vue.component('spark-profile-work', {
                                           </div>\
                                       </div>\
                                       <div class="row">\
-                                          <div class="col-md-12">\
+                                          <div class="col-md-6">\
                                               <gl-location :id="\'addWorkLoc\'"\
                                                            :display="\'Location\'" \
                                                            :form="forms.addForm" \
                                                            :name="\'country\'" \
                                                            :placeholder="\'e.g. Accra, Ghana\'">\
                                               </gl-location>\
+                                          </div>\
+                                          <div class="col-md-6">\
+                                                <gl-multiselect :display="\'Industries\'" :form="forms.addForm" :name="\'industries\'" :input="forms.addForm.industries" :multiple="true" :items="industries" :placetext="\'Choose industry...\'"></gl-multiselect>\
                                           </div>\
                                       </div>\
                                       <div class="row">\
@@ -74368,7 +75029,7 @@ Vue.component('spark-profile-work', {
                                           </div>\
                                       </div>\
                                       <div class="row">\
-                                          <div class="col-md-12">\
+                                          <div class="col-md-6">\
                                               <gl-location :id="\'editWorkLoc\'"\
                                                            :display="\'Location\'" \
                                                            :form="forms.updateForm" \
@@ -74376,6 +75037,9 @@ Vue.component('spark-profile-work', {
                                                            :input="loc">\
                                                            :placeholder="\'e.g. Accra, Ghana\'">\
                                               </gl-location>\
+                                          </div>\
+                                          <div class="col-md-6">\
+                                                <gl-multiselect :display="\'Industries\'" :form="forms.updateForm" :name="\'industries\'" :input.sync="forms.updateForm.industries" :multiple="true" :items="industries" :placetext="\'Choose industry...\'"></gl-multiselect>\
                                           </div>\
                                       </div>\
                                       <div class="row">\
@@ -74452,6 +75116,7 @@ Vue.component('spark-profile-work', {
             countryOptions: [],
             degreeOptions: [],
             majorOptions: [],
+            industries: [],
 
             addStart: _moment('1950-01-01').format('YYYY-MM-DD'),
             addeStart: _moment('1950-01-01').format('YYYY-MM-DD'),
@@ -74466,6 +75131,7 @@ Vue.component('spark-profile-work', {
                     company: '',
                     title: '',
                     description: '',
+                    industries: '',
                     country: '',
                     city: '',
                     start_date: '',
@@ -74479,6 +75145,7 @@ Vue.component('spark-profile-work', {
                     company: '',
                     title: '',
                     description: '',
+                    industries: '',
                     country: '',
                     city: '',
                     loc: '',
@@ -74512,6 +75179,7 @@ Vue.component('spark-profile-work', {
             this.forms.addForm.company = '';
             this.forms.addForm.title = '';
             this.forms.addForm.description = '';
+            this.forms.addForm.industries = '';
             this.forms.addForm.neighborhood = '';
             this.forms.addForm.country = '';
             this.forms.addForm.city = '';
@@ -74529,6 +75197,7 @@ Vue.component('spark-profile-work', {
             this.forms.updateForm.company = e.company;
             this.forms.updateForm.title = e.title;
             this.forms.updateForm.description = e.description;
+            this.forms.updateForm.industries = e.industries;
             this.forms.updateForm.country = e.country;
             this.forms.updateForm.city = e.city;
             this.forms.updateForm.neighborhood = e.neighborhood;
@@ -74581,6 +75250,9 @@ Vue.component('spark-profile-work', {
             bus.$on('authUserSet', function (user) {
                 self.setList(user.work);
             });
+            bus.$on('industriesSet', function (items) {
+                self.industries = items;
+            });
         },
         format_start_date: function format_start_date(v) {
             return _moment(v).format('MMMM Do, YYYY');
@@ -74594,7 +75266,7 @@ Vue.component('spark-profile-work', {
 
 });
 
-},{"moment":64}],123:[function(require,module,exports){
+},{"moment":64}],126:[function(require,module,exports){
 'use strict';
 
 Vue.component('gl-questionnaire', {

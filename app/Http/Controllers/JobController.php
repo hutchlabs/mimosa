@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+
+use App\User;
 use App\Gradlead\Job;
 use App\Gradlead\Application;
 use App\Gradlead\Contract;
@@ -47,7 +49,7 @@ class JobController extends Controller
         $i->user_id = $request->user_id;
         $i->resume_id = $request->resume_id;
         
-        $i->preselect_pass = (is_null($j->preselect)) ? null : $j->doPreselectEvaluation($u);
+        $i->preselect_pass = (is_null($j->preselect) || $j->preselect=0) ? null : $j->doPreselectEvaluation($u);
     
         if ($j->questionnaire_id > 0) {
             $i->screening =  (isset($request->screening) && sizeof($request->screening)>0) 
@@ -55,7 +57,7 @@ class JobController extends Controller
             $i->screening_score = $j->doScreeningEvaluation($request->screeening);
         }
         
-        $i->status = (!is_null($this->preselect_pass) && $i->preselect_pass==0) ? 'Rejected' : 'Pending';
+        $i->status = (!is_null($i->preselect_pass) && $i->preselect_pass==0) ? 'Rejected' : 'Pending';
         
         $i->modified_by = $user->id;
         $i->save();
@@ -164,7 +166,7 @@ class JobController extends Controller
             $i->video_title = (isset($request->video_title)) ? $request->video_title:'';
             $i->video_url = (isset($request->video_url)) ? $request->video_url:'';
 
-            $i->preselect = (isset($request->preselect) && sizeof($request->preselect)>0) ? $request->preselect:'';
+            $i->preselect = (isset($request->preselect) && sizeof($request->preselect)>0) ? $request->preselect:0;
             $i->questionnaire_id = ($request->questionnaire_id=='') ? 0 : $request->questionnaire_id;
 
             $i->start_date = date("Y-m-d", strtotime($request->start_date));
@@ -180,7 +182,6 @@ class JobController extends Controller
             $i->modified_by = $user->id;
             $i->save();
 
-            // TODO: notify alerts
             return $this->json_response($i);
         } else {
             return $this->json_response(['Invalid contract'], true, 422);
@@ -234,7 +235,7 @@ class JobController extends Controller
         $i->video_title = (isset($request->video_title)) ? $request->video_title:'';
         $i->video_url = (isset($request->video_url)) ? $request->video_url:'';
         
-        $i->preselect = (isset($request->preselect) && sizeof($request->preselect)>0) ? $request->preselect:'';
+        $i->preselect = (isset($request->preselect) && sizeof($request->preselect)>0) ? $request->preselect:0;
         $i->questionnaire_id = ($request->questionnaire_id=='') ? 0 : $request->questionnaire_id;
        
         $i->start_date = date("Y-m-d", strtotime($request->start_date));

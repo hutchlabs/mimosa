@@ -7,10 +7,18 @@
             <!-- nav -->
             <nav ui-nav class="navi">
                 <ul class="nav">
-<!--
                     <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
                         <span>Navigation</span>
                     </li>
+
+                    <li :class="listClass('#messages')">
+                        <a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">
+                            <b class="badge bg-info pull-right">@{{ newMessageLength }}</b>
+                            <i class="glyphicon glyphicon-envelope icon"></i>
+                            <span class="font-bold">Messages</span>
+                        </a>
+                    </li>
+<!--
 
                     <li class="active">
                         <a href="#dashboard" aria-controls="dashboard" role="tab" data-toggle="tab">
@@ -18,9 +26,9 @@
                             <span class="font-bold">Dashboard</span>
                         </a>
                     </li>
+-->
 
                     <li class="line dk"></li>
--->
 
                     <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
                         <span>Job Board</span>
@@ -229,6 +237,10 @@
 
         <div role="tabpanel" class="tab-pane" id="dashboard">
             @include('dashboards.stats.index')
+        </div>
+        
+        <div role="tabpanel" :class="tabClass('#messages')" id="messages">
+            @include('dashboards.messages.index')
         </div>
         
         <div v-if="usertype.canEdit" role="tabpanel" class="tab-pane" id="employers">

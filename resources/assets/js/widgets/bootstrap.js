@@ -3,9 +3,11 @@ require('./gl-sparkline');
 require('./gl-plot');
 
 require('./features');
+require('./inbox');
 require('./authenticate');
 require('./questionnaire');
 require('./achievement');
+require('./alert');
 require('./bookmark');
 require('./profile-account');
 require('./profile-user');

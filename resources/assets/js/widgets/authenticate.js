@@ -1,8 +1,8 @@
-Vue.component('spark-authenticate', {
+Vue.component('gradlead-authenticate', {
     props: [],
 
     // TODO: Finish logo load and onclick 
-    template: '<div><div v-if="loggedIn">\
+    template: '<div><div v-if="loggedIn" class="col wrapper">\
                    <a style="cursor: pointer" @click.prevent="gotoDashboard" class="btn btn-primary btn-xs">\
                       Welcome {{user.name}}\
                     </a>\
@@ -13,23 +13,22 @@ Vue.component('spark-authenticate', {
                   <a style="cursor: pointer" @click.prvevent="showSignup" class="btn btn-primary btn-filled btn-xs">Signup</a>\
             	</div>\
 				<div class="modal fade" id="modal-login" tabindex="-1" role="dialog" style="margin:auto; width: 760px;">\
-				    <div class="modal-dialog">\
+				    <div class="modal-dialog" style="width:50%">\
 				        <div class="modal-content">\
 				            <div class="modal-header">\
 				                <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
 				                <h4 class="modal-title"><i class="fa fa-btn fa-plus"></i>Login</h4>\
 				            </div>\
 				            <div class="modal-body">\
-				                <spark-error-alert :form="forms.login"></spark-error-alert>\
+				                <spark-error-alert v-show="1==0" :form="forms.login"></spark-error-alert>\
 				                <form class="form-horizontal" role="form">\
-									 <div class="row">\
-				                        <div class="col-md-12">\
-				                            <spark-email :display="\'Email*\'" :form="forms.login" :name="\'email\'"\
-														 :input="forms.login.email"></spark-email>\
-				                            <spark-password :display="\'Password*\'" :form="forms.login" :name="\'password\'"\
-															:input="forms.login.password" v-on:keyup.enter="doLogin"></spark-password>\
-				                        </div>\
-				                    </div>\
+                                <div class="row">\
+                                <div class="col-md-12">\
+				                        <gl-email :required="true" :display="\'Email*\'" :form="forms.login" :name="\'email\'"\
+												  :input="forms.login.email" :placeholder="\'e.g. name@server.com\'"></gl-email>\
+				                        <gl-password :required="true" :display="\'Password*\'" :form="forms.login" :name="\'password\'"\
+													 :minlength="4" :input="forms.login.password" v-on:keyup.enter="doLogin"></gl-password>\
+                                </div></div>\
 				                </form>\
 							</div>\
 							<div class="modal-footer">\
@@ -40,7 +39,7 @@ Vue.component('spark-authenticate', {
 					</div>\
 				</div>\
 				<div class="modal fade" id="modal-signup" tabindex="-1" role="dialog" style="margin:auto; width: 760px;">\
-				    <div class="modal-dialog">\
+				    <div class="modal-dialog" style="width:50%">\
 				        <div class="modal-content">\
 				            <div class="modal-header">\
 				                <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>\
@@ -49,19 +48,20 @@ Vue.component('spark-authenticate', {
 				            <div class="modal-body">\
 				                <spark-error-alert :form="forms.signup"></spark-error-alert>\
 				                <form class="form-horizontal" role="form">\
-									 <div class="row">\
-				                        <div class="col-md-12">\
- 											<spark-select :display="\'Type*\'" :form="forms.signup" :name="\'type\'"\
-														  :items="typeOptions" :input="forms.signup.type">\
-                            				</spark-select>\
-				                            <spark-text :display="\'Name*\'" :form="forms.signup" :name="\'name\'"\
-														:input="forms.signup.name"></spark-text>\
-				                            <spark-email :display="\'Email*\'" :form="forms.signup" :name="\'email\'"\
-														 :input="forms.signup.email"></spark-email>\
-				                            <spark-password :display="\'Password*\'" :form="forms.signup" :name="\'password\'"\
-															:input="forms.signup.password"></spark-password>\
-				                        </div>\
-				                    </div>\
+                                <div class="row">\
+                                <div class="col-md-12">\
+ 										<gl-select :display="\'Type*\'" :form="forms.signup" :name="\'type\'"\
+												   :items="typeOptions" :input="forms.signup.type">\
+                            			</gl-select>\
+				                         <gl-text :required="true" :display="\'First name*\'" :form="forms.signup" :name="\'first\'"\
+												  :input="forms.signup.first" :placeholder="\'Your first name\'"></gl-text>\
+				                         <gl-text :required="true" :display="\'Last name*\'" :form="forms.signup" :name="\'last\'"\
+												  :input="forms.signup.last" :placeholder="\'Your last name\'"></gl-text>\
+				                          <gl-email :required="true" :display="\'Email*\'" :form="forms.signup" :name="\'email\'"\
+												    :input="forms.signup.email" :placeholder="\'e.g. name@server.com\'"></gl-email>\
+				                            <gl-password :required="true" :minlength="6" :display="\'Password*\'" :form="forms.signup" :name="\'password\'"\
+														 :input="forms.signup.password"></gl-password>\
+                                </div></div>\
 				                </form>\
 							</div>\
 							<div class="modal-footer">\
@@ -73,6 +73,7 @@ Vue.component('spark-authenticate', {
 			</div>',
  
     mounted: function () {
+        this.setupListeners();
         this.getAuthUser();
     },
 
@@ -81,6 +82,7 @@ Vue.component('spark-authenticate', {
             user: null,
             loggedIn: false,
             baseUrl: '/',
+            redirect: 'home/',
 
 			typeOptions: [
                             {'text': 'Current Student', 'value':'student'},
@@ -95,7 +97,8 @@ Vue.component('spark-authenticate', {
 
                 signup: new SparkForm ({
                     type: '',
-                    name: '',
+                    last: '',
+                    first: '',
                     email: '',
                     password: '',
                 }),
@@ -104,7 +107,8 @@ Vue.component('spark-authenticate', {
     },
 
     methods: {
-        showLogin: function () {
+        showLogin: function (redirect) {
+            if (typeof redirect != 'undefined') { this.redirect = redirect; }
 			this.forms.login.email = '';
 			this.forms.login.password = '';
             this.forms.login.errors.forget();
@@ -112,12 +116,14 @@ Vue.component('spark-authenticate', {
 			$('#modal-login').modal('show');
 			$('.modal-backdrop').css('z-index', '0');
         },
-        showSignup: function () {
+        showSignup: function (redirect) {
+            this.forms.signup.errors.forget();
 			this.forms.signup.type = '';
 			this.forms.signup.email = '';
 			this.forms.signup.password = '';
-			this.forms.signup.name = '';
-            this.forms.signup.errors.forget();
+			this.forms.signup.first = '';
+			this.forms.signup.last = '';
+            if (typeof redirect != 'undefined') { this.redirect = redirect; }
 			$('#modal-login').modal('hide');
 			$('#modal-signup').modal('show');
 			$('.modal-backdrop').css('z-index', '0');
@@ -137,8 +143,8 @@ Vue.component('spark-authenticate', {
 			var self = this;
             this.$http.post(self.baseUrl+'fregister', this.forms.signup)
                 .then(function (resp) {
-					self.gotoDashboard();
 					$('#modal-signup').modal('hide');
+					self.gotoDashboard();
                 }, function(resp) {
                     self.forms.signup.errors.set(resp.data.errors);
                     self.forms.signup.busy = false;
@@ -155,7 +161,7 @@ Vue.component('spark-authenticate', {
         },
 		gotoDashboard: function() {
 			this.getAuthUser();
-            window.location.href= this.baseUrl+'home/';
+            window.location.href=this.redirect; 
 		},
         getAuthUser: function () {
             var self = this;
@@ -164,6 +170,12 @@ Vue.component('spark-authenticate', {
                     self.user = user.data; 
                     self.loggedIn = (self.user.name) ? true : false;
                 });
+        },
+
+        setupListeners: function () {
+            var self = this;
+            bus.$on('showRegistration', function (redirect) { self.showSignup(redirect); });
+            bus.$on('showLogin', function (redirect) { self.showLogin(redirect); });
         },
     }    
 });

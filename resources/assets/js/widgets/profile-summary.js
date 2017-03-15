@@ -6,7 +6,7 @@ Vue.component('spark-profile-summary', {
                     <i class="fa fa-circle-o text-info m-r-sm pull-right"></i>\
                     <h4 class="font-thin m-t-none m-b-none text-primary-lt">{{title}}</h4>\
                     <br/>\
-                    <div id="editor-container" style="height: 100px"></div>\
+                    <gl-textarea :id="\'editor-container\'" :display="\'\'" :form="forms.updateForm" :name="\'summary\'" :placeholder="\'Describe your self and your achievements\'" :input.sync="forms.updateForm.summary"></gl-textarea>\
                 </div>\
                </div>',
 
@@ -15,7 +15,12 @@ Vue.component('spark-profile-summary', {
         this.forms.updateForm.id = this.profileid;
         this.forms.updateForm.user_id = this.userid;
         this.forms.updateForm.summary = this.summary;
-        this.initQuill(this.summary);
+    },
+
+    watch: {
+        'forms.updateform.summary': function(v) {
+            this.doUpdate();
+        }
     },
 
     events: {},
@@ -37,21 +42,6 @@ Vue.component('spark-profile-summary', {
         return {
             baseUrl: '/',
 
-            quill: '',
-
-            config: {
-                    placeholder: 'Describe yourself and aspirations',
-                    theme: 'snow',
-                    modules: {
-                        toolbar: [
-                           ['bold', 'italic'],
-                           ['link', 'blockquote', 'image'],
-                           [{ list: 'ordered' }, { list: 'bullet' }],
-                           ['save']
-                       ]
-                    },
-            },
-
             forms: {
                 updateForm: new SparkForm ({
                     id: '',
@@ -63,34 +53,15 @@ Vue.component('spark-profile-summary', {
     },
 
     methods: {
-        initQuill: function(text) {
-            this.quill = new Quill('#editor-container', this.config);
-            if (typeof text!='undefined') {
-                this.quill.setText(text);
-            }
-            this.dehighlight();
-            $('.ql-save').on('click', function() { self.doUpdate(); });
-            this.quill.on('text-change', function(change) {  this.highlight(); });
-        },
-        highlight: function() {
-            $('.ql-save').css({'background-color': '#5bc0de', 'color': 'white'});
-        },
-        dehighlight: function() {
-            $('.ql-save').css({'background-color': 'white', 'color': 'black'});
-        },
 		doUpdate: function() {
 			var self = this;
-            this.forms.updateForm.summary = this.quill.getText();
             this.$http.put(this.baseUrl+'profiles/users/'+this.userid, this.forms.updateForm)
                 .then(function (resp) {
                     self.showUpdateSuccess();
-                    self.dehighlight();
                     bus.$emit('updateAuthUser');
                 }, function(resp) {
                     var errors = "";
-                    $.each(resp.data, function(i, e) {
-                        errors +=  e + " and ";
-                    });
+                    $.each(resp.data, function(i, e) { errors +=  e + " and "; });
                     console.log(errors);
                     self.showUpdateError({'message': errors});
 			    });

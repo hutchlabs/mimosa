@@ -21,7 +21,7 @@ Vue.component('gradlead-profile-clubs', {
                                 </td>\
                             </tr>\
                         </tbody>\
-                        <tbody v-else><tr><td colspan="3">No CLub information</td></tr></tbody>\
+                        <tbody v-else><tr><td colspan="3">No Club information</td></tr></tbody>\
                      </table>\
                   </div>\
                   <div class="modal fade" id="modal-add-club" tabindex="-1" role="dialog" style="margin:auto;">\
@@ -112,11 +112,15 @@ Vue.component('gradlead-profile-clubs', {
 
     mounted: function () {
         var self = this;
-        this.list = this.clubs;
+        this.list = (typeof this.clubs=='undefined') ? [] : this.clubs;
         this.setupListeners();
     },
 
-    watch: {},
+    watch: {
+        'clubs': function(v) {
+            this.setList(v);
+        },
+    },
 
     events: {},
 

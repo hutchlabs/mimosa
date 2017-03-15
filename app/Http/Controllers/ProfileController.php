@@ -290,6 +290,7 @@ class ProfileController extends Controller
             'user_id' => 'required|exists:users,id',
             'company' => 'required|max:255',
             'title' => 'required|max:255',
+            'industries' => 'required',
             'description' => 'required',
             'country' => 'required|max:255',
             'city' => 'required|max:255',
@@ -303,6 +304,7 @@ class ProfileController extends Controller
         $i->company = $request->company;
         $i->title = $request->title;
         $i->description = $request->description;
+        $i->industries = $request->industries;
         $i->country = $request->country;
         $i->city = $request->city;
         $i->neighborhood = $request->neighborhood;
@@ -678,8 +680,7 @@ class ProfileController extends Controller
 
         return $this->json_response($i);
     }
-
-   
+  
     public function updateUserExperience(Request $request, $itemId)
     {
         $user = $request->user();
@@ -690,6 +691,7 @@ class ProfileController extends Controller
             'company' => 'required|max:255',
             'title' => 'required|max:255',
             'description' => 'required',
+            'industries' => 'required',
             'country' => 'required|max:255',
             'city' => 'required|max:255',
             'start_date' => 'required|date',
@@ -702,6 +704,7 @@ class ProfileController extends Controller
         $i->company = $request->company;
         $i->title = $request->title;
         $i->description = $request->description;
+        $i->industries = $request->industries;
         $i->city = $request->city;
         $i->start_date = $request->start_date;
         $i->end_date = $request->end_date;

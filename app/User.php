@@ -18,13 +18,14 @@ class User extends Authenticatable
 
     protected $hidden = ['password', 'remember_token',];
 
-    protected $with = ['role','organization','bookmarks','alerts','achievements','applications'];
+    protected $with = ['achievements','alerts','applications','bookmarks','inbox','outbox','organization','role'];
     
     protected function getArrayableAppends()
     {
-        $appends = ['profile','name','profile_url'];
+        $appends = ['name','profile','profile_url'];
+        
         if ($this->isStudent()) {
-            $appends = array_merge($appends, ['education','languages','preferences','resumes','skills','work','docs','primary','clubs']);
+            $appends = array_merge($appends, ['clubs','docs','education','languages','primary','preferences','resumes','skills','work']);
         }
         
         $this->appends = array_merge($this->appends, $appends);
@@ -102,15 +103,13 @@ class User extends Authenticatable
     {
         return DB::table('profiles_student_work')->select(DB::raw('*'))->where('user_id',$this->id)->get(); 
     }
-    
-    
+        
     public function getProfileAttribute()
     {
         $profile = DB::table('profiles_users')->select(DB::raw('*'))->where('user_id',$this->id)->first(); 
         if (is_null($profile)) {   
             $profile = new Profile();
             $profile->user_id = $this->id;
-            $profile->uuid = md5($this->id.time());
             $profile->summary = "This is the default profile text. Please update your profile.";
             $profile->modified_by = 1;
             $profile->save();
@@ -158,6 +157,16 @@ class User extends Authenticatable
     public function bookmarks()
     {
         return $this->hasMany('\App\Gradlead\Bookmark', 'user_id', 'id');
+    }
+    
+    public function inbox()
+    {
+        return $this->hasMany('\App\Gradlead\Inbox');
+    }
+    
+    public function outbox()
+    {
+        return $this->hasMany('\App\Gradlead\Inbox', 'from_id', 'id');
     }
         
     public static function scopeCandidates($query) 

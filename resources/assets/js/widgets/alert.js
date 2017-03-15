@@ -4,14 +4,14 @@ Vue.component('gradlead-alert', {
     template: '<div class="panel hbox hbox-auto-xs no-border">\
                 <div class="col wrapper">\
                     <i class="fa fa-circle-o text-info m-r-sm pull-right"></i>\
-                    <a class="btn btn-sm btn-info btn-addon pull-right" @click.prevent="addAlert()"><i class="fa fa-plus"></i> Add</a>\
-                    <br/>\
+                    <a class="btn btn-sm btn-info btn-addon" @click.prevent="addAlert()"><i class="fa fa-plus"></i> Add</a>\
+                    <br/><br/>\
                     <table class="table table-striped m-b-none"><thead>\
-                        <tr><th>Name</th><th>Jobs</th><th>Created</th><th></th></tr></thead>\
-                        <tbody>\
+                        <tr><th>Name</th><th>Jobs Matched</th><th>Created</th><th></th></tr></thead>\
+                        <tbody v-if="list.length>0">\
                             <tr v-for="e in list">\
                                 <td class="spark-table-pad">{{ e.name }}</td>\
-                                <td class="spark-table-pad">{{ e.jobs.length }} jobs</td>\
+                                <td class="spark-table-pad"><a :href="e.link" style="color:#336699">{{ e.jobs.length }} jobs</a></td>\
                                 <td class="spark-table-pad">{{ e.created_at }}</td>\
                                 <td class="spark-table-pad">\
                                     <button class="btn btn-warning btn-addon btn-sm btn-circle" @click.prevent="editAlert(e)">\
@@ -22,6 +22,7 @@ Vue.component('gradlead-alert', {
                                 </td>\
                             </tr>\
                         </tbody>\
+                        <tbody v-else><tr><td colspan="4">No alerts set</td></tr></tbody>\
                      </table>\
                   </div>\
                   <div class="modal fade" id="modal-add-alert" tabindex="-1" role="dialog" style="margin:auto;">\
@@ -44,58 +45,34 @@ Vue.component('gradlead-alert', {
                                               </gl-text>\
                                           </div>\
                                           <div class="col-md-6">\
-                                              <gl-select :display="\'Country\'" \
+                                              <gl-select :display="\'Frequency*\'" \
                                                             :form="forms.addForm" \
-                                                            :name="\'country\'" \
-                                                            :items="countryOptions" \
-                                                            :input="forms.addForm.country">\
+                                                            :name="\'frequency\'" \
+                                                            :items="freqOptions" \
+                                                            :input="forms.addForm.frequency">\
                                               </gl-select>\
                                           </div>\
                                       </div>\
                                       <div class="row">\
                                           <div class="col-md-6">\
-                                              <gl-select :display="\'Degree\'" \
-                                                            :form="forms.addForm" \
-                                                            :name="\'degree_level\'" \
-                                                            :items="degreeOptions" \
-                                                            :input="forms.addForm.degree_level">\
-                                              </gl-select>\
+                                              <gl-location :id="\'addAlertLoc\'"\
+                                                           :display="\'Location (Area or City or Country)\'" \
+                                                           :form="forms.addForm" \
+                                                           :name="\'location\'"\
+                                                           :input="location"\
+                                                           :placeholder="\'e.g. Accra, Ghana\'">\
+                                              </gl-location>\
                                           </div>\
                                           <div class="col-md-6">\
-                                              <gl-select :display="\'Major\'" \
-                                                            :form="forms.addForm" \
-                                                            :name="\'degree_major\'" \
-                                                            :items="majorOptions" \
-                                                            :input="forms.addForm.degree_major">\
-                                              </gl-select>\
+                                                <gl-multiselect :display="\'Languages\'" :form="forms.addForm" :name="\'language\'" :input="forms.addForm.language" :multiple="true" :items="languages" :placetext="\'Choose languages...\'"></gl-multiselect>\
                                           </div>\
                                       </div>\
                                       <div class="row">\
                                           <div class="col-md-6">\
-                                              <gl-select :display="\'Graduation Month\'" \
-                                                            :form="forms.addForm" \
-                                                            :name="\'graduation_month\'" \
-                                                            :items="monthOptions" \
-                                                            :input="forms.addForm.graduation_month">\
-                                              </gl-select>\
+                                                <gl-multiselect :display="\'Job Types\'" :form="forms.addForm" :name="\'jobtype\'" :input="forms.addForm.jobtype" :multiple="true" :items="jobtypes" :placetext="\'Choose preferred job types...\'"></gl-multiselect>\
                                           </div>\
                                           <div class="col-md-6">\
-                                              <gl-select :display="\'Graduation Year\'" \
-                                                            :form="forms.addForm" \
-                                                            :name="\'graduation_year\'" \
-                                                            :items="yearOptions" \
-                                                            :input="forms.addForm.graduation_year">\
-                                              </gl-select>\
-                                          </div>\
-                                      </div>\
-                                      <div class="row">\
-                                          <div class="col-md-6">\
-                                              <gl-text :display="\'GPA\'" \
-                                                            :form="forms.addForm" \
-                                                            :name="\'gpa\'" \
-                                                            :placeholder="\'Enter GPA\'"\
-                                                            :input="forms.addForm.gpa">\
-                                              </gl-text>\
+                                                <gl-multiselect :display="\'Industries\'" :form="forms.addForm" :name="\'category\'" :input.sync="forms.addForm.category" :multiple="true" :items="industries" :placetext="\'Choose area of work...\'"></gl-multiselect>\
                                           </div>\
                                       </div>\
                                   </form>\
@@ -123,66 +100,41 @@ Vue.component('gradlead-alert', {
                                   <form class="form-horizontal" role="form">\
                                       <div class="row">\
                                           <div class="col-md-6">\
-                                              <gl-select :display="\'University\'" \
+                                              <gl-text :display="\'Name*\'" \
                                                             :form="forms.updateForm" \
-                                                            :name="\'university\'" \
-                                                            :items="universityOptions" \
-                                                            :input.sync="forms.updateForm.university">\
-                                              </gl-select>\
-                                          </div>\
-                                          <div class="col-md-6">\
-                                              <gl-select :display="\'Country\'" \
-                                                            :form="forms.updateForm" \
-                                                            :name="\'country\'" \
-                                                            :items="countryOptions" \
-                                                            :input.sync="forms.updateForm.country">\
-                                              </gl-select>\
-                                          </div>\
-                                      </div>\
-                                      <div class="row">\
-                                          <div class="col-md-6">\
-                                              <gl-select :display="\'Degree Level\'" \
-                                                            :form="forms.updateForm" \
-                                                            :name="\'degree_level\'" \
-                                                            :items="degreeOptions" \
-                                                            :input.sync="forms.updateForm.degree_level">\
-                                              </gl-select>\
-                                          </div>\
-                                          <div class="col-md-6">\
-                                              <gl-select :display="\'Major\'" \
-                                                            :form="forms.updateForm" \
-                                                            :name="\'degree_major\'" \
-                                                            :items="majorOptions" \
-                                                            :input.sync="forms.updateForm.degree_major">\
-                                              </gl-select>\
-                                          </div>\
-                                      </div>\
-                                      <div class="row">\
-                                          <div class="col-md-6">\
-                                              <gl-select :display="\'Graduation Month\'" \
-                                                            :form="forms.updateForm" \
-                                                            :name="\'graduation_month\'" \
-                                                            :items="monthOptions" \
-                                                            :input.sync="forms.updateForm.graduation_month">\
-                                              </gl-select>\
-                                          </div>\
-                                          <div class="col-md-6">\
-                                              <gl-select :display="\'Graduation Year\'" \
-                                                            :form="forms.updateForm" \
-                                                            :name="\'graduation_year\'" \
-                                                            :items="yearOptions" \
-                                                            :input.sync="forms.updateForm.graduation_year">\
-                                              </gl-select>\
-                                          </div>\
-                                      </div>\
-                                      <div class="row">\
-                                          <div class="col-md-6">\
-                                              <gl-text :display="\'GPA\'" \
-                                                            :form="forms.updateForm" \
-                                                            :name="\'gpa\'" \
-                                                            :placeholder="\'Enter GPA\'"\
-                                                            :input.sync="forms.updateForm.gpa">\
+                                                            :name="\'name\'" \
+                                                            :input.sync="forms.updateForm.name">\
                                               </gl-text>\
+                                          </div>\
+                                          <div class="col-md-6">\
+                                              <gl-select :display="\'Frequency*\'" \
+                                                            :form="forms.updateForm" \
+                                                            :name="\'frequency\'" \
+                                                            :items="freqOptions" \
+                                                            :input.sync="forms.updateForm.frequency">\
+                                              </gl-select>\
+                                          </div>\
+                                      </div>\
+                                      <div class="row">\
+                                          <div class="col-md-6">\
+                                              <gl-location :id="\'updateAlertLoc\'"\
+                                                           :display="\'Location (Area or City or Country)\'" \
+                                                           :form="forms.updateForm" \
+                                                           :name="\'location\'" \
+                                                           :input.sync="location"\
+                                                           :placeholder="\'e.g. Accra, Ghana\'">\
+                                              </gl-location>\
+                                          </div>\
+                                          <div class="col-md-6">\
+                                                <gl-multiselect :display="\'Languages\'" :form="forms.updateForm" :name="\'language\'" :input.sync="forms.updateForm.language" :multiple="true" :items="languages" :placetext="\'Choose languages...\'"></gl-multiselect>\
+                                          </div>\
+                                      </div>\
+                                      <div class="row">\
+                                          <div class="col-md-6">\
+                                                <gl-multiselect :display="\'Job Types\'" :form="forms.updateForm" :name="\'jobtype\'" :input.sync="forms.updateForm.jobtype" :multiple="true" :items="jobtypes" :placetext="\'Choose preferred job types...\'"></gl-multiselect>\
+                                          </div>\
+                                          <div class="col-md-6">\
+                                                <gl-multiselect :display="\'Industries\'" :form="forms.updateForm" :name="\'category\'" :input.sync="forms.updateForm.category" :multiple="true" :items="industries" :placetext="\'Choose area of work...\'"></gl-multiselect>\
                                           </div>\
                                       </div>\
                                   </form>\
@@ -227,11 +179,15 @@ Vue.component('gradlead-alert', {
             baseUrl: '/',
 
             list: [],
+            location: [],
+            languages: [],
+            industries: [],
+            jobtypes: [],
 
             freqOptions: [
                 {text:'Daily', value:'daily'},
-                {text:'Weekly', value:'Weekly'},
-                {text:'Monthly', value:'Monthly'},
+                {text:'Weekly', value:'weekly'},
+                {text:'Monthly', value:'monthly'},
             ],
 
             forms: {
@@ -241,7 +197,7 @@ Vue.component('gradlead-alert', {
                     country:'',
                     city:'',
                     neighborhood:'',
-                    job_type:'',
+                    jobtype:'',
                     category:'',
                     language:'',
                     frequency:'',
@@ -253,7 +209,7 @@ Vue.component('gradlead-alert', {
                     country:'',
                     city:'',
                     neighborhood:'',
-                    job_type:'',
+                    jobtype:'',
                     category:'',
                     language:'',
                     frequency:'',
@@ -269,27 +225,39 @@ Vue.component('gradlead-alert', {
             return _.reject(list, function (i) { return i.id === item.id; });
         },
 
+        getLocation: function(e) {
+            var add = [];
+            //if (e.street!='') { add.push(e.street); }
+            if (e.neighborhood!='') { add.push(e.neighborhood); }
+            if (e.city!='') { add.push(e.city); }
+            if (e.country!='') { add.push(e.country); }
+            return (add.length>0) ? add.join(', ') : '';
+        },
+
         addAlert: function(e) {
+            this.location='';
             this.forms.addForm.user_id = this.authUser.id;
             this.forms.addForm.name = '';
-            this.forms.addForm.country = 'Ghana';
+            this.forms.addForm.country = '';
             this.forms.addForm.city = '';
             this.forms.addForm.neighborhood = '';
-            this.forms.addForm.job_type = '';
+            this.forms.addForm.jobtype = '';
             this.forms.addForm.category = '';
             this.forms.addForm.language = '';
             this.forms.addForm.frequency = '';
             this.forms.addForm.errors.forget();
             $('#modal-add-alert').modal('show');
-        }
+        },
 
         editAlert: function(e) {
+            this.location = this.getLocation(e);
+            this.forms.updateForm.id = e.id;
             this.forms.updateForm.user_id = this.authUser.id;
             this.forms.updateForm.name = e.name;
-            this.forms.updateForm.country = e.country;;
+            this.forms.updateForm.country = e.country;
             this.forms.updateForm.city = e.city;
             this.forms.updateForm.neighborhood = e.neighborhood;;
-            this.forms.updateForm.job_type = e.job_type;
+            this.forms.updateForm.jobtype = e.job_type;
             this.forms.updateForm.category = e.category;
             this.forms.updateForm.language = e.language;
             this.forms.updateForm.frequency = e.frequency;
@@ -344,18 +312,9 @@ Vue.component('gradlead-alert', {
 
             bus.$on('authUserSet', function (user) { self.setList(user.alerts); });
 
-            bus.$on('languagesSet', function (items) {
-                self.languages = items;
-            });
-
-            bus.$on('jobTypesSet', function (items) {
-                self.jobTypes = items;
-            });
-
-            bus.$on('skillsSet', function (items) {
-                self.skills = items;
-            });
-            
+            bus.$on('languagesSet', function (items) { self.languages = items; });
+            bus.$on('industriesSet', function (items) { self.industries = items; });
+            bus.$on('jobTypesSet', function (items) { self.jobtypes = items; });
         },
     }
 });

@@ -19,6 +19,7 @@ class CreateProfilesStudentWorkTable extends Migration
             $table->string('company');
             $table->string('title');
             $table->longText('description');
+            $table->longText('industries');
             $table->string('country');
             $table->string('city');
             $table->string('neighborhood');

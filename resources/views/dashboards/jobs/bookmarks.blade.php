@@ -1,4 +1,4 @@
-<div class="hbox hbox-auto-xs hbox-auto-sm" v-if="everythingLoaded">
+<div class="hbox hbox-auto-xs hbox-auto-sm">
   <!-- main -->
   <div class="col">
     

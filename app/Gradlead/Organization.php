@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Gradlead\Permission;
 use App\Gradlead\Contract;
 use App\Gradlead\Theme;
+use App\Gradlead\Template;
 use App\Gradlead\ProfileCompany;
 
 class Organization extends Model
@@ -18,11 +19,11 @@ class Organization extends Model
 
     protected $hidden = [];
 
-    protected $with = ['contracts','permissions','events','jobs'];
+    protected $with = ['contracts','events','jobs','permissions'];
 
     protected function getArrayableAppends()
     {
-        $appends = ['numusers','numschools','numrecruiters','theme','profile','logo_url'];
+        $appends = ['logo_url','profile','numusers','numschools','numrecruiters','templates','theme'];
         
         if ($this->isCompany()) { array_push($appends,'schools'); } 
         
@@ -67,6 +68,34 @@ class Organization extends Model
         $theme = $i;
       }
       return $theme;
+    }
+    
+    public function getTemplatesAttribute() 
+    {
+        // Create new theme for organization based on Gradlead default
+        $tpls =  DB::table('templates')->select(DB::raw('*'))->where('organization_id',$this->id)->get(); 
+        $defs =  DB::table('templates')->select(DB::raw('*'))->where('organization_id',1)->get(); 
+
+        if (is_null($tpls) or sizeof($tpls)==0) {
+            foreach($defs as $def) {
+              
+              $i = new Template();
+              $i->organization_id = $this->id;
+              $i->name = $def->name;
+              $i->template = $def->template;
+              $i->system = $def->system;
+              $i->modified_by = 1;
+              $i->save();
+              $tpls[strtolower(preg_replace('/ /','_',$i->name))] = $i;
+            }
+        //} elseif (sizeof($tpls)!=sizeof($defs)) {  
+        } else {
+            foreach($tpls as $key => $tp) {
+                $tpls[strtolower(preg_replace('/ /','_',$tp->name))] = $tp;
+                unset($tpls[$key]);
+            }
+        }
+        return $tpls;
     }
 
     public function getNumusersAttribute() 

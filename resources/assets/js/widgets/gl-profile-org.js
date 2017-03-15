@@ -171,7 +171,6 @@ Vue.component('gl-view-profile-org', {
                     this.forms.updateProfile.description  = this.profile.description;
                     this.forms.updateProfile.website  = this.profile.website;
                     this.forms.updateProfile.num_employees  = this.profile.num_employees;
-                    console.log("Setting it...");
                     this.forms.updateProfile.jobtypes  = this.profile.job_types;
                     this.forms.updateProfile.industries  = this.profile.industries;
                 }

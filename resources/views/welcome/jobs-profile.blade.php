@@ -82,7 +82,12 @@
                                       <label class="col-sm-3 control-label">&nbsp;</label>
                                       <div class="col-sm-9">
                                         <div class="form-control-static">
-                                            <input type="submit" class="btn btn-warning btn-filled" value="Apply">
+                                            <span v-if="loggedIn">
+                                                <input type="submit" @click.prevent="showApply({{ $job->id}})" class="btn btn-warning btn-filled" value="Apply">
+                                            </span>
+                                            <span v-else>
+                                                <input type="submit" @click.prevent="showReg({{$job->id}})" class="btn btn-warning btn-filled" value="Apply">
+                                            </span>
                                         </div>
                                       </div>
                                     </div>  

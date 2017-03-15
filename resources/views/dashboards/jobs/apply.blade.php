@@ -24,11 +24,6 @@
                     </div>
                     <div class="row" v-show="currentJob.questionnaire_id!=null && currentJob.questionnaire_id>0">
                         <div class="col-md-12">
-                          <gl-questionnaire 
-                                   :qid="currentJob.questionnaire_id"
-                                   :auth-user="authUser"
-                                   :input.sync="forms.applyForm.screening">\
-                          </gl-questionnaire>
                         </div>
                     </div>
                 </form>

@@ -68,13 +68,16 @@ Vue.component('spark-profile-work', {
                                           </div>\
                                       </div>\
                                       <div class="row">\
-                                          <div class="col-md-12">\
+                                          <div class="col-md-6">\
                                               <gl-location :id="\'addWorkLoc\'"\
                                                            :display="\'Location\'" \
                                                            :form="forms.addForm" \
                                                            :name="\'country\'" \
                                                            :placeholder="\'e.g. Accra, Ghana\'">\
                                               </gl-location>\
+                                          </div>\
+                                          <div class="col-md-6">\
+                                                <gl-multiselect :display="\'Industries\'" :form="forms.addForm" :name="\'industries\'" :input="forms.addForm.industries" :multiple="true" :items="industries" :placetext="\'Choose industry...\'"></gl-multiselect>\
                                           </div>\
                                       </div>\
                                       <div class="row">\
@@ -154,7 +157,7 @@ Vue.component('spark-profile-work', {
                                           </div>\
                                       </div>\
                                       <div class="row">\
-                                          <div class="col-md-12">\
+                                          <div class="col-md-6">\
                                               <gl-location :id="\'editWorkLoc\'"\
                                                            :display="\'Location\'" \
                                                            :form="forms.updateForm" \
@@ -162,6 +165,9 @@ Vue.component('spark-profile-work', {
                                                            :input="loc">\
                                                            :placeholder="\'e.g. Accra, Ghana\'">\
                                               </gl-location>\
+                                          </div>\
+                                          <div class="col-md-6">\
+                                                <gl-multiselect :display="\'Industries\'" :form="forms.updateForm" :name="\'industries\'" :input.sync="forms.updateForm.industries" :multiple="true" :items="industries" :placetext="\'Choose industry...\'"></gl-multiselect>\
                                           </div>\
                                       </div>\
                                       <div class="row">\
@@ -238,6 +244,7 @@ Vue.component('spark-profile-work', {
             countryOptions: [],
             degreeOptions:[],
             majorOptions:[],
+            industries: [],
 
             addStart: _moment('1950-01-01').format('YYYY-MM-DD'),
             addeStart: _moment('1950-01-01').format('YYYY-MM-DD'),
@@ -252,6 +259,7 @@ Vue.component('spark-profile-work', {
                     company:'',
                     title:'',
                     description:'',
+                    industries: '',
                     country:'',
                     city:'',
                     start_date:'',
@@ -265,6 +273,7 @@ Vue.component('spark-profile-work', {
                     company:'',
                     title:'',
                     description:'',
+                    industries: '',
                     country:'',
                     city:'',
                     loc:'',
@@ -294,6 +303,7 @@ Vue.component('spark-profile-work', {
             this.forms.addForm.company = '';
             this.forms.addForm.title = '';
             this.forms.addForm.description = '';
+            this.forms.addForm.industries = '';
             this.forms.addForm.neighborhood = '';
             this.forms.addForm.country = '';
             this.forms.addForm.city = '';
@@ -311,6 +321,7 @@ Vue.component('spark-profile-work', {
             this.forms.updateForm.company = e.company;
             this.forms.updateForm.title = e.title;
             this.forms.updateForm.description = e.description;
+            this.forms.updateForm.industries = e.industries;
             this.forms.updateForm.country = e.country;
             this.forms.updateForm.city = e.city;
             this.forms.updateForm.neighborhood = e.neighborhood;
@@ -364,6 +375,7 @@ Vue.component('spark-profile-work', {
             var self = this;
             bus.$on('allLoaded', function() { });
             bus.$on('authUserSet', function (user) { self.setList(user.work); });
+            bus.$on('industriesSet', function (items) { self.industries = items; });
         },
         format_start_date: function(v) {
             return _moment(v).format('MMMM Do, YYYY');

@@ -60,17 +60,23 @@ Route::group(['middleware' => 'web'], function ($router) {
 
         // Users
         $router->get('users',                              'UserController@index');
+        $router->get('users/inbox/{id}',                   'UserController@inbox');
+        $router->get('users/outbox/{id}',                  'UserController@outbox');
         $router->post('users',                             'UserController@store');
         $router->post('users/alert',                       'UserController@alert');
         $router->post('users/badge',                       'UserController@merit');
         $router->post('users/bookmark',                    'UserController@bookmark');
+        $router->post('users/inbox',                       'UserController@msgStore');
         $router->put('users/{id}',                         'UserController@update');
         $router->put('users/alert/{aid}',                  'UserController@updateAlert');
         $router->put('users/bookmark/{id}',                'UserController@editBookmark');
+        $router->put('users/inbox/read/{id}',              'UserController@msgRead');
+        $router->put('users/inbox/trash/{id}',             'UserController@msgTrash');
         $router->delete('users/{id}',                      'UserController@destroy');
         $router->delete('users/alert/{aid}',               'UserController@unalert');
         $router->delete('users/badge/{aid}',               'UserController@demerit');
         $router->delete('users/bookmark/{bid}',            'UserController@unbookmark');
+        $router->delete('users/inbox/{mid}',               'UserController@mid');
 
         // Organizations
         $router->get('organizations',                       'OrganizationController@index');
@@ -168,7 +174,13 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->get('themes/default',          'ThemeController@defaultTheme');
         $router->post('themes/editable',        'ThemeController@editable');
         $router->post('themes',                 'ThemeController@store');
-        $router->put('themes/{id}',              'ThemeController@update');
+        $router->put('themes/{id}',             'ThemeController@update');
+
+        // Templates
+        $router->get('templates',                  'TemplateController@index');
+        $router->get('templates/default',          'TemplateController@defaultTheme');
+        $router->post('templates',                 'TemplateController@store');
+        $router->put('templates/{id}',             'TemplateController@update');
 
         // System Methods
         $router->get('degrees',                 'SystemController@degrees');

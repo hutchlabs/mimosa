@@ -25,14 +25,21 @@ Vue.component('gradlead-home-screen', {
             usertype: {'isGradlead': false, 'isCompany':false, 'isSchool':false, 'isAdmin':false, 'canEdit': false},
             permissions: {'canDoEvents': false, 'canDoScreening':false, 'canDoPreselect': false, 'canDoTracking':false},
 
+            newMessageLength: 0,
             loadedScreens: 0,
-            expectedScreens: 19,
+            expectedScreens: 20,
             expectedCalls: 16,
             completedCalls: 0,
         };
     },
 
     events: { },
+
+    watch: { 
+        'authUser': function() {
+            this.newMessageLength =  _.filter(this.authUser.inbox, function (i) { return i.seen==0; }).length;
+        },
+    },
 
     computed: {
         everythingLoaded: function() {
@@ -117,14 +124,14 @@ Vue.component('gradlead-home-screen', {
                     self.authUser = user.data;
                     self.usertype.canEdit = (self.authUser.role.name=='Member') ? false : true;
                     self.usertype.isAdmin = (self.authUser.role.name=='Super Administrator' || self.authUser.role.name=='Administrator');
-                    self.usertype.isGradlead = (self.authUser.organization.id==1) ? true : false;
+                    self.usertype.isGradlead = (self.authUser.organization.id==1 && (self.authUser.type!='student'&&self.authUser.type!='graduate')) ? true : false;
                     self.usertype.isCompany = (self.authUser.organization.type=='employer') ? true : false;
                     self.usertype.isSchool = (self.authUser.organization.type=='school') ? true : false;
                     self.permissions.canDoEvents = self.authUser.organization.permissions.events;
                     self.permissions.canDoScreening = self.authUser.organization.permissions.screening;
                     self.permissions.canDoPreselect = self.authUser.organization.permissions.preselect;
                     self.permissions.canDoTracking = self.authUser.organization.permissions.tracking;
-                    self.expectedScreens = (self.usertype.isGradlead) ? 19 : ((self.usertype.isCompany) ? 6 : 3);
+                    self.expectedScreens = (self.usertype.isGradlead) ? 20 : ((self.usertype.isCompany) ? 7 : 4);
                     self.logo = self.getLogoUrl();
                     self.avatar = self.getImageUrl();
                     bus.$emit('authUserSet', self.authUser);

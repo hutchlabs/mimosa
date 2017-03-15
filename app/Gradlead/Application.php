@@ -75,7 +75,7 @@ class Application extends Model
     
     public static function isDuplicate($jobId, $userId) 
     {
-      return DB::table($this->table)
+      return DB::table('jobs_applications')
                 ->select(DB::raw('id'))
                 ->where('job_id',$jobId)
                 ->where('user_id',$userId)

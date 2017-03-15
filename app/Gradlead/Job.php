@@ -17,7 +17,7 @@ class Job extends Model
 
     protected function getArrayableAppends()
     {
-        $this->appends = array_merge($this->appends, ['numapplications','orgname','orglogo','address']);
+        $this->appends = array_merge($this->appends, ['numapplications','orgname','orglogo','address','url_public','url_internal']);
         return parent::getArrayableAppends();
     }
 
@@ -67,6 +67,17 @@ class Job extends Model
         if ($this->city<>'') { array_push($address, $this->city); }
         if ($this->country<>'') { array_push($address, $this->country); }
         return (sizeof($address)>0) ? join(', ',$address) : 'No address given';
+    }
+    
+    public function getUrlPublicAttribute()
+    {     
+        //return $this->doPreselectEvaluation(\App\User::find(10));
+        return '/j/'.$this->id; 
+    }
+    
+    public function getUrlInternalAttribute()
+    {      
+       return  '/home?page=detail&id='.$this->id.'#jobs';
     }
     
     public function organization()
@@ -169,9 +180,12 @@ class Job extends Model
                             'orglogo'=>$j->orglogo,
                             'country'=>$j->country,
                             'city'=>$j->city,
+                            'neighborhood'=>$j->neighborhood,
                             'featured'=>$j->featured,
                             'post_date'=>$j->created_at,
                             'jobTypes'=>$j->job_types,
+                            'url_public'=>$j->url_public,
+                            'url_internal'=>$j->url_internal,
                             'questionnaire_id'=>$j->questionnaire_id,
                             'preselect'=>$j->preselect,
                          ];
@@ -214,16 +228,85 @@ class Job extends Model
     
     public function doPreselectEvaluation($user)
     {
-        $pass = 1;
-        $criteria = json_decode($this->preselect);
+        if(strlen($this->preselect)==1) {
+            return null;
+        } else {
+            $pass = 1;
+            $criteria = json_decode($this->preselect);
+
+            list($maxYear, $degrees, $majors) = $this->getEdParts($user->education);
+
+            foreach($criteria as $key => $v) {
+                if ($key=='student' && $v=='on') {
+                    $pass = ($user->type=='student' && $maxYear >= date('Y')) ? 1:0;
+                }
+
+                if ($pass && ($key=='gradyear' && $v!='')) { $pass = ($maxYear == $v) ? 1:0; }
+
+                if ($pass && ($key=='degrees' && $v!='')) {
+                    $pass = ($this->hasQual($v, $degrees)) ? 1 : 0;
+                }
+
+                if ($pass && ($key=='majors' && $v!='')) {
+                    $pass = ($this->hasQual($v, $degrees)) ? 1 : 0;
+                }
+
+                if ($pass && ($key=='languages' && $v!='')) {
+                    $list = $this->getStringList($user->languages, 'language');
+                    $pass = ($this->hasQual($v, $list)) ? 1 : 0;
+                }
+                
+                if ($pass && ($key=='skills' && $v!='')) {
+                    $pass = ($this->hasQual($v, $user->skills[0]->skills)) ? 1 : 0;
+                }
+
+                if ($pass && ($key=='industries' && $v!='')) {
+                    $list = $this->getStringList($user->work, 'industries');
+                    $pass = ($this->hasQual($v, $list)) ? 1 : 0;
+                } 
+            }
+            return $pass; 
+        }        
+    }
+    
+    private function hasQual($quals, $list) 
+    {
+        $has = false;
+        $qs = explode(',');
+        $ls = explode(',');
+        foreach($qs as $key => $q) { $qs[$key] = trim($q); }
+        foreach($ls as $l) { if (in_array(trim($l), $qs)) { $has = true; }}
+        return $has;
+    }
+    
+    private function getEdParts($education) 
+    {
+        $maxYear = 0;
+        $degrees = '';
+        $majors = '';
         
-        // TODO: criteria checks
-        foreach($criteria as $c) {
-            
+        foreach($education as $ed) {
+            if ($maxYear < $ed->graduation_year) { $maxYear = $ed->graduation_year; }
+            $degrees += ($ed->degree_level=='') ? '' : $ed->degree_level.',';
+            $majors += ($ed->degree_major=='') ? '' : $ed->degree_major.',';
         }
         
-        return $pass; 
+        $degrees = preg_replace('/,$/','',$degrees);
+        $majors = preg_replace('/,$/','',$majors);
+
+        return [$maxYear, $degrees, $majors];
     }
+    
+    private function getStringList($array, $field)
+    {
+        $list = '';   
+        foreach($array as $item) {
+            $list += ($item->$field=='') ? '' : $item->$field.',';
+        } 
+        $list = preg_replace('/,$/','',$list);
+        return $list;
+    }
+    
     
     public function doScreeningEvaluation($responses)
     {

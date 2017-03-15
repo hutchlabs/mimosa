@@ -22,31 +22,97 @@ class UserController extends Controller
         $this->middleware('tenant');
     }
     
-    // TODO: Bulk uploads    
+    // TODO: Bulk uploads
+    public function inbox(Request $request, $userId)
+    {
+        $items = [];
+        $user = User::find($userId);
+        if ($user) { $items = $user->inbox; }
+        return $this->json_response($items);
+    }
+    
+    public function outbox(Request $request, $userId)
+    {
+        $items = [];
+        $user = User::find($userId);
+        if ($user) { $items = $user->outbox; }
+        return $this->json_response($items);
+    }
+    
+    public function msgStore(Request $request) 
+    {
+        $user = $request->user();
+        
+        $this->validate($request, 
+                        ['user_id' => 'required|exists:users,id',
+                         'from_id' => 'required|exists:users,id',
+                         'subject' => 'required|max:255',
+                         'response_to' => 'exists:users_inbox,id',
+                         'message' => 'required']);
+        
+        $i = new Inbox();
+        $i->user_id = $request->user_id;
+        $i->from_id = $request->from_id;
+        $i->response_to = (isset($request->response_to)) ? $request->response_to:0;
+        $i->subject = $request->subject;
+        $i->message = $request->message;
+        $i->seen = 0;
+        $i->modified_by = $user->id;
+        $i->save();   
+        return $this->ok();
+    }
+    
+    public function msgRead(Request $request, $msgId) 
+    {
+        $user = $request->user();
+        $i = Inbox::find($msgId);
+        if ($i) { $i->markRead($user);}
+        return $this->ok();
+    }
+    
+    public function msgTrash(Request $request, $msgId) 
+    {
+        $user = $request->user();
+        $i = Inbox::find($msgId);
+        if ($i) { $i->markTrash($user);}
+        return $this->ok();
+    }
+    
+    public function msgDelete(Request $request, $msgId) 
+    {
+        $i = Inbox::find($msgId);
+        if ($i) {
+            $i->remove();
+            return $this->ok();
+        } else {
+            return $this->json_response(['Cannot find message'], true);
+        }
+    }
+    
+    
     public function alert(Request $request) 
     {
         $user = $request->user();
         
         $this->validate($request, 
                         ['user_id' => 'required|exists:users,id',
-                         'first' => 'required:max:255',
-                         'last' => 'required:max:255',
-                         'frequency' => 'required']);
+                         'name' => 'required:max:255',
+                         'frequency' => 'required|in:daily,weekly,monthly']);
         
         $i = new Alert();
         $i->user_id = $request->user_id;
-        $i->first = $request->first;
-        $i->last = $request->last;
-        $i->location = $request->location;
+        $i->name = $request->name;
+        $i->country = $request->country;
+        $i->city = $request->city;
+        $i->neighborhood = $request->neighborhood;
         $i->category = $request->category;
-        $i->job_type = $request->job_type;
+        $i->job_type = $request->jobtype;
         $i->language = $request->language;
         $i->frequency = $request->frequency;
+        $i->next_run_date = Alert::setNextRun($request->frequency);
         $i->modified_by = $user->id;
         $i->save();
-        
-        $i->createSchedule();
-        
+                
         return $this->ok();
     }
     
@@ -57,24 +123,23 @@ class UserController extends Controller
         $this->validate($request, 
                         ['id'=>'required|exists:users_alerts,id',
                          'user_id' => 'required|exists:users,id',
-                         'first' => 'required:max:255',
-                         'last' => 'required:max:255',
-                         'frequency' => 'required']);
+                         'name' => 'required:max:255',
+                         'frequency' => 'required|in:daily,weekly,monthly']);
         
         $i = Alert::find($request->id);
         $i->user_id = $request->user_id;
-        $i->first = $request->first;
-        $i->last = $request->last;        
-        $i->location = $request->location;
+        $i->name = $request->name;
+        $i->country = $request->country;
+        $i->city = $request->city;
+        $i->neighborhood = $request->neighborhood;
         $i->category = $request->category;
-        $i->job_type = $request->job_type;
+        $i->job_type = $request->jobtype;
         $i->language = $request->language;
         $i->frequency = $request->frequency;
+        $i->next_run_date = Alert::setNextRun($request->frequency);
         $i->modified_by = $user->id;
         $i->save();
-        
-        $i->createSchedule();
-        
+                
         return $this->ok();
     }
     
@@ -212,12 +277,12 @@ class UserController extends Controller
         $u->modified_by = $user->id;
         $u->save();
 
-        if ($u->isStudent()) {
-            $p = new Profile();
-            $p->user_id = $u->id;
-            $p->modified_by = 1;
-            $p->save();
-        }
+        //if ($u->isStudent()) {
+        $p = new Profile();
+        $p->user_id = $u->id;
+        $p->modified_by = 1;
+        $p->save();
+        //}
 
         $u = User::find($u->id); // add profile
 

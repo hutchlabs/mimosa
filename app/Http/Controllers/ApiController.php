@@ -54,24 +54,31 @@ class ApiController extends Controller
         //DB::enableQueryLog();      
         //$dd = DB::getQueryLog();
         //return $this->json_response(['email'=>[$dd],'pass'=>$pass], true, 401);
-        
         $user = User::withoutGlobalScope('organization_id')->where('email',$request->email)->first();
-        $user->makeVisible('password');
                 
-        if (!is_null($user)) {
-            $pass = Hash::check($request->password,$user->password);
-            if ($pass) {
-                \Landlord::addTenant('organization_id',$user->organization_id);
-                 $pass = Auth::attempt(['email' => $request->email, 
-                                        'password' => $request->password,
-                                        'organization_id'=>$user->organization_id]);
-                $user->makeHidden('password');
-                $response = array('data'=>$user, 'errors'=>null);
-                return response()->json($response);
-            } 
+        if ( ($user=$this->signin($user, $request->password, $request->email))!==false)  {
+            $response = array('data'=>$user, 'errors'=>null);
+            return response()->json($response);
         }
 
         return $this->json_response(['email'=>['Invalid credentials']], true, 401);
+    }
+    
+    private function signin($user, $rpass, $email)
+    {
+        if (!is_null($user)) {
+            $user->makeVisible('password');
+            $pass = Hash::check($rpass,$user->password);
+            if ($pass) {
+                \Landlord::addTenant('organization_id',$user->organization_id);
+                 $pass = Auth::attempt(['email' => $email, 
+                                        'password' => $rpass,
+                                        'organization_id'=>$user->organization_id]);
+                $user->makeHidden('password');
+                return $user;
+            } 
+        }
+        return false;
     }
 
     
@@ -79,7 +86,8 @@ class ApiController extends Controller
     {
         
         $validator = Validator::make($request->all(), ['email' => 'required|email|unique:users,email',
-                                   'name' => 'required|max:255',
+                                   'first' => 'required|max:255',
+                                   'last' => 'required|max:255',
                                    'password'=> 'required|min:6',
                                    'type' => 'required|in:employer,gradlead,graduate,school,student',
                                   ]
@@ -89,32 +97,37 @@ class ApiController extends Controller
             $errors = $validator->errors();
             $resp = [];
             if ($errors->has('email')) { $resp['email'] = [$errors->get('email')[0]]; }
-            if ($errors->has('name')) { $resp['name'] =[$errors->get('name')[0]]; }
+            if ($errors->has('first')) { $resp['first'] =[$errors->get('first')[0]]; }
+            if ($errors->has('last')) { $resp['last'] =[$errors->get('last')[0]]; }
             if ($errors->has('password')) { $resp['password'] = [$errors->get('password')[0]]; }
             if ($errors->has('type')) { $resp['type'] = [$errors->get('type')[0]]; }
-
             return $this->json_response($resp, true, 422);
         }
 
         // Add user
         $u = new User();
-        $u->name = $request->name;
+        $u->first = $request->first;
+        $u->last = $request->last;
         $u->email = $request->email;
+        $u->uuid = md5(time());
         $u->password = bcrypt($request->password);
         $u->type = $request->type;
-        $u->organization_id = $request->organization_id;
+        $u->organization_id = 1;
         $u->role_id = 4; // Member
         $u->modified_by = 1; // Super Admin
         $u->save();
         
         $p = new Profile();
         $p->user_id = $u->id;
-        $p->uuid = uniqid();
         $p->modified_by = 1;
         $p->save();
         
         $u = User::find($u->id); // add profile
 
-        return $this->json_response($u);
+        if ($this->signin($u, $request->password, $u->email)) {
+                return $this->json_response($u);
+        } else {
+            return $this->json_response(['first'=>['Registered user but could not automatically sign in']], true, 401);
+        }
     }
 }
