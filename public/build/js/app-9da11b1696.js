@@ -71816,6 +71816,8 @@ Vue.component('gradlead-alert', {
 },{}],104:[function(require,module,exports){
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 Vue.component('gradlead-authenticate', {
     props: [],
 
@@ -71900,7 +71902,7 @@ Vue.component('gradlead-authenticate', {
             user: null,
             loggedIn: false,
             baseUrl: '/',
-            redirect: 'home/',
+            redirect: '/home/',
 
             typeOptions: [{ 'text': 'Current Student', 'value': 'student' }, { 'text': 'Graduate', 'value': 'graduate' }],
 
@@ -71923,7 +71925,7 @@ Vue.component('gradlead-authenticate', {
 
     methods: {
         showLogin: function showLogin(redirect) {
-            if (typeof redirect != 'undefined') {
+            if (typeof redirect != 'undefined' && (typeof redirect === 'undefined' ? 'undefined' : _typeof(redirect)) != 'object') {
                 this.redirect = redirect;
             }
             this.forms.login.email = '';
@@ -71940,7 +71942,7 @@ Vue.component('gradlead-authenticate', {
             this.forms.signup.password = '';
             this.forms.signup.first = '';
             this.forms.signup.last = '';
-            if (typeof redirect != 'undefined') {
+            if (typeof redirect != 'undefined' && (typeof redirect === 'undefined' ? 'undefined' : _typeof(redirect)) != 'object') {
                 this.redirect = redirect;
             }
             $('#modal-login').modal('hide');
@@ -75312,35 +75314,10 @@ Vue.component('gl-questionnaire', {
         };
     },
 
-    render: function render(createElement) {
-        if (!this.template) {
-            return createElement('div', 'Loading...');
-        } else {
-            return this.template();
-        }
-    },
-    staticRenderFns: function staticRenderFns() {
-        if (this.template) {}
-    },
-
     methods: {
         boot: function boot() {
-            console.log("Booting...");
             this.getQuestionnaire();
             this.checkBuilding();
-        },
-
-        checkBuilding: function checkBuilding() {
-            var self = this;
-            setTimeout(function () {
-                if (!self.doneBuilding) {
-                    self.checkBuilding();
-                } else {
-                    console.log(self.htmlcode);
-                    var x = createElement('div', 'hello', [createElement('b', 'David')]);
-                    self.template = Vue.compile(x).render;
-                }
-            }, 2000);
         },
 
         buildForm: function buildForm() {

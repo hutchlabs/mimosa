@@ -82,7 +82,7 @@ Vue.component('gradlead-authenticate', {
             user: null,
             loggedIn: false,
             baseUrl: '/',
-            redirect: 'home/',
+            redirect: '/home/',
 
 			typeOptions: [
                             {'text': 'Current Student', 'value':'student'},
@@ -108,7 +108,7 @@ Vue.component('gradlead-authenticate', {
 
     methods: {
         showLogin: function (redirect) {
-            if (typeof redirect != 'undefined') { this.redirect = redirect; }
+            if (typeof redirect != 'undefined' && typeof redirect!='object') { this.redirect = redirect; }
 			this.forms.login.email = '';
 			this.forms.login.password = '';
             this.forms.login.errors.forget();
@@ -123,7 +123,7 @@ Vue.component('gradlead-authenticate', {
 			this.forms.signup.password = '';
 			this.forms.signup.first = '';
 			this.forms.signup.last = '';
-            if (typeof redirect != 'undefined') { this.redirect = redirect; }
+            if (typeof redirect != 'undefined' && typeof redirect!='object') { this.redirect = redirect; }
 			$('#modal-login').modal('hide');
 			$('#modal-signup').modal('show');
 			$('.modal-backdrop').css('z-index', '0');

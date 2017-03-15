@@ -37,40 +37,12 @@ Vue.component('gl-questionnaire', {
         }
     },
 
-	render: function(createElement) {
-    	if (!this.template) {
-      		return createElement('div', 'Loading...');
-    	} else {
-      		return this.template();
-    	}
-  	},
-    staticRenderFns: function() {
-        if (this.template) {
-        }
-    },
-
     methods: {
         boot: function() {
-            console.log("Booting...");
             this.getQuestionnaire();
 		    this.checkBuilding();
         },
         
-		checkBuilding: function() {
-			var self = this;
-  			setTimeout(function() {
-				if (!self.doneBuilding) {
-					self.checkBuilding();
-				} else {
-                    console.log(self.htmlcode);
-                    var x = createElement('div', 'hello',[
-                                createElement('b','David')
-                            ]);
-    				self.template = Vue.compile(x).render;
-				}    			
-			}, 2000);
-		},
-
         buildForm: function() {
             var self = this;
        		if (self.questionnaire!==null && self.questionnaire.numquestions > 0) {
