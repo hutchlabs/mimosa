@@ -22,7 +22,6 @@ Vue.component('gl-student-profile', {
 
     mounted: function () { 
         this.myuser = this.user; 
-        console.log(this.user);
     }, 
     computed: {
         everythingLoaded: function() { return this.myuser.id > 0; }

@@ -25,7 +25,8 @@ Vue.component('gradlead-home-screen', {
             usertype: {'isGradlead': false, 'isCompany':false, 'isSchool':false, 'isAdmin':false, 'canEdit': false},
             permissions: {'canDoEvents': false, 'canDoScreening':false, 'canDoPreselect': false, 'canDoTracking':false},
 
-            newMessageLength: 0,
+            newMessageNum: 0,
+            jobSeekerNum: 0,
             loadedScreens: 0,
             expectedScreens: 20,
             expectedCalls: 16,
@@ -38,6 +39,7 @@ Vue.component('gradlead-home-screen', {
     watch: { 
         'authUser': function() {
             this.newMessageLength =  _.filter(this.authUser.inbox, function (i) { return i.seen==0; }).length;
+            this.jobSeekerNum =  _.filter(this.authUser.inbox, function (i) { return i.seen==0; }).length;
         },
     },
 
@@ -291,6 +293,11 @@ Vue.component('gradlead-home-screen', {
             this.$http.get(this.baseUrl+'users')
                 .then(function (resp) {
                     self.icCounter();
+                    if (resp.data.data.length>0) {
+                        self.jobSeekerNum = resp.data.data.reduce(function (c, u) {
+                            return ((u.type=='student' || u.type=='graduate') && u.profile.visible==1) ? c+1:c;
+                        }, 0);
+                    }
                     bus.$emit('usersSet', resp.data.data); });
         },
 

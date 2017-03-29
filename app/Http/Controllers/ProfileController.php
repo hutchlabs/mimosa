@@ -182,6 +182,8 @@ class ProfileController extends Controller
         $i->city = $request->city;
         $i->neighborhood = $request->neighborhood;
         $i->street = $request->street;
+        $i->visible = (isset($request->visible) && $request->visible=='on') ? 1: 0;
+
         
         if ($request->icon_file<>'') {
             $fInfo = $this->handleNewFileUpload($request, 'files/avatars/');
@@ -577,7 +579,8 @@ class ProfileController extends Controller
         $i->city = $request->city;
         $i->neighborhood = $request->neighborhood;
         $i->street = $request->street;
-
+        $i->visible = (isset($request->visible) && $request->visible=='on') ? 1: 0;
+        
  		if ($request->icon_file<>'') {
             Storage::delete($i->file_path);
            $fInfo = $this->handleNewFileUpload($request, 'files/avatars/');

@@ -13,7 +13,7 @@
 
                     <li :class="listClass('#messages')">
                         <a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">
-                            <b class="badge bg-info pull-right">@{{ newMessageLength }}</b>
+                            <b class="badge bg-info pull-right">@{{ newMessageNum }}</b>
                             <i class="glyphicon glyphicon-envelope icon"></i>
                             <span class="font-bold">Messages</span>
                         </a>
@@ -48,6 +48,7 @@
                     </li>
                     <li>
                         <a href="#resumes" aria-controls="resumes" role="tab" data-toggle="tab">
+                            <b class="badge bg-info pull-right">@{{ jobSeekerNum }}</b>
                             <i class="fa fa-group icon text-info-lter"></i>
                             <span class="font-bold">Job Seekers</span>
                         </a>

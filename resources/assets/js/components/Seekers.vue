@@ -97,6 +97,9 @@ Vue.component('gradlead-seekers-screen', {
         everythingLoaded: function () {
             return this.roles.length > 0 && this.organizations.length > 0 && this.users.length > 0;
         },
+        seekerNum: function() {
+            return (this.filteredUsers()).length;
+        },
     },
 
     methods: {
@@ -219,7 +222,7 @@ Vue.component('gradlead-seekers-screen', {
                 if (users.length) {
                     self.users = [];
                     $.each(users, function(idx, u) {
-                        if (u.type=='student' || u.type=='graduate') {
+                        if ((u.type=='student' || u.type=='graduate') && u.profile.visible==1) {
                             self.users.push(u);
                         }
                     });

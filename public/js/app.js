@@ -65235,7 +65235,7 @@ Vue.component('gradlead-applications-screen', {
                     name: 'Pending'
                 },
                 {
-                    name: 'Approved'
+                    name: 'Shortlisted'
                 },
                 {
                     name: 'Interviewed'
@@ -65289,7 +65289,7 @@ Vue.component('gradlead-applications-screen', {
     computed: {
         everythingLoaded: function () { return this.authUser != null; },
         isPending: function () { return this.currentApp.status == 'Pending'; },
-        isApproved: function () { return this.currentApp.status == 'Approved'; },
+        isShortlisted: function () { return this.currentApp.status == 'Shortlisted'; },
         isInterviewed: function () { return this.currentApp.status == 'Interviewed'; },
         isHired: function () { return this.currentApp.status == 'Hired'; },
         isRejected: function () { return this.currentApp.status == 'Rejected'; },
@@ -65321,7 +65321,9 @@ Vue.component('gradlead-applications-screen', {
             } else {
                 $.each(this.jobs, function (idx, j) {
                     if (j.applications.length) {
-                        self.apps = self.apps.concat.apply([], j.applications);
+                        for(var i=0; i < j.applications.length; i++) {
+                            self.apps.push(j.applications[i]);
+                        }
                     }
                 });
             }
@@ -65792,7 +65794,8 @@ Vue.component('gradlead-home-screen', {
             usertype: {'isGradlead': false, 'isCompany':false, 'isSchool':false, 'isAdmin':false, 'canEdit': false},
             permissions: {'canDoEvents': false, 'canDoScreening':false, 'canDoPreselect': false, 'canDoTracking':false},
 
-            newMessageLength: 0,
+            newMessageNum: 0,
+            jobSeekerNum: 0,
             loadedScreens: 0,
             expectedScreens: 20,
             expectedCalls: 16,
@@ -65805,6 +65808,7 @@ Vue.component('gradlead-home-screen', {
     watch: { 
         'authUser': function() {
             this.newMessageLength =  _.filter(this.authUser.inbox, function (i) { return i.seen==0; }).length;
+            this.jobSeekerNum =  _.filter(this.authUser.inbox, function (i) { return i.seen==0; }).length;
         },
     },
 
@@ -66058,6 +66062,11 @@ Vue.component('gradlead-home-screen', {
             this.$http.get(this.baseUrl+'users')
                 .then(function (resp) {
                     self.icCounter();
+                    if (resp.data.data.length>0) {
+                        self.jobSeekerNum = resp.data.data.reduce(function (c, u) {
+                            return ((u.type=='student' || u.type=='graduate') && u.profile.visible==1) ? c+1:c;
+                        }, 0);
+                    }
                     bus.$emit('usersSet', resp.data.data); });
         },
 
@@ -69308,6 +69317,9 @@ Vue.component('gradlead-seekers-screen', {
         everythingLoaded: function () {
             return this.roles.length > 0 && this.organizations.length > 0 && this.users.length > 0;
         },
+        seekerNum: function() {
+            return (this.filteredUsers()).length;
+        },
     },
 
     methods: {
@@ -69430,7 +69442,7 @@ Vue.component('gradlead-seekers-screen', {
                 if (users.length) {
                     self.users = [];
                     $.each(users, function(idx, u) {
-                        if (u.type=='student' || u.type=='graduate') {
+                        if ((u.type=='student' || u.type=='graduate') && u.profile.visible==1) {
                             self.users.push(u);
                         }
                     });
@@ -70469,11 +70481,13 @@ Vue.component('gl-password', {
             this.form.errors.forget();
             this.form.errors.rforget(this.name);
 
-            if (v.length == 0 && this.isRequired && !this.firstLoad) {
-                this.form.errors.set(this.reqError);
-            } else if (v.length == 0 && !this.isRequired) {// do nothing
-            } else if (!this.isValidLength && !this.firstLoad) {
-                this.form.errors.set(this.textError);
+            if (typeof v != 'undefined') {
+                if (v.length == 0 && this.isRequired && !this.firstLoad) {
+                    this.form.errors.set(this.reqError);
+                } else if (v.length == 0 && !this.isRequired) {// do nothing
+                } else if (!this.isValidLength && !this.firstLoad) {
+                    this.form.errors.set(this.textError);
+                }
             }
 
             this.firstLoad = false;
@@ -74605,7 +74619,6 @@ Vue.component('gl-student-profile', {
 
     mounted: function mounted() {
         this.myuser = this.user;
-        console.log(this.user);
     },
     computed: {
         everythingLoaded: function everythingLoaded() {
@@ -74727,6 +74740,14 @@ Vue.component('gl-profile-user', {
                                 </div>\
                             </div>\
                             <div class="row">\
+                                <div class="col-md-6" style="padding-left:30px">\
+                                    <gl-checkbox :display="\'Make Profile Visible\'"\
+                                             :form="forms.updateProfile"  :name="\'visible\'"\
+                                             :input.sync="forms.updateProfile.visible">\
+                                    </gl-checkbox>\
+                                 </div>\
+                            </div>\
+                            <div class="row">\
                                 <div class="col-md-6">\
                                     <gl-text :display="\'Street\'" :form="forms.updateProfile" :name="\'street\'"\ :input.sync="forms.updateProfile.street" :minlength="3" :placeholder="\'e.g. 5 mango ln\'"></gl-text>\
                                 </div>\
@@ -74744,7 +74765,7 @@ Vue.component('gl-profile-user', {
                             </div>\
                             <div class="row">\
                                 <div class="col-md-6">\
-                                    <gl-file :display="\'Avatar\'"\
+                                    <gl-file :display="\'Profile Picture\'"\
                                              :form="forms.updateProfile" v-on:updated="setFileName"\ :name="\'icon_file\'"\
                                              :warning="\'File must be less than 20MB. Must be an image file\'"\ :filename.sync="forms.updateProfile.file_name"\ :input.sync="forms.updateProfile.icon_file">\
                                     </gl-file>\
@@ -74801,7 +74822,8 @@ Vue.component('gl-profile-user', {
                     street: '',
                     phone: '',
                     icon_file: '',
-                    file_name: ''
+                    file_name: '',
+                    visible: ''
                 })
             }
         };
@@ -74846,6 +74868,7 @@ Vue.component('gl-profile-user', {
                 this.forms.updateProfile.city = this.profile.city;
                 this.forms.updateProfile.neighborhood = this.profile.neighborhood;
                 this.forms.updateProfile.street = this.profile.street;
+                this.forms.updateProfile.visible = this.profile.visible;
             }
         },
 
@@ -75317,7 +75340,6 @@ Vue.component('gl-questionnaire', {
     methods: {
         boot: function boot() {
             this.getQuestionnaire();
-            this.checkBuilding();
         },
 
         buildForm: function buildForm() {

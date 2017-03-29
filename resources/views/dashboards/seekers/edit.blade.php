@@ -18,24 +18,24 @@
                             </spark-select>
 
 
-                            <spark-select :display="'Type*'" :form="forms.updateUser" :name="'type'" :items="getTypeOptions()" :input.sync="forms.updateUser.type">
-                            </spark-select>
+                            <gl-select :display="'Type*'" :form="forms.updateUser" :name="'type'" :items="getTypeOptions()" :input.sync="forms.updateUser.type">
+                            </gl-select>
 
 
-                            <spark-text :display="'First*'" :form="forms.updateUser" :name="'first'" :input.sync="forms.updateUser.first">
-                            </spark-text>
+                            <gl-text :display="'First*'" :form="forms.updateUser" :name="'first'" :input.sync="forms.updateUser.first">
+                            </gl-text>
 
-                            <spark-text :display="'Last*'" :form="forms.updateUser" :name="'last'" :input.sync="forms.updateUser.last">
-                            </spark-text>
+                            <gl-text :display="'Last*'" :form="forms.updateUser" :name="'last'" :input.sync="forms.updateUser.last">
+                            </gl-text>
 
-                            <spark-email :display="'Email*'" :form="forms.updateUser" :name="'email'" :input.sync="forms.updateUser.email">
-                            </spark-email>
+                            <gl-email :display="'Email*'" :form="forms.updateUser" :name="'email'" :input.sync="forms.updateUser.email">
+                            </gl-email>
 
-                            <spark-password :display="'Current Password'" :form="forms.updateUser" :name="'current_password'" :input.sync="forms.updateUser.current_password">
-                            </spark-password>
+                            <gl-password :display="'Current Password'" :form="forms.updateUser" :name="'current_password'" :input.sync="forms.updateUser.current_password">
+                            </gl-password>
 
-                            <spark-password :display="'New Password'" :form="forms.updateUser" :name="'password'" :input.sync="forms.updateUser.password">
-                            </spark-password>
+                            <gl-password :display="'New Password'" :form="forms.updateUser" :name="'password'" :input.sync="forms.updateUser.password">
+                            </gl-password>
 
                         </div>
                     </div>

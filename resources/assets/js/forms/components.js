@@ -353,12 +353,14 @@ Vue.component('gl-password', {
                 this.form[this.name] = v;
                 this.form.errors.forget();
                 this.form.errors.rforget(this.name);
-
-                if (v.length==0 && this.isRequired && !this.firstLoad) {
-                    this.form.errors.set(this.reqError);
-                } else if (v.length==0 && !this.isRequired) { // do nothing
-                } else if (!this.isValidLength && !this.firstLoad) {
-                    this.form.errors.set(this.textError);
+                
+                if (typeof v != 'undefined') {
+                    if (v.length==0 && this.isRequired && !this.firstLoad) {
+                        this.form.errors.set(this.reqError);
+                    } else if (v.length==0 && !this.isRequired) { // do nothing
+                    } else if (!this.isValidLength && !this.firstLoad) {
+                        this.form.errors.set(this.textError);
+                    }
                 }
 
                 this.firstLoad = false;

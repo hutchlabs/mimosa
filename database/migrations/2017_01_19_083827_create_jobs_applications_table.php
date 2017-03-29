@@ -21,7 +21,7 @@ class CreateJobsApplicationsTable extends Migration
             $table->longText('screening')->nullable();
             $table->boolean('preselect_pass')->nullable();
             $table->integer('screening_score')->nullable();
-            $table->enum('status',['Pending','Rejected','Approved','Interviewed','Hired','Failed'])->default('Pending');
+            $table->enum('status',['Pending','Rejected','Shortlisted','Interviewed','Hired','Failed'])->default('Pending');
             $table->integer('modified_by');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();

@@ -25,7 +25,7 @@ Vue.component('gradlead-applications-screen', {
                     name: 'Pending'
                 },
                 {
-                    name: 'Approved'
+                    name: 'Shortlisted'
                 },
                 {
                     name: 'Interviewed'
@@ -79,7 +79,7 @@ Vue.component('gradlead-applications-screen', {
     computed: {
         everythingLoaded: function () { return this.authUser != null; },
         isPending: function () { return this.currentApp.status == 'Pending'; },
-        isApproved: function () { return this.currentApp.status == 'Approved'; },
+        isShortlisted: function () { return this.currentApp.status == 'Shortlisted'; },
         isInterviewed: function () { return this.currentApp.status == 'Interviewed'; },
         isHired: function () { return this.currentApp.status == 'Hired'; },
         isRejected: function () { return this.currentApp.status == 'Rejected'; },
@@ -111,7 +111,9 @@ Vue.component('gradlead-applications-screen', {
             } else {
                 $.each(this.jobs, function (idx, j) {
                     if (j.applications.length) {
-                        self.apps = self.apps.concat.apply([], j.applications);
+                        for(var i=0; i < j.applications.length; i++) {
+                            self.apps.push(j.applications[i]);
+                        }
                     }
                 });
             }

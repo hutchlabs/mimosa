@@ -25,6 +25,7 @@ class CreateProfilesUsersTable extends Migration
             $table->string('file_name')->nullable();
             $table->string('file_path')->nullable();
             $table->string('file_url')->nullable();
+            $table->integer('visible')->default(1);
             $table->integer('modified_by');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();

@@ -20,6 +20,14 @@ Vue.component('gl-profile-user', {
                                 </div>\
                             </div>\
                             <div class="row">\
+                                <div class="col-md-6" style="padding-left:30px">\
+                                    <gl-checkbox :display="\'Make Profile Visible\'"\
+                                             :form="forms.updateProfile"  :name="\'visible\'"\
+                                             :input.sync="forms.updateProfile.visible">\
+                                    </gl-checkbox>\
+                                 </div>\
+                            </div>\
+                            <div class="row">\
                                 <div class="col-md-6">\
                                     <gl-text :display="\'Street\'" :form="forms.updateProfile" :name="\'street\'"\ :input.sync="forms.updateProfile.street" :minlength="3" :placeholder="\'e.g. 5 mango ln\'"></gl-text>\
                                 </div>\
@@ -37,7 +45,7 @@ Vue.component('gl-profile-user', {
                             </div>\
                             <div class="row">\
                                 <div class="col-md-6">\
-                                    <gl-file :display="\'Avatar\'"\
+                                    <gl-file :display="\'Profile Picture\'"\
                                              :form="forms.updateProfile" v-on:updated="setFileName"\ :name="\'icon_file\'"\
                                              :warning="\'File must be less than 20MB. Must be an image file\'"\ :filename.sync="forms.updateProfile.file_name"\ :input.sync="forms.updateProfile.icon_file">\
                                     </gl-file>\
@@ -96,6 +104,7 @@ Vue.component('gl-profile-user', {
                     phone: '',
                     icon_file: '',
                     file_name: '',
+                    visible: '',
                 }),
             },
         }
@@ -134,6 +143,7 @@ Vue.component('gl-profile-user', {
                 this.forms.updateProfile.city = this.profile.city;
                 this.forms.updateProfile.neighborhood  = this.profile.neighborhood;
                 this.forms.updateProfile.street  = this.profile.street;
+                this.forms.updateProfile.visible  = this.profile.visible;
             }
         },
 

@@ -21,13 +21,18 @@
    
     <div class="col wrapper-md">
       <div class="clearfix m-b">
-            <button class="btn btn-info btn-addon" @click.prevent="addUser()">
-                <i class="fa fa-plus"></i> Add 
-            </button>
+            <h2 style="display:inline;" class="m-n font-thin h3">@{{ seekerNum }} Job Seekers</h2>
 
+            <!--
             <button class="btn btn-info btn-addon pull-right" disabled @click.prevent="addUserBulk()">
                 <i class="fa fa-plus"></i> Bulk Upload 
             </button>
+            -->
+
+            <button class="btn btn-info btn-addon pull-right" @click.prevent="addUser()">
+                <i class="fa fa-plus"></i> Add 
+            </button>
+
       </div>
   
         <!-- Users -->

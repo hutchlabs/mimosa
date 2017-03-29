@@ -40,7 +40,6 @@ Vue.component('gl-questionnaire', {
     methods: {
         boot: function() {
             this.getQuestionnaire();
-		    this.checkBuilding();
         },
         
         buildForm: function() {
