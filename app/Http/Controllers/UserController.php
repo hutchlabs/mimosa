@@ -13,16 +13,20 @@ use App\Gradlead\Alert;
 use App\Gradlead\Badge;
 use App\Gradlead\Bookmark;
 use App\Gradlead\Profile;
+use App\Gradlead\Inbox;
+use App\Gradlead\MailTemplate;
+use App\Gradlead\MailContact;
 
 class UserController extends Controller
 {
+    // TODO: Bulk uploads
     public function __construct()
     {
         $this->middleware('auth');
         $this->middleware('tenant');
     }
     
-    // TODO: Bulk uploads
+    // Messaging
     public function inbox(Request $request, $userId)
     {
         $items = [];
@@ -44,21 +48,23 @@ class UserController extends Controller
         $user = $request->user();
         
         $this->validate($request, 
-                        ['user_id' => 'required|exists:users,id',
-                         'from_id' => 'required|exists:users,id',
+                        ['to' => 'required',
                          'subject' => 'required|max:255',
-                         'response_to' => 'exists:users_inbox,id',
                          'message' => 'required']);
         
-        $i = new Inbox();
-        $i->user_id = $request->user_id;
-        $i->from_id = $request->from_id;
-        $i->response_to = (isset($request->response_to)) ? $request->response_to:0;
-        $i->subject = $request->subject;
-        $i->message = $request->message;
-        $i->seen = 0;
-        $i->modified_by = $user->id;
-        $i->save();   
+        $to = explode(',',$request->to);
+        
+        foreach($to as $t) {
+            $i = new Inbox();
+            $i->user_id = $t;
+            $i->from_id = $user->id;
+            $i->response_to = (isset($request->response_to)) ? $request->response_to:0;
+            $i->subject = $request->subject;
+            $i->message = $request->message;
+            $i->seen = 0;
+            $i->modified_by = $user->id;
+            $i->save();   
+        }
         return $this->ok();
     }
     
@@ -90,6 +96,132 @@ class UserController extends Controller
     }
     
     
+    public function contacts(Request $request, $userId)
+    {
+        $items = [];
+        $user = User::find($userId);
+        if ($user) { $items = $user->inbox; }
+        return $this->json_response($items);
+    }
+    
+    public function msgAddContact(Request $request)
+    {
+        $user = $request->user();
+        
+        $this->validate($request, 
+                        ['name' => 'required|max:255',
+                         'description' => 'required',
+                         'contacts' => 'required']);
+        
+        $i = new MailContact();
+        $i->name = $request->name;
+        $i->description = $request->description;
+        $i->contacts = $request->contacts;
+        $i->modified_by = $user->id;
+        $i->save();
+
+        return $this->json_response($i);
+    }
+    
+    public function msgUpdateContact(Request $request, $contactId)
+    {
+        $user = $request->user();
+
+        $this->validate($request, [
+           'name' => 'required|max:255',
+            'description' => 'required',
+           'contacts' => 'required',
+          ]
+        );
+        
+        $i = MailContact::find($contactId);
+
+        if (is_null($i)) {
+            return $this->json_response(['Cannot find contact to update'], true);    
+        }
+        
+        $i->name = $request->name;
+        $i->contacts = $request->contacts;
+        $i->description = $request->description;
+        $i->modified_by = $user->id;
+        $i->save();
+
+        return $this->json_response($i);
+    }
+    
+    public function msgDeleteContact(Request $request, $contactId)
+    {
+        $i = MailContact::find($contactId);
+        if ($i) { $i->delete(); }
+        return $this->ok();
+    }
+    
+    
+    public function templates(Request $request, $userId)
+    {
+        $items = [];
+        $user = User::find($userId);
+        if ($user) { $items = $user->templates; }
+        return $this->json_response($items);
+    }
+    
+    public function msgAddTemplate(Request $request)
+    {
+        $user = $request->user();
+        
+        $this->validate($request, 
+                        ['organization_id' => 'required|exists:organizations,id',
+                         'name' => 'required|max:255',
+                         'description' => 'required',
+                         'template' => 'required'
+                        ]);
+        
+        $i = new MailTemplate();
+        $i->name = $request->name;
+        $i->description = $request->description;
+        $i->template = $request->template;
+        $i->modified_by = $user->id;
+        $i->save();
+
+        return $this->json_response($i);
+    }
+    
+    public function msgUpdateTemplate(Request $request, $itemId)
+    {
+        $user = $request->user();
+
+        $this->validate($request, [
+           'name' => 'required|max:255',
+           'description' => 'required',
+           'template' => 'max:255',
+          ]
+        );
+        
+        $i = MailTemplate::find($itemId);
+
+        if (is_null($i)) {
+            return $this->json_response(['Cannot find template to update'], true);    
+        }
+        
+        $i->name = $request->name;
+        $i->template = $request->template;
+        $i->description = $request->description;
+        $i->modified_by = $user->id;
+        $i->save();
+
+        return $this->json_response($i);
+    }
+    
+    public function msgDeleteTemplate(Request $request, $itemId)
+    {
+        $i = MailTemplate::find($itemId);
+        if ($i) { $i->delete(); }
+        return $this->ok();
+    }
+    
+    
+    
+    // Alerts
     public function alert(Request $request) 
     {
         $user = $request->user();
@@ -154,6 +286,7 @@ class UserController extends Controller
         }
     }
     
+    // Badges
     public function merit(Request $request) 
     {
         $user = $request->user();
@@ -182,6 +315,7 @@ class UserController extends Controller
         }
     }
     
+    // Bookmarks
     public function bookmark(Request $request) 
     {
         $user = $request->user();

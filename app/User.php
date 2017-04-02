@@ -8,7 +8,7 @@ use HipsterJazzbo\Landlord\BelongsToTenants;
 use Illuminate\Support\Facades\DB;
 
 use App\Gradlead\Profile;
-
+use App\Profile\Organization;
 
 class User extends Authenticatable
 {
@@ -26,7 +26,10 @@ class User extends Authenticatable
         
         if ($this->isStudent()) {
             $appends = array_merge($appends, ['clubs','docs','education','languages','primary','preferences','resumes','skills','work']);
+        } else {
+            $appends = array_merge($appends,['contacts','templates']);
         }
+        
         
         $this->appends = array_merge($this->appends, $appends);
         return parent::getArrayableAppends();
@@ -66,6 +69,62 @@ class User extends Authenticatable
             }
         }
         return $ed;
+    }
+    
+    protected function getContactsAttribute()
+    {
+        $contacts = [];
+        $x = DB::table('mailing_list')->select(DB::raw('*'))->where('organization_id',$this->organization_id)->get();
+        foreach($x as $c) { 
+                            array_push($contacts, 
+                                       ['text'=>$c->name,'value'=>$c->contacts,
+                                        'id'=>$c->id,
+                                        'name'=>$c->name,
+                                        'description'=>$c->description,
+                                        'contacts'=>$c->contacts,
+                                        'type'=>'list'
+                                       ]); 
+                          }
+        
+        if ($this->isGradlead()) {
+            $x = DB::table('users')
+                ->join('organizations', 'users.organization_id','=', 'organizations.id')
+                ->select('users.*','organizations.name as o')
+                ->orderBy('o')->orderBy('users.first')
+                ->get();
+            foreach($x as $u) { 
+                if ($u->id !=$this->id) {  
+                    array_push($contacts, ['type'=>'normal','text'=>$u->o.' > '.trim($u->first.' '.$u->last),'value'=>$u->id]); 
+                }
+            }
+        } else {
+            $x = DB::table('users')
+                ->select(DB::raw("users.id, CONCAT(users.first,' ',users.last) as name"))
+                ->where('organization_id',$this->organization_id)
+                ->orderBy('users.first')
+                ->get();
+            foreach($x as $u) { 
+                if ($u->id !=$this->id) {
+                    array_push($contacts, ['type'=>'normal','text'=>trim($u->name),'value'=>$u->id]); 
+                }
+            }
+        }
+        return $contacts;
+    }
+    
+    protected function getTemplatesAttribute()
+    {
+        $templates = [];
+        $x = DB::table('mailing_templates')->select(DB::raw('*'))->where('organization_id',$this->organization_id)->get();
+        foreach($x as $t) { 
+            array_push($templates, ['text'=>$t->name,
+                                    'id'=>$t->id,
+                                    'name'=>$t->name,
+                                    'description'=>$t->description,
+                                    'template'=>$t->template,
+                                    'value'=>$t->template]); 
+        }
+        return $templates;
     }
     
     protected function getClubsAttribute()
@@ -177,6 +236,16 @@ class User extends Authenticatable
     public function isSuperAdmin() 
     {
         return $this->role->name == 'Super Administrator'; 
+    }
+    
+    public function isGradlead() 
+    {
+        return $this->type == 'gradlead'; 
+    }
+    
+    public function isOrgUser() 
+    {
+        return ! $this->isStudent();
     }
     
     public function isStudent() 

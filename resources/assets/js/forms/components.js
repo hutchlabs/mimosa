@@ -293,7 +293,7 @@ Vue.component('gl-location', {
 });
 
 Vue.component('gl-multiselect', {
-    props: ['display', 'form', 'name', 'items', 'input', 'placetext','multiple'],
+    props: ['display', 'form', 'name', 'items', 'input', 'placetext','multiple','val'],
 
     components: { Multiselect },
 
@@ -314,6 +314,7 @@ Vue.component('gl-multiselect', {
     },
     mounted: function () {
         this.fieldValue = this.getValuesAsArray(this.input);
+        this.valType = (typeof this.val == 'undefined' || this.val=='') ? this.valType : this.val;
     },
     methods: {
         getValuesAsArray: function (value) {
@@ -325,7 +326,11 @@ Vue.component('gl-multiselect', {
 
         getValuesAsString: function(nw) {
             var vals = '';
-            for (var i = 0; i < nw.length; i++) { vals += nw[i].name + ((i < nw.length - 1) ? ',' : ''); }
+            if (this.valType=='name') {
+                for (var i = 0; i < nw.length; i++) { vals += nw[i].name + ((i < nw.length - 1) ? ',' : ''); }
+            } else {
+                for (var i = 0; i < nw.length; i++) { vals += nw[i].id + ((i < nw.length - 1) ? ',' : ''); }
+            }
             return vals;
         },
     },
@@ -333,6 +338,7 @@ Vue.component('gl-multiselect', {
         return {
             fieldValue: '',
             fieldModel: [],
+            valType: 'name',
         }
     },
 });

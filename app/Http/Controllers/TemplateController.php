@@ -19,7 +19,7 @@ class TemplateController extends Controller
         return $this->json_response($items);
     }
     
-    public function defaultTemplatese)
+    public function defaultTemplates()
     {
         $items = Theme::withoutGlobalScope('organization_id')->find($this->getTenant()->id);
         if (!$items) {

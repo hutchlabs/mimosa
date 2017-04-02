@@ -4,6 +4,9 @@ require('./gl-plot');
 
 require('./features');
 require('./inbox');
+require('./inbox-compose');
+require('./inbox-templates');
+require('./inbox-lists');
 require('./authenticate');
 require('./questionnaire');
 require('./achievement');

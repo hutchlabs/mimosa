@@ -11,13 +11,6 @@
                         <span>Navigation</span>
                     </li>
 
-                    <li :class="listClass('#messages')">
-                        <a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">
-                            <b class="badge bg-info pull-right">@{{ newMessageNum }}</b>
-                            <i class="glyphicon glyphicon-envelope icon"></i>
-                            <span class="font-bold">Messages</span>
-                        </a>
-                    </li>
 <!--
 
                     <li class="active">
@@ -53,6 +46,36 @@
                             <span class="font-bold">Job Seekers</span>
                         </a>
                     </li>
+
+
+                    <li class="line dk"></li>
+
+                    <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+                        <span>Messages</span>
+                    </li>
+
+                    <li :class="listClass('#messages')">
+                        <a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">
+                            <b class="badge bg-info pull-right">@{{ newMessageNum }}</b>
+                            <i class="glyphicon glyphicon-envelope icon"></i>
+                            <span class="font-bold">Inbox</span>
+                        </a>
+                    </li>
+
+                    <li v-if="usertype.canEdit" :class="listClass('#maillists')">
+                        <a href="#maillists" aria-controls="maillists" role="tab" data-toggle="tab">
+                            <i class="glyphicon glyphicon-list-alt icon"></i>
+                            <span class="font-bold">Mail Lists</span>
+                        </a>
+                    </li>
+
+                    <li v-if="usertype.canEdit" :class="listClass('#mailtemplates')">
+                        <a href="#mailtemplates" aria-controls="mailtemplates" role="tab" data-toggle="tab">
+                            <i class="glyphicon glyphicon-book icon"></i>
+                            <span class="font-bold">Mail templates</span>
+                        </a>
+                    </li>
+
 
                     <li v-if="usertype.canEdit" class="line dk"></li>
 
@@ -92,6 +115,7 @@
                             <span class="font-bold">Theme</span>
                         </a>
                     </li>
+
 
                     <li v-if="usertype.isAdmin" class="line dk"></li>
 
@@ -242,6 +266,14 @@
         
         <div role="tabpanel" :class="tabClass('#messages')" id="messages">
             @include('dashboards.messages.index')
+        </div>
+
+        <div v-if="usertype.canEdit" role="tabpanel" :class="tabClass('#mailtemplates')" id="mailtemplates">
+            @include('dashboards.messages.templates')
+        </div>
+
+        <div v-if="usertype.canEdit" role="tabpanel" :class="tabClass('#maillists')" id="maillists">
+            @include('dashboards.messages.lists')
         </div>
         
         <div v-if="usertype.canEdit" role="tabpanel" class="tab-pane" id="employers">

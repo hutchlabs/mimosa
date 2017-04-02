@@ -9,6 +9,7 @@ Vue.component('gradlead-inbox-screen', {
         this.setupListeners();
         this.currentMsg = this.defaultMsg;
         this.setList(this.authUser);
+        this.setMessages('o');
     },
 
     data: function () {
@@ -35,14 +36,11 @@ Vue.component('gradlead-inbox-screen', {
 
     watch: {
         'filter': function (name) { 
-            if (name=='Sent') { this.availableMsgs =  this.sent; }
-            else if (name=='Trash') { this.availableMsgs =  this.trash; }
-            else { this.availableMsgs = this.inbox; };
-            this.showList();
+            this.setMessages(name);
         },
     },
 
-    events: {},
+    events: { },
 
     computed: {
         everythingLoaded: function () { return this.authUser != null; },
@@ -50,6 +48,13 @@ Vue.component('gradlead-inbox-screen', {
     },
 
     methods: {
+        setMessages: function(name) {
+            if (name=='Sent') { this.availableMsgs =  this.sent; }
+            else if (name=='Trash') { this.availableMsgs =  this.trash; }
+            else { this.availableMsgs = this.inbox; };
+            this.showList();
+        },
+
         setList: function(user) {
             this.inbox = [];
             this.trash = [];

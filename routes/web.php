@@ -62,21 +62,33 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->get('users',                              'UserController@index');
         $router->get('users/inbox/{id}',                   'UserController@inbox');
         $router->get('users/outbox/{id}',                  'UserController@outbox');
+        $router->get('users/message/contacts/{id}',        'UserController@contacts');
+        $router->get('users/message/templates/{id}',       'UserController@templates');
+
         $router->post('users',                             'UserController@store');
         $router->post('users/alert',                       'UserController@alert');
         $router->post('users/badge',                       'UserController@merit');
         $router->post('users/bookmark',                    'UserController@bookmark');
         $router->post('users/inbox',                       'UserController@msgStore');
+        $router->post('users/message/contacts',            'UserController@msgAddContact');
+        $router->post('users/message/templates',           'UserController@msgAddTemplate');
+
         $router->put('users/{id}',                         'UserController@update');
         $router->put('users/alert/{aid}',                  'UserController@updateAlert');
         $router->put('users/bookmark/{id}',                'UserController@editBookmark');
         $router->put('users/inbox/read/{id}',              'UserController@msgRead');
         $router->put('users/inbox/trash/{id}',             'UserController@msgTrash');
+        $router->put('users/message/contacts/{id}',        'UserController@msgUpdateContact');
+        $router->put('users/message/templates/{id}',       'UserController@msgUpdateTemplate');
+
         $router->delete('users/{id}',                      'UserController@destroy');
         $router->delete('users/alert/{aid}',               'UserController@unalert');
         $router->delete('users/badge/{aid}',               'UserController@demerit');
         $router->delete('users/bookmark/{bid}',            'UserController@unbookmark');
         $router->delete('users/inbox/{mid}',               'UserController@mid');
+        $router->delete('users/message/contacts/{id}',     'UserController@msgDeleteContact');
+        $router->delete('users/message/templates/{id}',    'UserController@msgDeleteTemplate');
+
 
         // Organizations
         $router->get('organizations',                       'OrganizationController@index');
