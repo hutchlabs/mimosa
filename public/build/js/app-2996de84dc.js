@@ -70435,9 +70435,6 @@ Vue.component('gl-multiselect', {
         },
         'fieldModel': function fieldModel(v) {
             this.form[this.name] = this.getValuesAsString(this.fieldModel);
-        },
-        'input': function input(v) {
-            this.fieldValue = this.getValuesAsArray(v);
         }
     },
     mounted: function mounted() {
@@ -72668,7 +72665,7 @@ Vue.component('gradlead-inbox-compose', {
 
     watch: {
         'forms.msgForm.tpl': function formsMsgFormTpl(v) {
-            console.log(v);this.forms.msgForm.message = v;
+            this.forms.msgForm.message = v;
         }
     },
 
@@ -72721,6 +72718,7 @@ Vue.component('gradlead-inbox-compose', {
 
         sendMessage: function sendMessage() {
             var self = this;
+
             Spark.post(self.baseUrl + 'users/inbox', this.forms.msgForm).then(function () {
                 self.showSuccess({ message: 'New message sent' });
                 bus.$emit('updateAuthUser');

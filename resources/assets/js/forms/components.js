@@ -309,8 +309,8 @@ Vue.component('gl-multiselect', {
                 </div>',
     watch: {
         'items': function(v) { this.fieldValue = this.getValuesAsArray(this.input);},
-        'fieldModel': function (v) {  this.form[this.name] = this.getValuesAsString(this.fieldModel); },
-        'input': function(v) { this.fieldValue = this.getValuesAsArray(v); }
+        'fieldModel': function (v) { this.form[this.name] = this.getValuesAsString(this.fieldModel); },
+        //'input': function(v) {  this.fieldValue = this.getValuesAsArray(v); }
     },
     mounted: function () {
         this.fieldValue = this.getValuesAsArray(this.input);

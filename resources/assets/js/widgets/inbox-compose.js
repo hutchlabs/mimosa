@@ -73,7 +73,7 @@ Vue.component('gradlead-inbox-compose', {
     },
 
     watch: { 
-        'forms.msgForm.tpl': function(v) { console.log(v); this.forms.msgForm.message = v; }
+        'forms.msgForm.tpl': function(v) { this.forms.msgForm.message = v; },
     },
 
     events: {},
@@ -123,6 +123,7 @@ Vue.component('gradlead-inbox-compose', {
 
         sendMessage: function () {
             var self = this;
+
             Spark.post(self.baseUrl+'users/inbox', this.forms.msgForm)
                 .then(function () {
                     self.showSuccess({message:'New message sent'});
