@@ -18,7 +18,6 @@ class CreateMailingtemplatesTable extends Migration
             $table->integer('organization_id');
             $table->string('name');
             $table->text('description');
-            $table->text('description');
             $table->longText('template');
             $table->integer('modified_by');
             $table->timestamp('created_at')->useCurrent();
