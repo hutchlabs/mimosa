@@ -9,7 +9,7 @@
       <div class="row">
         <div class="col-md-10 col-md-offset-1 col-sm-12 text-center">
             <h2 class="text-white">
-                {!! $theme->schools_header !!}
+                {!! $theme->partners_header !!}
             </h2>
         </div>
       </div>
@@ -24,9 +24,9 @@
         <div class="col-md-4 col-sm-6 clearfix">
           <div class="feature feature-icon-small">
             <i class="icon icon-document"></i>
-            <h6 class="text-white">{!! $theme->schools_first_title !!}</h6>
+            <h6 class="text-white">{!! $theme->partners_first_title !!}</h6>
             <p class="text-white">
-                {!! $theme->schools_first !!}
+                {!! $theme->partners_first !!}
             </p>
           </div><!--end of feature-->
         </div>
@@ -34,9 +34,9 @@
         <div class="col-md-4 col-sm-6 clearfix">
           <div class="feature feature-icon-small">
             <i class="icon icon-linegraph"></i>
-            <h6 class="text-white">{!! $theme->schools_second_title !!}</h6>
+            <h6 class="text-white">{!! $theme->partners_second_title !!}</h6>
             <p class="text-white">
-                {!! $theme->schools_second !!}
+                {!! $theme->partners_second !!}
             </p>
           </div><!--end of feature-->
         </div>
@@ -44,9 +44,9 @@
         <div class="col-md-4 col-sm-6 clearfix">
           <div class="feature feature-icon-small">
             <i class="icon icon-target"></i>
-            <h6 class="text-white">{!! $theme->schools_third_title !!}</h6>
+            <h6 class="text-white">{!! $theme->partners_third_title !!}</h6>
             <p class="text-white">
-                  {!! $theme->schools_third !!}
+                  {!! $theme->partners_third !!}
             </p>
           </div><!--end of feature-->
         </div>

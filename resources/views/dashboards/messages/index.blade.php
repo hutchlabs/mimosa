@@ -84,39 +84,13 @@
 
             <!-- Message -->
             <div v-show="messageView" class="col bg-white-only">
-				<div class="wrapper bg-light lter b-b">
-				    <div class="btn-group m-r-sm pull-right">
-				      <button v-show="isInbox(currentMsg)" class="btn btn-sm btn-default w-xxs w-auto-xs" tooltip="Delete" @click.prevent="trashMsg(currentMsg)"><i class="fa fa-trash-o"></i></button>
-				    </div>
-
-				    <a @click.prevent="showList()" class="btn btn-sm btn-default w-xxs m-r-sm" tooltip="Back to Inbox"><i class="fa fa-long-arrow-left"></i></a>
-				 </div>
-				<div class="wrapper b-b">
-				    <h2 class="font-thin m-n">@{{currentMsg.subject}}</h2>
-				  </div>
-				  <div class="wrapper b-b">
-				    <img :src="getImage(currentMsg)" class="img-circle thumb-xs m-r-sm">
-				    from @{{currentMsg.from.name}} (@{{currentMsg.from.orgname}})  <span class="text-muted">@{{currentMsg.created_at | fromNow }}</span>
-				  </div>
-				  <div class="wrapper" v-html="currentMsg.message"> </div>
-				  <div class="wrapper" v-show="isInbox(currentMsg)">
-				    <div class="panel b-a">
-				      <div class="panel-heading" v-show="!reply">
-				        <div class="m-b-lg">
-				        Click here to <a href class="text-u-l" @click.prevent="reply=!reply">Reply</a>
-				        </div>
-				      </div>
-				      <div class="ng-hide" v-show="reply">
-				        <div class="panel-heading b-b b-light"> @{{currentMsg.from.email}} </div>
-				        <div class="panel-heading b-b b-light"> Re: @{{currentMsg.subject}} </div>
-				        <div class="wrapper" contenteditable="true" style="min-height:100px"></div>
-				        <div class="panel-footer bg-light lt">
-				          <button class="btn btn-link pull-right" @click.prevent="reply=!reply"><i class="fa fa-trash-o"></i></button>
-				          <button class="btn btn-info w-xs font-bold" @click.prevent="replyMsg(msg)">Send</button>
-				        </div>
-				      </div>
-				    </div>
-				  </div>
+                <gradlead-inbox-message 
+                        :message="currentMsg" 
+                        :inboxmsg="isInbox(currentMsg)"
+                        :avatar="getImage(currentMsg)"
+                        @goback="showList" 
+                        @deletemsg="trashMsg(currentMsg)">
+                </gradlead-inbox-message>
             </div>
             <!-- / Message -->
             

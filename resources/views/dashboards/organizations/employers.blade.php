@@ -35,7 +35,7 @@
                         <th>Name</th>
                         <th v-if="usertype.isSchool && 0">Approved?</th>
                         <th v-if="usertype.isGradlead"># of Users</th>
-                        <th v-if="usertype.isGradlead">School Affiliations</th>
+                        <th v-if="usertype.isGradlead">Partner Affiliations</th>
                         <th>Profile</th>
                         <th></th>
                     </tr>

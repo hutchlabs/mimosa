@@ -54,8 +54,8 @@
  @elseif($link=='employers-profile')
     @include('welcome.employers-profile', array('tid'=>$tid,'theme'=>$theme))
 
- @elseif($link=='schools')
-    @include('welcome.schools', array('tid'=>$tid,'theme'=>$theme))
+ @elseif($link=='partners')
+    @include('welcome.partners', array('tid'=>$tid,'theme'=>$theme))
 
  @elseif($link=='contact')
     @include('welcome.contact', array('tid'=>$tid,'theme'=>$theme))

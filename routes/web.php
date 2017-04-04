@@ -25,7 +25,7 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->get('/employers',  'WelcomeController@employers');
         $router->post('/employers', 'WelcomeController@employers');
 
-        $router->get('/schools',    'WelcomeController@schools');
+        $router->get('/partners',   'WelcomeController@partners');
         $router->get('/contact',    'WelcomeController@contact');
         $router->get('/login',      'WelcomeController@index');     
         $router->get('/u/{id}',     'WelcomeController@publicProfile');

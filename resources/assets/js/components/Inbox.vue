@@ -140,11 +140,6 @@ Vue.component('gradlead-inbox-screen', {
             this.showList();
         },
 
-        replyMsg: function(msg) {
-            this.selecttBin({'name':''});
-            this.showList(); 
-        },
-
         trashMsg: function(msg) {
             msg.seen = 2;
             this.showList(); 

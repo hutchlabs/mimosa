@@ -8,8 +8,8 @@
     <div class="bg-light lter b-b wrapper-md">
       <div class="row">
         <div class="col-sm-6 col-xs-12">
-          <h1 class="m-n font-thin h3 text-black">Schools</h1>
-          <small class="text-muted">Registered Schools</small>
+          <h1 class="m-n font-thin h3 text-black">Partners</h1>
+          <small class="text-muted">Registered Partners</small>
         </div>
       </div>
     </div>
@@ -18,7 +18,7 @@
     <div class="col wrapper-md">
       <div class="clearfix m-b">
             <button class="btn btn-info btn-addon" @click.prevent="addOrganization('school')">
-                <i class="fa fa-plus"></i> Add School
+                <i class="fa fa-plus"></i> Add Partner
             </button>
       </div>
   
@@ -66,7 +66,7 @@
             </div>
         
             <div v-else class="panel-body">
-                No schools found.
+                No Partners found.
             </div>
 
         </div>
@@ -80,8 +80,8 @@
   </div>
   <!-- / main -->
           
-        @include('dashboards.organizations.schools-add') @include('dashboards.organizations.schools-edit')
-                @include('dashboards.organizations.schools-profile-view')
+        @include('dashboards.organizations.partners-add') @include('dashboards.organizations.partners-edit')
+        @include('dashboards.organizations.partners-profile-view')
 </div>
 
 </gradlead-orgs-screen>

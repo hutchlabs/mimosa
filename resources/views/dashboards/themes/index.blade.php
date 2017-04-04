@@ -18,7 +18,7 @@
                             </li>
                             <li role="presentation">
                                 <a href="#themesch" aria-controls="themesch" role="tab" data-toggle="tab">
-                                   <b>School Page</b>
+                                   <b>Partner Page</b>
                                 </a>
                             </li>
                             <li role="presentation">
@@ -107,7 +107,7 @@
                                 </div>
                             </div>
 
-                            <!-- Schools page -->
+                            <!-- Partners page -->
                             <div role="tabpanel" id="themesch" class="tab-pane">
                                 <div class="row">
                                     <div class="col-sm-12">
@@ -115,7 +115,7 @@
                                             <div class="panel-heading">Hero Banner</div>
                                             <div class="panel-body" style="padding: 15px 30px 30px 30px;">
 
-                                                <spark-text2 :display="'Hero Text*'" :form="forms.updateTheme" :name="'schools_header'" :input.sync="forms.updateTheme.schools_header">
+                                                <spark-text2 :display="'Hero Text*'" :form="forms.updateTheme" :name="'partners_header'" :input.sync="forms.updateTheme.partners_header">
                                                 </spark-text2>
 
                                             </div>
@@ -128,10 +128,10 @@
                                         <div class="panel panel-default">
                                             <div class="panel-heading">1st Block</div>
                                             <div class="panel-body" style="padding: 15px 30px 30px 30px;">
-                                                <spark-text2 :display="'Title*'" :form="forms.updateTheme" :name="'schools_first_title'" :input.sync="forms.updateTheme.schools_first_title">
+                                                <spark-text2 :display="'Title*'" :form="forms.updateTheme" :name="'partners_first_title'" :input.sync="forms.updateTheme.partners_first_title">
                                                 </spark-text2>
 
-                                                <spark-textarea :display="'Text*'" :form="forms.updateTheme" :name="'schools_first'" :input.sync="forms.updateTheme.schools_first">
+                                                <spark-textarea :display="'Text*'" :form="forms.updateTheme" :name="'partners_first'" :input.sync="forms.updateTheme.partners_first">
                                                 </spark-textarea>
                                             </div>
                                         </div>
@@ -141,10 +141,10 @@
                                         <div class="panel panel-default">
                                             <div class="panel-heading">2nd Block</div>
                                             <div class="panel-body" style="padding: 15px 30px 30px 30px;">
-                                                <spark-text2 :display="'Title*'" :form="forms.updateTheme" :name="'schools_second_title'" :input.sync="forms.updateTheme.schools_second_title">
+                                                <spark-text2 :display="'Title*'" :form="forms.updateTheme" :name="'partners_second_title'" :input.sync="forms.updateTheme.partners_second_title">
                                                 </spark-text2>
 
-                                                <spark-textarea :display="'Text*'" :form="forms.updateTheme" :name="'schools_second'" :input.sync="forms.updateTheme.schools_second">
+                                                <spark-textarea :display="'Text*'" :form="forms.updateTheme" :name="'partners_second'" :input.sync="forms.updateTheme.partners_second">
                                                 </spark-textarea>
                                             </div>
                                         </div>
@@ -154,10 +154,10 @@
                                         <div class="panel panel-default">
                                             <div class="panel-heading">3rd Block</div>
                                             <div class="panel-body" style="padding: 15px 30px 30px 30px;">
-                                                <spark-text2 :display="'Title*'" :form="forms.updateTheme" :name="'schools_third_title'" :input.sync="forms.updateTheme.schools_third_title">
+                                                <spark-text2 :display="'Title*'" :form="forms.updateTheme" :name="'partners_third_title'" :input.sync="forms.updateTheme.partners_third_title">
                                                 </spark-text2>
 
-                                                <spark-textarea :display="'Text*'" :form="forms.updateTheme" :name="'schools_third'" :input.sync="forms.updateTheme.schools_third">
+                                                <spark-textarea :display="'Text*'" :form="forms.updateTheme" :name="'partners_third'" :input.sync="forms.updateTheme.partners_third">
                                                 </spark-textarea>
                                             </div>
                                         </div>

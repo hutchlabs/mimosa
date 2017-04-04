@@ -7,6 +7,7 @@ require('./inbox');
 require('./inbox-compose');
 require('./inbox-templates');
 require('./inbox-lists');
+require('./inbox-message');
 require('./authenticate');
 require('./questionnaire');
 require('./achievement');

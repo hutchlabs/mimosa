@@ -90,9 +90,9 @@
                         </a>
                     </li>
                     <li v-if="usertype.canEdit">
-                        <a href="#schools" aria-controls="schools" role="tab" data-toggle="tab">
+                        <a href="#partners" aria-controls="partners" role="tab" data-toggle="tab">
                             <i class="fa fa-institution icon text-warning-lter"></i>
-                            <span class="font-bold">Schools</span>
+                            <span class="font-bold">Partners</span>
                         </a>
                     </li>
 
@@ -280,8 +280,8 @@
             @include('dashboards.organizations.employers')
         </div>
 
-        <div v-if="usertype.canEdit" role="tabpanel" class="tab-pane" id="schools">
-            @include('dashboards.organizations.schools')
+        <div v-if="usertype.canEdit" role="tabpanel" class="tab-pane" id="partners">
+            @include('dashboards.organizations.partners')
         </div>
 
         <div v-if="usertype.canEdit && permissions.canDoEvents" role="tabpanel" class="tab-pane" id="events">

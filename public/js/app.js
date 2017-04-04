@@ -66259,11 +66259,6 @@ Vue.component('gradlead-inbox-screen', {
             this.showList();
         },
 
-        replyMsg: function(msg) {
-            this.selecttBin({'name':''});
-            this.showList(); 
-        },
-
         trashMsg: function(msg) {
             msg.seen = 2;
             this.showList(); 
@@ -72110,6 +72105,7 @@ require('./inbox');
 require('./inbox-compose');
 require('./inbox-templates');
 require('./inbox-lists');
+require('./inbox-message');
 require('./authenticate');
 require('./questionnaire');
 require('./achievement');
@@ -72130,7 +72126,7 @@ require('./profile-student');
 require('./gl-profile-org');
 require('./gl-profile-seeker');
 
-},{"./achievement":102,"./alert":103,"./authenticate":104,"./bookmark":105,"./errors":107,"./features":108,"./gl-plot":109,"./gl-profile-org":110,"./gl-profile-seeker":111,"./gl-sparkline":112,"./inbox":116,"./inbox-compose":113,"./inbox-lists":114,"./inbox-templates":115,"./profile-account":117,"./profile-club":118,"./profile-education":120,"./profile-education-primary":119,"./profile-languages":121,"./profile-org":122,"./profile-preferences":123,"./profile-skills":124,"./profile-student":125,"./profile-summary":126,"./profile-user":127,"./profile-work":128,"./questionnaire":129}],107:[function(require,module,exports){
+},{"./achievement":102,"./alert":103,"./authenticate":104,"./bookmark":105,"./errors":107,"./features":108,"./gl-plot":109,"./gl-profile-org":110,"./gl-profile-seeker":111,"./gl-sparkline":112,"./inbox":117,"./inbox-compose":113,"./inbox-lists":114,"./inbox-message":115,"./inbox-templates":116,"./profile-account":118,"./profile-club":119,"./profile-education":121,"./profile-education-primary":120,"./profile-languages":122,"./profile-org":123,"./profile-preferences":124,"./profile-skills":125,"./profile-student":126,"./profile-summary":127,"./profile-user":128,"./profile-work":129,"./questionnaire":130}],107:[function(require,module,exports){
 'use strict';
 
 /*
@@ -73023,6 +73019,135 @@ Vue.component('gradlead-inbox-lists', {
 },{}],115:[function(require,module,exports){
 'use strict';
 
+var _moment = require('moment');
+
+Vue.component('gradlead-inbox-message', {
+    props: ['message', 'inboxmsg', 'avatar'],
+
+    template: '<div>\
+                <div class="wrapper bg-light lter b-b">\
+                    <div class="btn-group m-r-sm pull-right">\
+                      <button v-show="inboxmsg" class="btn btn-sm btn-default w-xxs w-auto-xs" tooltip="Delete" @click.prevent="removeMessage"><i class="fa fa-trash-o"></i></button>\
+                    </div>\
+                    <a @click.prevent="goback" class="btn btn-sm btn-default w-xxs m-r-sm" tooltip="Back to Inbox"><i class="fa fa-long-arrow-left"></i></a>\
+                 </div>\
+                <div class="wrapper b-b">\
+                    <h2 class="font-thin m-n">{{message.subject}}</h2>\
+                  </div>\
+                  <div class="wrapper b-b">\
+                    <img :src="avatar" class="img-circle thumb-xs m-r-sm">\
+                    from {{message.from.name}} ({{message.from.orgname}})  <span class="text-muted">{{message.created_at | fromNow }}</span>\
+                  </div>\
+                  <div class="wrapper" v-html="message.message"> </div>\
+                  <div class="wrapper" v-show="inboxmsg">\
+                    <div class="panel b-a">\
+                      <div class="panel-heading" v-show="!reply">\
+                        <div class="m-b-lg">\
+                            Click here to <a href class="text-u-l" @click.prevent="reply=!reply">Reply</a>\
+                        </div>\
+                      </div>\
+                      <div class="ng-hide" v-show="reply">\
+                        <div class="panel-heading b-b b-light"> {{message.from.email}} </div>\
+                        <div class="panel-heading b-b b-light"> Re: {{message.subject}} </div>\
+                        <div class="wrapper" contenteditable="true" style="min-height:100px"></div>\
+                        <gl-error-alert :form="forms.msgForm"></gl-error-alert>\
+                        <form class="form-horizontal m-t-lg" role="form">\
+                            <gl-textarea :required="true" :id="msgid()" :display="\'Message:\'" :form="forms.msgForm" :name="\'message\'" :placeholder="\'Your message\'" :input.sync="forms.msgForm.message"></gl-textarea>\
+                            <div class="panel-footer bg-light lt">\
+                                <button class="btn btn-link pull-right" @click.prevent="reply=!reply"><i class="fa fa-trash-o"></ i></button>\
+                                <button class="btn btn-info w-xs font-bold" @click.prevent="sendMessage()">Send</button>\
+                            </div>\
+                        </form>\
+                      </div>\
+                    </div>\
+                  </div>\
+			</div>',
+
+    notifications: {
+        showError: {
+            title: 'Reply Email Error',
+            message: 'Failed to reach server',
+            type: 'error'
+        },
+        showSuccess: {
+            title: 'Reply success',
+            message: 'Successfully sent message',
+            type: 'success'
+        }
+    },
+
+    mounted: function mounted() {},
+
+    computed: {},
+
+    watch: {},
+
+    events: {},
+
+    data: function data() {
+        return {
+            baseUrl: '/',
+            reply: false,
+
+            forms: {
+                msgForm: new SparkForm({
+                    from: '',
+                    to: '',
+                    subject: '',
+                    message: '',
+                    tpl: ''
+                })
+            }
+        };
+    },
+
+    methods: {
+        msgid: function msgid() {
+            return 'reply-container-' + this.message.id;
+        },
+
+        goback: function goback() {
+            this.forms.msgForm.to = '';
+            this.forms.msgForm.subject = '';
+            this.forms.msgForm.message = '';
+            this.forms.msgForm.errors.forget();
+            this.$emit('goback');
+        },
+
+        removeMessage: function removeMessage() {
+            this.$emit('deletemsg');
+        },
+
+        sendMessage: function sendMessage() {
+            var self = this;
+
+            Spark.post(self.baseUrl + 'users/inbox', this.forms.msgForm).then(function () {
+                self.showSuccess({ message: 'New message sent' });
+                bus.$emit('updateAuthUser');
+                self.goback();
+            }, function (resp) {
+                self.forms.msgForm.busy = false;
+                self.showError({ 'message': resp.error[0] });
+            });
+        },
+
+        removeFromList: function removeFromList(list, item) {
+            return _.reject(list, function (i) {
+                return i.id === item.id;
+            });
+        }
+    },
+
+    filters: {
+        fromNow: function fromNow(v) {
+            return _moment(v).fromNow();
+        }
+    }
+});
+
+},{"moment":64}],116:[function(require,module,exports){
+'use strict';
+
 Vue.component('gradlead-inbox-template', {
     props: ['user'],
 
@@ -73271,7 +73396,7 @@ Vue.component('gradlead-inbox-template', {
     }
 });
 
-},{}],116:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 'use strict';
 
 var _moment = require('moment');
@@ -73381,7 +73506,7 @@ Vue.component('gradlead-inbox-dropdown', {
 
 });
 
-},{"moment":64}],117:[function(require,module,exports){
+},{"moment":64}],118:[function(require,module,exports){
 'use strict';
 
 Vue.component('gl-profile-account', {
@@ -73532,7 +73657,7 @@ Vue.component('gl-profile-account', {
     }
 });
 
-},{}],118:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 'use strict';
 
 Vue.component('gradlead-profile-clubs', {
@@ -73773,7 +73898,7 @@ Vue.component('gradlead-profile-clubs', {
     }
 });
 
-},{}],119:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-profile-education-primary', {
@@ -74077,7 +74202,7 @@ Vue.component('spark-profile-education-primary', {
     }
 });
 
-},{}],120:[function(require,module,exports){
+},{}],121:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-profile-education', {
@@ -74476,7 +74601,7 @@ Vue.component('spark-profile-education', {
     }
 });
 
-},{}],121:[function(require,module,exports){
+},{}],122:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-profile-languages', {
@@ -74710,7 +74835,7 @@ Vue.component('spark-profile-languages', {
     filters: {}
 });
 
-},{}],122:[function(require,module,exports){
+},{}],123:[function(require,module,exports){
 'use strict';
 
 Vue.component('gl-profile-org', {
@@ -74936,7 +75061,7 @@ Vue.component('gl-profile-org', {
     filters: {}
 });
 
-},{}],123:[function(require,module,exports){
+},{}],124:[function(require,module,exports){
 'use strict';
 
 //TODO: move to multiselect component
@@ -75151,7 +75276,7 @@ Vue.component('spark-profile-preferences', {
     filters: {}
 });
 
-},{}],124:[function(require,module,exports){
+},{}],125:[function(require,module,exports){
 'use strict';
 
 //TODO: move to  multiselect comppnent
@@ -75288,7 +75413,7 @@ Vue.component('spark-profile-skills', {
     filters: {}
 });
 
-},{}],125:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 'use strict';
 
 Vue.component('gl-student-profile', {
@@ -75336,7 +75461,7 @@ Vue.component('gl-student-profile', {
     methods: {}
 });
 
-},{}],126:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 'use strict';
 
 Vue.component('spark-profile-summary', {
@@ -75411,7 +75536,7 @@ Vue.component('spark-profile-summary', {
     }
 });
 
-},{}],127:[function(require,module,exports){
+},{}],128:[function(require,module,exports){
 'use strict';
 
 Vue.component('gl-profile-user', {
@@ -75588,7 +75713,7 @@ Vue.component('gl-profile-user', {
     }
 });
 
-},{}],128:[function(require,module,exports){
+},{}],129:[function(require,module,exports){
 'use strict';
 
 var _moment = require('moment');
@@ -75987,7 +76112,7 @@ Vue.component('spark-profile-work', {
 
 });
 
-},{"moment":64}],129:[function(require,module,exports){
+},{"moment":64}],130:[function(require,module,exports){
 'use strict';
 
 Vue.component('gl-questionnaire', {

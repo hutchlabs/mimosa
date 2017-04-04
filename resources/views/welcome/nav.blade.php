@@ -22,7 +22,7 @@
                         Employers
                     </a>
                 </li>
-                <li><a style="color: {{ ($link=='schools')? '#339966': ''}}" href="/schools">Schools</a></li>
+                <li><a style="color: {{ ($link=='partners')? '#339966': ''}}" href="/partners">Partners</a></li>
                 <li><a style="color: {{ ($link=='contact')? '#339966': ''}}" href="/contact">Contact</a></li>
             </ul>
 

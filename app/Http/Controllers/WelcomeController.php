@@ -69,10 +69,10 @@ class WelcomeController extends Controller
         return view('welcome.index', array('name'=>$tenant->name, 'tid'=>$tenant->id, 'theme'=>$this->theme, 'link'=>'employers','orgs'=>$orgs ,'q'=>$q,'loc'=>$loc));
     }
         
-    public function schools()
+    public function partners()
     {
         $tenant = $this->getTenant();
-        return view('welcome.index', array('name'=>$tenant->name, 'tid'=>$tenant->id, 'theme'=>$this->theme, 'link'=>'schools'));
+        return view('welcome.index', array('name'=>$tenant->name, 'tid'=>$tenant->id, 'theme'=>$this->theme, 'link'=>'partners'));
     }
     
     public function contact()
