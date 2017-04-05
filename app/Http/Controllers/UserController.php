@@ -52,15 +52,13 @@ class UserController extends Controller
         //return $this->json_response($files);
         
         if (sizeof($files)) {
-            $zipname = 'resumebook.zip';
-            $zippath = 'files/'.$zipname;
-
-            Storage::put($zippath, '');
-
+            $zipname = 'resumebook_'.uniqid().'.zip';
+            $zippath = tempnam('./storage','glzip');
+            
             $zip = new ZipArchive;
-            $tmp_file = tempnam('.','');
-            if ($zip->open($tmp_file, ZipArchive::CREATE)!==TRUE) {
-                return $this->error('Cannot open zip file at '.$zippath);
+            $code = $zip->open($zippath, ZipArchive::CREATE);
+            if ($code!==TRUE) {
+                return $this->error('Error '.$zippath.'  Code: '.$this->errorCode($code).' Exists: '. $e);
             } 
             
             $count=1;
@@ -69,33 +67,57 @@ class UserController extends Controller
                 $zip->addFromString('test.txt'.$count, "no ");
             }
             $v = $zip->close();
-            
+                
             /*
+            $e = (file_exists($zippath)?'yes':'no');
+            echo "$zippath";
             $x = 'nofiles';
-            if ($zip->open($tmp_file)===TRUE) {
+            if ($zip->open($zippath)===TRUE) {
                 $x='';
                 for ($i = 0; $i < $zip->numFiles; $i++) {
-                    $x .= "\nFilename: " . $zip->getNameIndex($i) . '<br />';
+                    $x .= "\nFilename: " . $zip->getNameIndex($i);
                 }
-                            $zip->close();
+                $zip->close();
             }
+            return $this->json_response(['files'=>$x,'save'=>$v]);
             */
             
-            //return $this->json_response(['files'=>$x,'save'=>$v]);
-            $size = filesize($tmp_file);
+            $newfile = $_SERVER["DOCUMENT_ROOT"].'/storage/download.zip';
+            $e = (file_exists($zippath)?'yes':'no');
+            $f = (file_exists($newfile)?'yes':'no');
+            
+            rename($zippath, $newfile);
 
-            header("Content-Disposition: attachment; filename='resumebook.zip'");
+            $zippath = $newfile;
+            
+            $size = filesize($zippath);
+            header("Content-Disposition: attachment; filename='$zippath'");
             header('Content-Type: application/zip');
             header('Content-Length: ' . $size);
-            //header("Pragma: no-cache"); 
-            //header("Expires: 0");
-            readfile($tmp_file);
+            header("Pragma: no-cache"); 
+            header("Expires: 0");
+            readfile($zippath);
             exit;
         } else {
             return $this->error('No resumes found.');
         }
     }
     
+    private function errorCode($num) {
+        $msg = $num;
+        switch($num) {
+            case ZipArchive::ER_EXISTS: $msg = "File already exists."; break;
+            case ZipArchive::ER_INCONS: $msg = "Zip archive inconsistent."; break;
+			case ZipArchive::ER_INVAL: $msg = "Invalid argument."; break;
+			case ZipArchive::ER_MEMORY: $msg = "Malloc failure."; break;
+			case ZipArchive::ER_NOENT: $msg = "No such file."; break;
+			case ZipArchive::ER_NOZIP: $msg = "Not a zip archive."; break;
+			case ZipArchive::ER_OPEN: $msg = "Can't open file."; break;
+			case ZipArchive::ER_READ: $msg = "Read error."; break;
+			case ZipArchive::ER_SEEK: $msg = "Seek error."; break;
+        }
+        return $msg;
+    }
     
     // Messaging
     public function inbox(Request $request, $userId)
