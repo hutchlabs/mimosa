@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 use App\Events\UserCreated;
 
@@ -18,6 +19,8 @@ use App\Gradlead\Profile;
 use App\Gradlead\Inbox;
 use App\Gradlead\MailTemplate;
 use App\Gradlead\MailContact;
+use ZipArchive;
+
 
 class UserController extends Controller
 {
@@ -27,6 +30,72 @@ class UserController extends Controller
         $this->middleware('auth');
         $this->middleware('tenant');
     }
+    
+    // Resume book
+    public function getResumeBook(Request $request) 
+    {
+        $user = $request->user();
+        
+        $this->validate($request, ['users' => 'required']);
+        
+        $files = [];
+        foreach($request->users as $u) {
+            foreach($u['resumes'] as $r) {
+                if (count($u['resumes'])==1 || $r['default']==1) {
+                    if (Storage::exists($r['file_path'])) {
+                        array_push($files, ['name'=>$u['last'].'_'.$u['first'].'_'.$u['uuid'].'.pdf',
+                                        'file'=>$r['file_path']]);
+                    }
+                }
+            }
+        }
+        //return $this->json_response($files);
+        
+        if (sizeof($files)) {
+            $zipname = 'resumebook.zip';
+            $zippath = 'files/'.$zipname;
+
+            Storage::put($zippath, '');
+
+            $zip = new ZipArchive;
+            $tmp_file = tempnam('.','');
+            if ($zip->open($tmp_file, ZipArchive::CREATE)!==TRUE) {
+                return $this->error('Cannot open zip file at '.$zippath);
+            } 
+            
+            $count=1;
+            foreach($files as $f) {  
+                //$zip->addFile(Storage::url($f['file']), $f['name']); 
+                $zip->addFromString('test.txt'.$count, "no ");
+            }
+            $v = $zip->close();
+            
+            /*
+            $x = 'nofiles';
+            if ($zip->open($tmp_file)===TRUE) {
+                $x='';
+                for ($i = 0; $i < $zip->numFiles; $i++) {
+                    $x .= "\nFilename: " . $zip->getNameIndex($i) . '<br />';
+                }
+                            $zip->close();
+            }
+            */
+            
+            //return $this->json_response(['files'=>$x,'save'=>$v]);
+            $size = filesize($tmp_file);
+
+            header("Content-Disposition: attachment; filename='resumebook.zip'");
+            header('Content-Type: application/zip');
+            header('Content-Length: ' . $size);
+            //header("Pragma: no-cache"); 
+            //header("Expires: 0");
+            readfile($tmp_file);
+            exit;
+        } else {
+            return $this->error('No resumes found.');
+        }
+    }
+    
     
     // Messaging
     public function inbox(Request $request, $userId)

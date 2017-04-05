@@ -2,7 +2,7 @@ Vue.component('gradlead-seekers-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
 
-    mounted: function () {
+    mounted: function() {
         this.profilingUser = this.authUser;
         this.setupListeners();
     },
@@ -26,6 +26,10 @@ Vue.component('gradlead-seekers-screen', {
             roleOptions: [],
             orgsOptions: [],
             badgeOptions: [],
+
+            masterChbx: false,
+            checkedboxes: [],
+            selAction: '',
 
             allTypeOptions: [
                 {
@@ -67,11 +71,14 @@ Vue.component('gradlead-seekers-screen', {
                          ],
 
             forms: {
+                resumeBook: new SparkForm({
+                    users: '',
+                }),
+
                 addUser: new SparkForm({
                     first: '',
                     last: '',
                     email: '',
-                    password: '',
                     type: '',
                     organization_id: '',
                     role_id: '',
@@ -91,6 +98,32 @@ Vue.component('gradlead-seekers-screen', {
         };
     },
 
+    watch: {
+        'masterChbx': function(v) {
+             var self = this;
+             this.checkedboxes = [];
+             if (v) {
+                $.each(this.filteredUsers(), function(i,u) {
+                     self.checkedboxes.push(u);
+                });
+             }
+        },
+        'selAction': function(v) {
+            if (v != "") {
+                if (this.checkedboxes.length>0) {
+                    if (v=='email') { this.sendEmail(); } 
+                    if (v=='resumebook') { 
+                        this.forms.resumeBook.users = this.checkedboxes;
+                        this.downloadResumeBook(); 
+                    } 
+                } else {
+                    alert('Please select users');
+                }
+                this.selAction="";
+            }
+        },
+    },
+
     events: { },
 
     computed: {
@@ -107,7 +140,6 @@ Vue.component('gradlead-seekers-screen', {
             this.forms.addUser.first = '';
             this.forms.addUser.last = '';
             this.forms.addUser.email = '';
-            this.forms.addUser.password = '';
             this.forms.addUser.role_id = 4;
             this.forms.addUser.type = '';
             this.forms.addUser.organization_id = (this.usertype.isGradlead) ? '' : this.authUser.organization_id;
@@ -178,7 +210,18 @@ Vue.component('gradlead-seekers-screen', {
             }
         },
 
+        sendEmail: function() { $('#modal-email-seeker').modal('show'); },
+        closeEmail: function() { $('#modal-email-seeker').modal('hide'); },
+
         // Ajax calls
+        downloadResumeBook: function() {
+            var self = this;
+            Spark.post(self.baseUrl + 'users/resumebook', this.forms.resumeBook)
+                .then(function () { }, function (resp) { 
+                    alert('Cannot download resume book: '+resp);
+                });
+        },
+
         addNewUser: function () {
             var self = this;
             Spark.post(self.baseUrl + 'users', this.forms.addUser)
@@ -222,8 +265,12 @@ Vue.component('gradlead-seekers-screen', {
                 if (users.length) {
                     self.users = [];
                     $.each(users, function(idx, u) {
-                        if ((u.type=='student' || u.type=='graduate') && u.profile.visible==1) {
-                            self.users.push(u);
+                        if (u.type=='student' || u.type=='graduate') {
+                            if (self.usertype.isCompany) {
+                                if(u.profile.visible==1) { self.users.push(u); }
+                            } else {
+                                self.users.push(u);
+                            }
                         }
                     });
                 }

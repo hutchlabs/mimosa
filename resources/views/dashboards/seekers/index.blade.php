@@ -45,8 +45,17 @@
             <table id="userstable" class="table table-striped m-b-none">
                 <thead>
                     <tr>
+                        <td style="width: 140px">
+							<input type="checkbox" v-model="masterChbx" style="display:inline; margin-left:9px"/>
+                            <select v-model="selAction" style="display: inline; width:90px;">
+                                <option disabled value="">Select One</option>
+                                <option value="resumebook">Download Resume book</option>
+                                <option value="email">Email</option>
+                            </select>
+						</td>
                         <th>Name</th>
                         <th>Email</th>
+                        <th>Num Resumes</th>
                         <th>Badges</th>
                         <th>Profile</th>
                         <th>Type</th>
@@ -55,9 +64,12 @@
                 </thead>
                 <tbody>
                     <tr v-for="u in filteredUsers()">
-
+                        <td class="spark-table-pad">
+                             <input type="checkbox" :value="u" v-model="checkedboxes" class="form-control" />
+                        </td>
                         <td class="spark-table-pad"> @{{ u.name }} </td>
                         <td class="spark-table-pad"> @{{ u.email }} </td>
+                        <td class="spark-table-pad"> @{{ u.resumes.length }} </td>
                         <td class="spark-table-pad"> <gl-achievement-display :user="u" :tiny="true"></gl-achievement-display></td>
                         <td class="spark-table-pad">
                             <button class="btn btn-default btn-addon btn-sm btn-circle" @click.prevent="viewProfile(u)"><i class="fa fa-user"></i> Profile</button>
@@ -66,7 +78,7 @@
                         <td class="spark-table-pad"> @{{ u.type | ucwords }} </td>
 
                         <td class="spark-table-pad">
-                            <button class="btn btn-info btn-addon btn-sm btn-circle" @click.prevent="manageBadges(u)">
+                            <button v-if="usertype.isGradlead" class="btn btn-info btn-addon btn-sm btn-circle" @click.prevent="manageBadges(u)">
                                 <i class="fa fa-certificate"></i>Manage  Badge</button>
 
                             <button class="btn btn-warning btn-addon btn-sm btn-circle" @click.prevent="editUser(u)">
@@ -94,6 +106,7 @@
         
         @include('dashboards.seekers.add') @include('dashboards.seekers.edit') 
         @include('dashboards.seekers.badges') @include('dashboards.seekers.profile') 
+        @include('dashboards.seekers.email')
       </div>
         <!-- / Users -->
 

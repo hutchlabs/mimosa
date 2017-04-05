@@ -69258,7 +69258,7 @@ Vue.component('gradlead-seekers-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
 
-    mounted: function () {
+    mounted: function() {
         this.profilingUser = this.authUser;
         this.setupListeners();
     },
@@ -69282,6 +69282,10 @@ Vue.component('gradlead-seekers-screen', {
             roleOptions: [],
             orgsOptions: [],
             badgeOptions: [],
+
+            masterChbx: false,
+            checkedboxes: [],
+            selAction: '',
 
             allTypeOptions: [
                 {
@@ -69323,11 +69327,14 @@ Vue.component('gradlead-seekers-screen', {
                          ],
 
             forms: {
+                resumeBook: new SparkForm({
+                    users: '',
+                }),
+
                 addUser: new SparkForm({
                     first: '',
                     last: '',
                     email: '',
-                    password: '',
                     type: '',
                     organization_id: '',
                     role_id: '',
@@ -69347,6 +69354,32 @@ Vue.component('gradlead-seekers-screen', {
         };
     },
 
+    watch: {
+        'masterChbx': function(v) {
+             var self = this;
+             this.checkedboxes = [];
+             if (v) {
+                $.each(this.filteredUsers(), function(i,u) {
+                     self.checkedboxes.push(u);
+                });
+             }
+        },
+        'selAction': function(v) {
+            if (v != "") {
+                if (this.checkedboxes.length>0) {
+                    if (v=='email') { this.sendEmail(); } 
+                    if (v=='resumebook') { 
+                        this.forms.resumeBook.users = this.checkedboxes;
+                        this.downloadResumeBook(); 
+                    } 
+                } else {
+                    alert('Please select users');
+                }
+                this.selAction="";
+            }
+        },
+    },
+
     events: { },
 
     computed: {
@@ -69363,7 +69396,6 @@ Vue.component('gradlead-seekers-screen', {
             this.forms.addUser.first = '';
             this.forms.addUser.last = '';
             this.forms.addUser.email = '';
-            this.forms.addUser.password = '';
             this.forms.addUser.role_id = 4;
             this.forms.addUser.type = '';
             this.forms.addUser.organization_id = (this.usertype.isGradlead) ? '' : this.authUser.organization_id;
@@ -69434,7 +69466,18 @@ Vue.component('gradlead-seekers-screen', {
             }
         },
 
+        sendEmail: function() { $('#modal-email-seeker').modal('show'); },
+        closeEmail: function() { $('#modal-email-seeker').modal('hide'); },
+
         // Ajax calls
+        downloadResumeBook: function() {
+            var self = this;
+            Spark.post(self.baseUrl + 'users/resumebook', this.forms.resumeBook)
+                .then(function () { }, function (resp) { 
+                    alert('Cannot download resume book: '+resp);
+                });
+        },
+
         addNewUser: function () {
             var self = this;
             Spark.post(self.baseUrl + 'users', this.forms.addUser)
@@ -69478,8 +69521,12 @@ Vue.component('gradlead-seekers-screen', {
                 if (users.length) {
                     self.users = [];
                     $.each(users, function(idx, u) {
-                        if ((u.type=='student' || u.type=='graduate') && u.profile.visible==1) {
-                            self.users.push(u);
+                        if (u.type=='student' || u.type=='graduate') {
+                            if (self.usertype.isCompany) {
+                                if(u.profile.visible==1) { self.users.push(u); }
+                            } else {
+                                self.users.push(u);
+                            }
                         }
                     });
                 }
@@ -70464,6 +70511,11 @@ Vue.component('gl-multiselect', {
         },
         'fieldModel': function fieldModel(v) {
             this.form[this.name] = this.getValuesAsString(this.fieldModel);
+        },
+        'input': function input(v) {
+            if (v != null) {
+                this.fieldValue = this.getValuesAsArray(v);
+            }
         }
     },
     mounted: function mounted() {
@@ -70475,7 +70527,7 @@ Vue.component('gl-multiselect', {
             var self = this;
             var vals = typeof value == 'undefined' || value == null || value == '' ? [] : value.split(',');
             $.each(vals, function (i, v) {
-                vals[i] = { id: v, name: v };
+                vals[i] = { id: v, name: self.getValueLabel(v) };
             });
             return vals;
         },
@@ -70492,6 +70544,15 @@ Vue.component('gl-multiselect', {
                 }
             }
             return vals;
+        },
+        getValueLabel: function getValueLabel(key) {
+            var name = key;
+            $.each(this.items, function (i, x) {
+                if (x.id == key) {
+                    name = x.name;
+                }
+            });
+            return name;
         }
     },
     data: function data() {
@@ -72656,11 +72717,11 @@ Vue.component('gradlead-sparkline-bar', {
 var _moment = require('moment');
 
 Vue.component('gradlead-inbox-compose', {
-    props: ['user'],
+    props: ['to', 'user', 'showheader'],
 
     template: '<div>\
     			<!-- header -->\
-                  <div class="wrapper bg-light lter b-b">\
+                  <div v-show="hs" class="wrapper bg-light lter b-b">\
                     <div class="btn-group m-r-sm">\
                       <a @click.prevent="goback()" class="btn btn-sm btn-default w-xxs w-auto-xs"\
                         tooltip="go back"><i class="fa fa-long-arrow-left"></i></a>\
@@ -72671,7 +72732,7 @@ Vue.component('gradlead-inbox-compose', {
                     <gl-error-alert :form="forms.msgForm"></gl-error-alert>\
                     <form class="form-horizontal m-t-lg" role="form">\
                         <div class="col-lg-8">\
-                            <gl-multiselect :display="\'To:\'" :form="forms.msgForm" :name="\'to\'" :input="forms.msgForm.to" :multiple="true" :items="contacts" :placetext="\'\'" :val="\'id\'"></gl-multiselect>\
+                            <gl-multiselect :display="\'To:\'" :form="forms.msgForm" :name="\'to\'" :input.sync="forms.msgForm.to" :multiple="true" :items="contacts" :placetext="\'\'" :val="\'id\'"></gl-multiselect>\
                         </div>\
                         <div class="col-lg-8">\
                                               <gl-text :display="\'Subject:\'" \
@@ -72683,7 +72744,7 @@ Vue.component('gradlead-inbox-compose', {
                                               </gl-text>\
                         </div>\
                         <div class="col-sm-6">\
-                                <gl-textarea :required="true" :id="\'msg-container\'" :display="\'Message:\'" :form="forms.msgForm" :name="\'message\'" :placeholder="\'Your message\'" :input.sync="forms.msgForm.message"></gl-textarea>\
+                                <gl-textarea :required="true" :id="cl" :display="\'Message:\'" :form="forms.msgForm" :name="\'message\'" :placeholder="\'Your message\'" :input.sync="forms.msgForm.message"></gl-textarea>\
                         </div>\
                         <div class="col-sm-2">\
                                  <gl-select :display="\'Templates:\'" \
@@ -72721,11 +72782,16 @@ Vue.component('gradlead-inbox-compose', {
     mounted: function mounted() {
         this.setupListeners();
         this.forms.msgForm.from = this.user.id;
+        this.hs = typeof this.showheader == 'undefined' ? true : this.showheader;
+        this.setup(this.user);
     },
 
     computed: {},
 
     watch: {
+        'to': function to(v) {
+            this.setTo(v);
+        },
         'forms.msgForm.tpl': function formsMsgFormTpl(v) {
             this.forms.msgForm.message = v;
         }
@@ -72738,6 +72804,8 @@ Vue.component('gradlead-inbox-compose', {
             baseUrl: '/',
             contacts: [],
             templates: [],
+            hs: false,
+            cl: this.makeid() + '-msg-container',
 
             forms: {
                 msgForm: new SparkForm({
@@ -72752,6 +72820,31 @@ Vue.component('gradlead-inbox-compose', {
     },
 
     methods: {
+        setup: function setup(u) {
+            this.setContacts(u.contacts);
+            this.setTemplates(u.templates);
+            this.setTo(this.to);
+        },
+
+        makeid: function makeid() {
+            var text = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            for (var i = 0; i < 5; i++) {
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+            }
+            return text;
+        },
+
+        setTo: function setTo(u) {
+            if (typeof u != 'undefined') {
+                var vals = '';
+                $.each(u, function (i, c) {
+                    vals += (vals != '' ? ',' : '') + c.id;
+                });
+                this.forms.msgForm.to = vals;
+            }
+        },
+
         setContacts: function setContacts(cs) {
             var self = this;
             self.contacts = [];
@@ -72808,8 +72901,7 @@ Vue.component('gradlead-inbox-compose', {
                         u = users[i];
                     }
                 }
-                self.setContacts(u.contacts);
-                self.setTemplates(u.templates);
+                self.setup(u);
             });
         }
     },

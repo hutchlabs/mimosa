@@ -37,6 +37,11 @@ class Controller extends BaseController
         return $this->json_response('ok');
     }
     
+    protected function error($msg, $code=404)
+    {
+        return $this->json_response($msg,true,$code);
+    }
+    
     protected function json_response($val, $error=false, $code=200)
     {
         if ($error) {

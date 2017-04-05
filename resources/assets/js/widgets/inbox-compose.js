@@ -1,11 +1,11 @@
 var _moment = require('moment');
 
 Vue.component('gradlead-inbox-compose', {
-    props: ['user'],
+    props: ['to','user','showheader'],
 
     template: '<div>\
     			<!-- header -->\
-                  <div class="wrapper bg-light lter b-b">\
+                  <div v-show="hs" class="wrapper bg-light lter b-b">\
                     <div class="btn-group m-r-sm">\
                       <a @click.prevent="goback()" class="btn btn-sm btn-default w-xxs w-auto-xs"\
                         tooltip="go back"><i class="fa fa-long-arrow-left"></i></a>\
@@ -16,7 +16,7 @@ Vue.component('gradlead-inbox-compose', {
                     <gl-error-alert :form="forms.msgForm"></gl-error-alert>\
                     <form class="form-horizontal m-t-lg" role="form">\
                         <div class="col-lg-8">\
-                            <gl-multiselect :display="\'To:\'" :form="forms.msgForm" :name="\'to\'" :input="forms.msgForm.to" :multiple="true" :items="contacts" :placetext="\'\'" :val="\'id\'"></gl-multiselect>\
+                            <gl-multiselect :display="\'To:\'" :form="forms.msgForm" :name="\'to\'" :input.sync="forms.msgForm.to" :multiple="true" :items="contacts" :placetext="\'\'" :val="\'id\'"></gl-multiselect>\
                         </div>\
                         <div class="col-lg-8">\
                                               <gl-text :display="\'Subject:\'" \
@@ -28,7 +28,7 @@ Vue.component('gradlead-inbox-compose', {
                                               </gl-text>\
                         </div>\
                         <div class="col-sm-6">\
-                                <gl-textarea :required="true" :id="\'msg-container\'" :display="\'Message:\'" :form="forms.msgForm" :name="\'message\'" :placeholder="\'Your message\'" :input.sync="forms.msgForm.message"></gl-textarea>\
+                                <gl-textarea :required="true" :id="cl" :display="\'Message:\'" :form="forms.msgForm" :name="\'message\'" :placeholder="\'Your message\'" :input.sync="forms.msgForm.message"></gl-textarea>\
                         </div>\
                         <div class="col-sm-2">\
                                  <gl-select :display="\'Templates:\'" \
@@ -66,12 +66,15 @@ Vue.component('gradlead-inbox-compose', {
     mounted: function () {
         this.setupListeners();
         this.forms.msgForm.from = this.user.id;
+        this.hs = (typeof this.showheader=='undefined') ? true : this.showheader;
+        this.setup(this.user);
     },
 
     computed: {
     },
 
     watch: { 
+        'to': function(v) { this.setTo(v); },
         'forms.msgForm.tpl': function(v) { this.forms.msgForm.message = v; },
     },
 
@@ -82,6 +85,8 @@ Vue.component('gradlead-inbox-compose', {
             baseUrl: '/',
             contacts: [],
             templates: [],
+            hs: false,
+            cl: this.makeid()+'-msg-container',
 
             forms: {
                 msgForm: new SparkForm ({
@@ -96,12 +101,33 @@ Vue.component('gradlead-inbox-compose', {
     },
 
     methods: {
+        setup: function(u) {
+              this.setContacts(u.contacts);
+              this.setTemplates(u.templates);
+              this.setTo(this.to);
+        },
+        
+       makeid: function() {
+    		var text = "";
+    		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    		for( var i=0; i < 5; i++ ) {
+        		text += possible.charAt(Math.floor(Math.random() * possible.length));
+			}
+    		return text;
+		},
+       
+        setTo: function(u) {
+            if (typeof u != 'undefined') {
+                 var vals = '';       
+                 $.each(u, function(i, c) { vals += ((vals!='') ?',' : '')+c.id; });
+                 this.forms.msgForm.to = vals; 
+            }
+        },
+
 		setContacts: function(cs) {
             var self = this;
 			self.contacts = [];		
-            $.each(cs, function(i, c) {
-               self.contacts.push({'name':c.text, 'id':c.value}); 
-            });
+            $.each(cs, function(i, c) { self.contacts.push({'name':c.text, 'id':c.value}); });
 		},
 
 		setTemplates: function(ts) {
@@ -147,8 +173,7 @@ Vue.component('gradlead-inbox-compose', {
                 for (var i = 0; i < users.length; i++) {
                     if (u.id == users[i].id) { u = users[i]; }
                 }
-                self.setContacts(u.contacts);
-                self.setTemplates(u.templates);
+                self.setup(u);
             });
         },
     },

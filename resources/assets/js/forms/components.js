@@ -310,7 +310,7 @@ Vue.component('gl-multiselect', {
     watch: {
         'items': function(v) { this.fieldValue = this.getValuesAsArray(this.input);},
         'fieldModel': function (v) { this.form[this.name] = this.getValuesAsString(this.fieldModel); },
-        //'input': function(v) {  this.fieldValue = this.getValuesAsArray(v); }
+        'input': function(v) {  if (v!=null) { this.fieldValue = this.getValuesAsArray(v);} }
     },
     mounted: function () {
         this.fieldValue = this.getValuesAsArray(this.input);
@@ -320,7 +320,7 @@ Vue.component('gl-multiselect', {
         getValuesAsArray: function (value) {
             var self = this;
             var vals = (typeof value == 'undefined' || value==null || value=='') ? [] : value.split(',');
-            $.each(vals, function(i, v) {  vals[i] = {id:v, name:v}});
+            $.each(vals, function(i, v) {  vals[i] = {id:v, name:self.getValueLabel(v)}});
             return vals;
         },
 
@@ -332,6 +332,13 @@ Vue.component('gl-multiselect', {
                 for (var i = 0; i < nw.length; i++) { vals += nw[i].id + ((i < nw.length - 1) ? ',' : ''); }
             }
             return vals;
+        },
+        getValueLabel: function(key) {
+            var name = key;
+            $.each(this.items, function(i, x) {
+                if (x.id==key) { name = x.name; }
+            });
+            return name;
         },
     },
     data: function () {

@@ -70,6 +70,7 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->post('users/badge',                       'UserController@merit');
         $router->post('users/bookmark',                    'UserController@bookmark');
         $router->post('users/inbox',                       'UserController@msgStore');
+        $router->post('users/resumebook',                  'UserController@getResumeBook');
         $router->post('users/message/contacts',            'UserController@msgAddContact');
         $router->post('users/message/templates',           'UserController@msgAddTemplate');
 

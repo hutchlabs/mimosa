@@ -8,14 +8,14 @@
 
             <div class="modal-body">
 
-                <spark-error-alert :form="forms.updateUser"></spark-error-alert>
+                <gl-error-alert :form="forms.updateUser"></gl-error-alert>
 
                 <!-- Update Form -->
                 <form class="form-horizontal" role="form">
                     <div class="row">
                         <div class="col-md-12">
-                            <spark-select v-if="usertype.isGradlead" :display="'Organization*'" :form="forms.updateUser" :name="'organization_id'" :items="orgsOptions" :input.sync="forms.updateUser.organization_id">
-                            </spark-select>
+                            <gl-select v-if="usertype.isGradlead" :display="'Organization*'" :form="forms.updateUser" :name="'organization_id'" :items="orgsOptions" :input.sync="forms.updateUser.organization_id">
+                            </gl-select>
 
 
                             <gl-select :display="'Type*'" :form="forms.updateUser" :name="'type'" :items="getTypeOptions()" :input.sync="forms.updateUser.type">
