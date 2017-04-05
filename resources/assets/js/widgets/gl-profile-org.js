@@ -1,6 +1,6 @@
 Vue.component('gl-view-profile-org', {
 
-    props: ['organization', 'authUser', 'usertype', 'permissions','jobtypes','industries'],
+    props: ['organization', 'authUser', 'usertype', 'permissions','jobtypes','industries','canupdate'],
 
     template: '<div class="hbox hbox-auto-xs no-border">\
                 <div class="col wrapper">\
@@ -53,7 +53,7 @@ Vue.component('gl-view-profile-org', {
                             </div>\
                         </div>\
                     </form>\
-                    <div class="footer">\
+                    <div v-if="updatable" class="footer">\
                         <button v-if="isSchool" type="button" class="btn btn-primary pull-right" @click.prevent="updateSchoolProfile" :disabled="forms.updateProfile.busy">\
                             <span v-if="forms.updateProfile.busy"><i class="fa fa-btn fa-spinner fa-spin"></i> Updating</span>\
                             <span v-else> <i class="fa fa-btn fa-save"></i> Update </span>\
@@ -71,6 +71,7 @@ Vue.component('gl-view-profile-org', {
         this.idLoc = this.makeid(); 
         this.jtList = this.jobtypes;
         this.jpList = this.industries;
+        this.updatable = (typeof this.canupdate == 'undefined') ? true : this.canupdate;
         this.boot();
     },
 
@@ -85,6 +86,8 @@ Vue.component('gl-view-profile-org', {
             idLoc: this.makeid(), 
 
             jtList: [], jpList: [],
+
+            updatable: true,
 
  			forms: {
                 updateProfile: new SparkForm({

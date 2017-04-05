@@ -8,6 +8,7 @@ use App\User;
 use App\Events\UserCreated;
 use App\Gradlead\Organization;
 use App\Gradlead\Permission;
+use App\Gradlead\Affiliation;
 use Illuminate\Support\Facades\Hash;
 
 class OrganizationController extends Controller
@@ -91,7 +92,7 @@ class OrganizationController extends Controller
         }
     }
     
-    public function addAffiliate(Request $request)
+    public function storeAffiliate(Request $request)
     {
         $user = $request->user();
 
@@ -102,15 +103,20 @@ class OrganizationController extends Controller
                                   ]
                                 );
 
+        $i = new Affiliation();
+      
+
         if ($request->type=='school') {
-            $this->schools()->attach($request->org_id, ['organization_id'=>$request->affiliate_id, 
-                                                        'modified_by' => $user->id, 
-                                                        'approved'=>0]);
+              $i->organization_id = $request->affiliate_id;
+              $i->employer_id = $request->org_id;
+              $i->approved = 0;
         } else {
-           $this->recruiters()->attach($request->org_id, ['employer_id'=>$request->affiliate_id, 
-                                                          'modified_by' => $user->id, 
-                                                          'approved'=>1]);
+              $i->organization_id = $request->org_id;
+              $i->employer_id = $request->affiliate_id;
+              $i->approved = 1;
         }
+        $i->modified_by = $user->id;
+        $i->save();
 
         $o = Organization::find($request->org_id);
         
@@ -156,10 +162,30 @@ class OrganizationController extends Controller
             $this->json_report(['Cannot find organization'], true);
         } else {
             if ($user->organization->type=='school') {
-                $i->removeAffiliationFrom($user->organization->id);    
+                $i->removeAffiliationFromSchool($user->organization->id);
+            } else if ($user->organization->type=='employer'){
+                $i->removeAffiliationFromEmployer($user->organization->id);    
             } else {
                 $i->cleanUp();
                 $i->delete();
+            }
+            return $this->ok();
+        }
+    }
+    
+    public function destroyAffiliate(Request $request, $orgId)
+    {
+        $user = $request->user();
+        
+        $i = Organization::find($affId);
+        
+        if (is_null($i)) {
+            $this->json_report(['Cannot find organization'], true);
+        } else {
+            if ($user->organization->type=='school') {
+                $i->removeAffiliationFromSchool($user->organization->id);    
+            } else {
+                $i->removeAffiliationFromEmployer($user->organization->id);    
             }
             return $this->ok();
         }

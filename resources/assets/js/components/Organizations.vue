@@ -2,9 +2,6 @@ Vue.component('gradlead-orgs-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
 
-    
-    // TODO: handle approval
-
     mounted: function() {
         this.setupListeners();
     },
@@ -20,6 +17,7 @@ Vue.component('gradlead-orgs-screen', {
 
             jtList: [],
             jpList: [],
+            empOptions: [],
             
             profilingOrganization: {'name':'none'},
             editingOrganization: {'name':'none'},
@@ -32,6 +30,12 @@ Vue.component('gradlead-orgs-screen', {
                     first: '',
                     last: '',
                     email: '',
+                }),
+
+                addAffiliate: new SparkForm ({
+                    org_id: '',
+                    affiliate_id: '',
+                    type: 'recruiter',
                 }),
 
                 updateOrganization: new SparkForm ({
@@ -66,6 +70,13 @@ Vue.component('gradlead-orgs-screen', {
             this.forms.addOrganization.errors.forget();
             $('#modal-add-'+type+'-org').modal('show');
         },
+        addPartnerOrganization: function (type) {
+            this.forms.addAffiliate.org_id = this.authUser.organization.id;
+            this.forms.addAffiliate.affiliate_id = '';
+            this.forms.addAffiliate.type = (type=='employer') ? 'recruiter': 'school';
+            this.forms.addAffiliate.errors.forget();
+            $('#modal-add-p'+type+'-org').modal('show');
+        },
         editOrganization: function (org) {
             this.editingOrganization = org;
             this.forms.updateOrganization.name = org.name;
@@ -77,6 +88,10 @@ Vue.component('gradlead-orgs-screen', {
         viewProfile: function(org) {
             this.profilingOrganization = org;
             $('#modal-'+org.type+'-view-profile').modal('show');
+        },
+        viewPEProfile: function(org) {
+            this.profilingOrganization = org;
+            $('#modal-p'+org.type+'-view-profile').modal('show');
         },
 
         removingOrganization: function(id) { return (this.removingOrganizationId == id); },
@@ -93,18 +108,25 @@ Vue.component('gradlead-orgs-screen', {
             Spark.post(self.baseUrl+'organizations', this.forms.addOrganization)
                 .then(function () {
                     $('#modal-add-'+type+'-org').modal('hide');
-                    self.showSuccess({message: 'Organization added'});
                     bus.$emit('updateOrganizations');
                 }, function(resp) {
                     self.forms.addOrganization.busy = false;
-                    self.showError({'message': resp[0]});
+                });
+        },
+        addAffiliate: function (type) {
+            var self = this;
+            Spark.post(self.baseUrl+'organizations/affiliate', this.forms.addAffiliate)
+                .then(function () {
+                    bus.$emit('updateOrganizations');
+                    $('#modal-add-p'+type+'-org').modal('hide');
+                }, function(resp) {
+                    self.forms.addAffiliate.busy = false;
                 });
         },
         updateOrganization: function (type) {
             var self = this;
             Spark.put(self.baseUrl+'organizations/' + this.editingOrganization.id, this.forms.updateOrganization)
                 .then(function () {
-                    self.showSuccess({message: 'Organization updated'});
                     bus.$emit('updateOrganizations');
                     $('#modal-edit-'+type+'-org').modal('hide');
                 });
@@ -120,7 +142,6 @@ Vue.component('gradlead-orgs-screen', {
                     bus.$emit('updateOrganizations');
                 }, function(resp) {
                     self.removingOrganizationId = 0;
-                    self.showError({'message': resp[0]});
                 });
         },
 
@@ -137,7 +158,12 @@ Vue.component('gradlead-orgs-screen', {
                 self.schools = orgs[2];
 
                 self.employers = [];
+                self.empOptions = [];
                 $.each(orgs[1], function (idx, emp) {
+                       if (!self.isInArray(self.authUser.organization_id, emp.schools)) {
+                           self.empOptions.push({text:emp.name, value:emp.id});
+                       }
+
                        if (self.authUser.organization.id==1) { self.employers.push(emp) }
                        else if (self.isInArray(self.authUser.organization_id, emp.schools)) {
                            self.employers.push(emp);

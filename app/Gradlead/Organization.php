@@ -10,6 +10,7 @@ use App\Gradlead\Contract;
 use App\Gradlead\Theme;
 use App\Gradlead\Template;
 use App\Gradlead\ProfileCompany;
+use App\Gradlead\Affiliation;
 
 class Organization extends Model
 {
@@ -235,7 +236,7 @@ class Organization extends Model
         return false;
     }
     
-    public function removeAffiliationFrom($schoolId)
+    public function removeAffiliationFromSchool($schoolId)
     {
         $i = DB::table('organizations_employers')
                 ->select(DB::raw('id'))
@@ -243,6 +244,23 @@ class Organization extends Model
                 ->where('employer_id',$this->id)->first();
         
         if (!is_null($i)) {
+            $i = Affiliation::find($i->id);
+            $i->delete();
+            return true;
+        }
+        return false;
+    }
+    
+      
+    public function removeAffiliationFromEmployer($empId)
+    {
+        $i = DB::table('organizations_employers')
+                ->select(DB::raw('id'))
+                ->where('organization_id',$this->id)
+                ->where('employer_id',$empId)->first();
+        
+        if (!is_null($i)) {
+            $i = Affiliation::find($i->id);
             $i->delete();
             return true;
         }

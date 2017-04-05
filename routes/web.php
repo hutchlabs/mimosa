@@ -91,13 +91,14 @@ Route::group(['middleware' => 'web'], function ($router) {
 
 
         // Organizations
-        $router->get('organizations',                       'OrganizationController@index');
-        $router->get('organizations/featured',              'OrganizationController@featured');
-        $router->post('organizations',                      'OrganizationController@store');
-        $router->post('organizations/addaffiliate',         'OrganizationController@storeAffiliate');
-        $router->put('organizations/updateapproval/{id}',   'OrganizationController@updateAffiliateApproval');
-        $router->put('organizations/{id}',                  'OrganizationController@update');
-        $router->delete('organizations/{id}',               'OrganizationController@destroy');
+        $router->get('organizations',                         'OrganizationController@index');
+        $router->get('organizations/featured',                'OrganizationController@featured');
+        $router->post('organizations',                        'OrganizationController@store');
+        $router->post('organizations/affiliate',              'OrganizationController@storeAffiliate');
+        $router->put('organizations/updateapproval/{id}',     'OrganizationController@updateAffiliateApproval');
+        $router->put('organizations/{id}',                    'OrganizationController@update');
+        $router->delete('organizations/{id}',                 'OrganizationController@destroy');
+        $router->delete('organizations/affiliate/{id}',       'OrganizationController@destroyAffiliate');
 
 
         // Profiles
