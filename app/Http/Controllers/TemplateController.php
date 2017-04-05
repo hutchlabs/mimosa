@@ -33,12 +33,16 @@ class TemplateController extends Controller
         $user = $request->user();
 
         $this->validate($request, [
-           'name' => 'required|max:255', 'template' => 'required', ]
+           'name' => 'required|max:255', 'type'=>'required', 'template' => 'required', ]
         );
 
         $i = new Template();
         $i->name = $request->name;
+        $i->type = $request->type;
+        $i->description = $request->description;
         $i->template = $request->template;
+        $i->system = 0;
+        $i->modified_by = $user->id;
         $i->save();
 
         return $this->json_response($i);
@@ -50,6 +54,7 @@ class TemplateController extends Controller
 
         $this->validate($request, [
            'name' => 'required|max:255',
+           'type' => 'required|max:255',
            'template' => 'max:255',
           ]
         );
@@ -61,10 +66,23 @@ class TemplateController extends Controller
         }
         
         $i->name = $request->name;
+        $i->type = $request->type;
+        $i->description = $request->description;
         $i->template = $request->template;
         $i->modified_by = $user->id;
         $i->save();
 
         return $this->json_response($i);
+    }
+    
+    public function destroy(Request $request, $itemId)
+    {
+        $i = Template::find($itemId);
+        if (is_null($i)) {
+            $this->json_report(['Cannot find template'], true);
+        } else {
+            $i->delete();
+            return $this->ok();
+        }
     }
 }

@@ -15,7 +15,7 @@ Vue.component('gradlead-themes-screen', {
                 updateTheme: new SparkForm ({
                     id: '',
 					home_header: '',
-           			schools_header: '',
+           			partners_header: '',
 		           	contact_header: '',
 		           	home_first_title: '',
 		           	home_second_title: '',
@@ -23,12 +23,12 @@ Vue.component('gradlead-themes-screen', {
 		           	home_first: '',
 		           	home_second: '',
 		           	home_third: '',
-                    schools_first_title: '',
-		           	schools_second_title: '',
-		           	schools_third_title: '',
-		           	schools_first: '',
-		           	schools_second: '',
-		           	schools_third: '',
+                    partners_first_title: '',
+		           	partners_second_title: '',
+		           	partners_third_title: '',
+		           	partners_first: '',
+		           	partners_second: '',
+		           	partners_third: '',
                     contact_first_title: '',
 		            contact_second_title: '',
 		           	contact_third_title: '',
@@ -36,7 +36,7 @@ Vue.component('gradlead-themes-screen', {
 		           	contact_second: '',
 		           	contact_third: '',
 		           	home_hero: '',
-		           	schools_hero: '',
+		           	partners_hero: '',
 		           	contact_hero: '',
                 }),
             }
@@ -72,7 +72,7 @@ Vue.component('gradlead-themes-screen', {
                     self.theme = resp.data.data[0];
 					self.forms.updateTheme.id = self.theme.id;
 					self.forms.updateTheme.home_header = self.theme.home_header;
-					self.forms.updateTheme.schools_header = self.theme.schools_header;
+					self.forms.updateTheme.partners_header = self.theme.partners_header;
 					self.forms.updateTheme.contact_header = self.theme.contact_header;
 					self.forms.updateTheme.home_first_title = self.theme.home_first_title;
 					self.forms.updateTheme.home_second_title = self.theme.home_second_title;
@@ -81,12 +81,12 @@ Vue.component('gradlead-themes-screen', {
 					self.forms.updateTheme.home_second = self.theme.home_second;
 					self.forms.updateTheme.home_third = self.theme.home_third;
                     
-                    self.forms.updateTheme.schools_first_title = self.theme.schools_first_title;
-					self.forms.updateTheme.schools_second_title = self.theme.schools_second_title;
-					self.forms.updateTheme.schools_third_title = self.theme.schools_third_title;
-					self.forms.updateTheme.schools_first = self.theme.schools_first;
-					self.forms.updateTheme.schools_second = self.theme.schools_second;
-					self.forms.updateTheme.schools_third = self.theme.schools_third;
+                    self.forms.updateTheme.partners_first_title = self.theme.partners_first_title;
+					self.forms.updateTheme.partners_second_title = self.theme.partners_second_title;
+					self.forms.updateTheme.partners_third_title = self.theme.partners_third_title;
+					self.forms.updateTheme.partners_first = self.theme.partners_first;
+					self.forms.updateTheme.partners_second = self.theme.partners_second;
+					self.forms.updateTheme.partners_third = self.theme.partners_third;
                 
                     self.forms.updateTheme.contact_first_title = self.theme.contact_first_title;
 					self.forms.updateTheme.contact_second_title = self.theme.contact_second_title;
@@ -96,7 +96,7 @@ Vue.component('gradlead-themes-screen', {
 					self.forms.updateTheme.contact_third = self.theme.contact_third;
                 
 					self.forms.updateTheme.home_hero = self.theme.home_hero;
-					self.forms.updateTheme.schools_hero = self.theme.schools_hero;
+					self.forms.updateTheme.partners_hero = self.theme.partners_hero;
 					self.forms.updateTheme.contact_hero = self.theme.contact_hero;
              });
 		},

@@ -402,6 +402,34 @@ Vue.component('gl-password', {
     },
 });
 
+Vue.component('gl-text2', {
+    props: ['display', 'form', 'name', 'input'],
+
+    template: '<div class="form-group" :class="{\'has-error\': form.errors.has(name)}">\
+    <label class="control-label">{{ display }}</label>\
+        <input type="text" class="form-control spark-first-field" v-model="fieldValue">\
+        <span class="help-block" v-show="form.errors.has(name)">\
+            <small>{{ form.errors.get(name) }}</small>\
+        </span>\
+</div>',
+
+    watch: {
+        'fieldValue': function (v) {
+            this.form[this.name] = v;
+        },
+        'input': function (v) {
+            this.fieldValue = this.input;
+        }
+    },
+    mounted: function () {
+        this.fieldValue = this.input;
+    },
+    data: function () {
+        return {
+            fieldValue: ''
+        }
+    }
+});
 Vue.component('gl-text', {
     props: ['display', 'form', 'name', 'input','maxlength','minlength','placeholder','required'],
 

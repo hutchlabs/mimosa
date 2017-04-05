@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
+use App\Events\UserCreated;
+
 use App\User;
 use App\Gradlead\Achievement;
 use App\Gradlead\Address;
@@ -391,7 +393,6 @@ class UserController extends Controller
         $this->validate($request, ['email' => 'required|email|unique:users,email',
                                    'first' => 'required|max:255',
                                    'last' => 'required|max:255',
-                                   'password'=> 'required|min:6',
                                    'role_id' => 'required|exists:system_roles,id',
                                    'organization_id' => 'required|exists:organizations,id',
                                    'type' => 'required|in:employer,gradlead,graduate,school,student',
@@ -403,7 +404,7 @@ class UserController extends Controller
         $u->first = $request->first;
         $u->last = $request->last;  
         $u->email = $request->email;
-        $u->password = Hash::make($request->password);
+        $u->password = Hash::make(substr(md5($request->last.$request->first),3,6));
         $u->uuid = md5($request->user_id.time());
         $u->organization_id = $request->organization_id;
         $u->role_id = $request->role_id;
@@ -411,14 +412,9 @@ class UserController extends Controller
         $u->modified_by = $user->id;
         $u->save();
 
-        //if ($u->isStudent()) {
-        $p = new Profile();
-        $p->user_id = $u->id;
-        $p->modified_by = 1;
-        $p->save();
-        //}
+        event(new UserCreated($u));
 
-        $u = User::find($u->id); // add profile
+        $u = User::find($u->id);
 
         return $this->json_response($u);
     }
@@ -431,7 +427,7 @@ class UserController extends Controller
         $this->validate($request, [
                                    'email' => 'required|email|unique:users,email,'.$u->id,
                                    'first' => 'required|max:255',
-                                    'last' => 'required|max:255',
+                                   'last' => 'required|max:255',
                                    'uuid' => 'required|max:255|unique:users,uuid,'.$u->id,
                                    'role_id' => 'required|exists:system_roles,id',
                                    'organization_id' => 'required|exists:organizations,id',

@@ -115,7 +115,10 @@ class User extends Authenticatable
     protected function getTemplatesAttribute()
     {
         $templates = [];
-        $x = DB::table('mailing_templates')->select(DB::raw('*'))->where('organization_id',$this->organization_id)->get();
+        $x = DB::table('templates')->select(DB::raw('*'))
+            ->where('organization_id',$this->organization_id)
+            ->where('type','Email')
+            ->get();
         foreach($x as $t) { 
             array_push($templates, ['text'=>$t->name,
                                     'id'=>$t->id,

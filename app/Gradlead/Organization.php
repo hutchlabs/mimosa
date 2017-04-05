@@ -40,7 +40,7 @@ class Organization extends Model
         $request =  DB::table('themes')->select(DB::raw('*'))->where('organization_id',1)->first(); 
         $i = new Theme();
         $i->home_header = $request->home_header;
-        $i->schools_header = $request->schools_header;
+        $i->partners_header = $request->partners_header;
         $i->contact_header = $request->contact_header;
         $i->home_first_title = $request->home_first_title;
         $i->home_second_title = $request->home_second_title;
@@ -48,11 +48,11 @@ class Organization extends Model
         $i->home_first = $request->home_first;
         $i->home_second = $request->home_second;
         $i->home_third = $request->home_third;
-        $i->schools_first_title = $request->schools_first_title;
-        $i->schools_second_title = $request->schools_second_title;
-        $i->schools_third_title = $request->schools_third_title;
-        $i->schools_first = $request->schools_first;
-        $i->schools_second = $request->schools_second;
+        $i->partners_first_title = $request->partners_first_title;
+        $i->partners_second_title = $request->partners_second_title;
+        $i->partners_third_title = $request->partners_third_title;
+        $i->partners_first = $request->partners_first;
+        $i->partners_second = $request->partners_second;
         $i->contact_first_title = $request->contact_first_title;
         $i->contact_second_title = $request->contact_second_title;
         $i->contact_third_title = $request->contact_third_title;
@@ -60,7 +60,7 @@ class Organization extends Model
         $i->contact_second = $request->contact_second;
         $i->contact_third = $request->contact_third;
         $i->home_hero = $request->home_hero;
-        $i->schools_hero = $request->schools_hero;
+        $i->partners_hero = $request->partners_hero;
         $i->contact_hero = $request->contact_hero;
         $i->organization_id = $this->id;
         $i->modified_by = 1;
@@ -82,13 +82,14 @@ class Organization extends Model
               $i = new Template();
               $i->organization_id = $this->id;
               $i->name = $def->name;
+              $i->type = $def->type;
+              $i->description = $def->description;
               $i->template = $def->template;
               $i->system = $def->system;
               $i->modified_by = 1;
               $i->save();
               $tpls[strtolower(preg_replace('/ /','_',$i->name))] = $i;
             }
-        //} elseif (sizeof($tpls)!=sizeof($defs)) {  
         } else {
             foreach($tpls as $key => $tp) {
                 $tpls[strtolower(preg_replace('/ /','_',$tp->name))] = $tp;

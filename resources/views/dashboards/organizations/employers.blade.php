@@ -82,7 +82,8 @@
   
   </div>
   <!-- / main -->
-          @include('dashboards.organizations.employers-add') @include('dashboards.organizations.employers-edit')
+        @include('dashboards.organizations.employers-add') 
+        @include('dashboards.organizations.employers-edit')
         @include('dashboards.organizations.employers-profile-view')
 </div>
         

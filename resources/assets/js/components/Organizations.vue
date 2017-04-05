@@ -2,7 +2,6 @@ Vue.component('gradlead-orgs-screen', {
 
     props: ['authUser', 'usertype', 'permissions'],
 
-    notifications: { },
     
     // TODO: handle approval
 
@@ -30,6 +29,9 @@ Vue.component('gradlead-orgs-screen', {
                 addOrganization: new SparkForm ({
                     name: '',
                     type: '',
+                    first: '',
+                    last: '',
+                    email: '',
                 }),
 
                 updateOrganization: new SparkForm ({
@@ -38,6 +40,11 @@ Vue.component('gradlead-orgs-screen', {
                 }),
             }
         };
+    },
+
+    notifications: {
+      //showError: { title: 'Error', message: 'Failed to reach server', type: 'error' },
+      //showSuccess: { title: 'Success', message: 'Successfully completed', type: 'success' },
     },
 
     events: {
@@ -52,6 +59,9 @@ Vue.component('gradlead-orgs-screen', {
     methods: {
         addOrganization: function (type) {
             this.forms.addOrganization.name = '';
+            this.forms.addOrganization.first = '';
+            this.forms.addOrganization.last = '';
+            this.forms.addOrganization.email = '';
             this.forms.addOrganization.type = type;
             this.forms.addOrganization.errors.forget();
             $('#modal-add-'+type+'-org').modal('show');

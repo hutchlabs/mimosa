@@ -193,6 +193,7 @@ Route::group(['middleware' => 'web'], function ($router) {
         $router->get('templates/default',          'TemplateController@defaultTheme');
         $router->post('templates',                 'TemplateController@store');
         $router->put('templates/{id}',             'TemplateController@update');
+        $router->delete('templates/{id}',          'TemplateController@destroy');
 
         // System Methods
         $router->get('degrees',                 'SystemController@degrees');

@@ -70,7 +70,6 @@ Vue.component('gradlead-users-screen', {
                     first: '',
                     last: '',
                     email: '',
-                    password: '',
                     type: '',
                     organization_id: '',
                     role_id: '',
@@ -104,7 +103,6 @@ Vue.component('gradlead-users-screen', {
             this.forms.addUser.first = '';
             this.forms.addUser.last = '';
             this.forms.addUser.email = '';
-            this.forms.addUser.password = '';
             this.forms.addUser.role_id = '';
             this.forms.addUser.organization_id = '';
             this.forms.addUser.type = '';

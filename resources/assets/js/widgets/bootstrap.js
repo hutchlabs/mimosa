@@ -27,3 +27,4 @@ require('./profile-preferences');
 require('./profile-student');
 require('./gl-profile-org');
 require('./gl-profile-seeker');
+require('./template');

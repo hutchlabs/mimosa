@@ -8,35 +8,31 @@
 
             <div class="modal-body">
 
-                <spark-error-alert :form="forms.addUser"></spark-error-alert>
+                <gl-error-alert :form="forms.addUser"></gl-error-alert>
 
                 <!-- Add Form -->
                 <form class="form-horizontal" role="form">
                     <div class="row">
                         <div class="col-md-12">
-                            <spark-select :display="'Organization*'" :form="forms.addUser" :name="'organization_id'" :items="orgsOptions" :input="forms.addUser.organization_id">
-                            </spark-select>
+                            <gl-select :display="'Organization*'" :form="forms.addUser" :name="'organization_id'" :items="orgsOptions" :input="forms.addUser.organization_id">
+                            </gl-select>
 
 
-                            <spark-select :display="'Role*'" :form="forms.addUser" :name="'role_id'" :items="roleOptions" :input="forms.addUser.role_id">
-                            </spark-select>
+                            <gl-select :display="'Role*'" :form="forms.addUser" :name="'role_id'" :items="roleOptions" :input="forms.addUser.role_id">
+                            </gl-select>
 
-                            <spark-select :display="'Type*'" :form="forms.addUser" :name="'type'" :items="getTypeOptions()" :input="forms.addUser.type">
-                            </spark-select>
+                            <gl-select :display="'Type*'" :form="forms.addUser" :name="'type'" :items="getTypeOptions()" :input="forms.addUser.type">
+                            </gl-select>
 
 
-                            <spark-text :display="'First Name*'" :form="forms.addUser" :name="'first'" :input="forms.addUser.first">
-                            </spark-text>
+                            <gl-text :required="true" :display="'First Name*'" :form="forms.addUser" :name="'first'" :input="forms.addUser.first">
+                            </gl-text>
 
-                            <spark-text :display="'Last Name*'" :form="forms.addUser" :name="'last'" :input="forms.addUser.last">
-                            </spark-text>
+                            <gl-text :required="true" :display="'Last Name*'" :form="forms.addUser" :name="'last'" :input="forms.addUser.last">
+                            </gl-text>
 
-                            <spark-email :display="'Email*'" :form="forms.addUser" :name="'email'" :input="forms.addUser.email">
-                            </spark-email>
-
-                            <spark-password :display="'Password*'" :form="forms.addUser" :name="'password'" :input="forms.addUser.password">
-                            </spark-password>
-
+                            <gl-email :required="true" :display="'Email*'" :form="forms.addUser" :name="'email'" :input="forms.addUser.email">
+                            </gl-email>
                         </div>
                     </div>
                 </form>

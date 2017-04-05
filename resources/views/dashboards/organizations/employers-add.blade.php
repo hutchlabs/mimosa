@@ -8,15 +8,26 @@
 
             <div class="modal-body">
 
-                <spark-error-alert :form="forms.addOrganization"></spark-error-alert>
+                <gl-error-alert :form="forms.addOrganization"></gl-error-alert>
 
                 <!-- Add Form -->
                 <form class="form-horizontal" role="form">
                     <div class="row">
                         <div class="col-md-12">
 
-                            <spark-text :display="'Name*'" :form="forms.addOrganization" :name="'name'" :input="forms.addOrganization.name">
-                            </spark-text>
+                            <gl-text :display="'Company Name*'" :form="forms.addOrganization" :name="'name'" :input="forms.addOrganization.name">
+                            </gl-text>
+
+                            <h3>Administrator Details</h3>
+
+                            <gl-text :required="true" :display="'First Name*'" :form="forms.addOrganization" :name="'first'" :input="forms.addOrganization.first">
+                            </gl-text>
+
+                            <gl-text :required="true" :display="'Last Name*'" :form="forms.addOrganization" :name="'last'" :input="forms.addOrganization.last">
+                            </gl-text>
+
+                            <gl-email :required="true" :display="'Email*'" :form="forms.addOrganization" :name="'email'" :input="forms.addOrganization.email">
+                            </gl-email>
 
                         </div>
                     </div>

@@ -8,15 +8,15 @@
 
             <div class="modal-body">
 
-                <spark-error-alert :form="forms.updateOrganization"></spark-error-alert>
+                <gl-error-alert :form="forms.updateOrganization"></gl-error-alert>
 
                 <!-- Update Form -->
                 <form class="form-horizontal" role="form">
                     <div class="row">
                         <div class="col-md-12">
                             
-                            <spark-text :display="'Name*'" :form="forms.updateOrganization" :name="'name'" :input.sync="forms.updateOrganization.name">
-                            </spark-text>
+                            <gl-text :display="'Name*'" :form="forms.updateOrganization" :name="'name'" :input.sync="forms.updateOrganization.name">
+                            </gl-text>
 
                         </div>
                     </div>

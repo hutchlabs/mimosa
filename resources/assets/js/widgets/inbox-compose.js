@@ -63,7 +63,6 @@ Vue.component('gradlead-inbox-compose', {
       },
     },
 
-
     mounted: function () {
         this.setupListeners();
         this.forms.msgForm.from = this.user.id;

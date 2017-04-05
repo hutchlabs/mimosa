@@ -16,7 +16,9 @@ class CreateTemplatesTable extends Migration
         Schema::create('templates', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('organization_id');
-            $table->longText('name')->nullable();
+            $table->string('type');
+            $table->string('name');
+            $table->longText('description')->nullable();
             $table->longText('template')->nullable();
             $table->boolean('system')->default(0);
             $table->integer('modified_by')->default(1); // default: super admin

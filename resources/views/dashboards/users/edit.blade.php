@@ -8,36 +8,36 @@
 
             <div class="modal-body">
 
-                <spark-error-alert :form="forms.updateUser"></spark-error-alert>
+                <gl-error-alert :form="forms.updateUser"></gl-error-alert>
 
                 <!-- Update Form -->
                 <form class="form-horizontal" role="form">
                     <div class="row">
                         <div class="col-md-12">
-                            <spark-select :display="'Organization*'" :form="forms.updateUser" :name="'organization_id'" :items="orgsOptions" :input.sync="forms.updateUser.organization_id">
-                            </spark-select>
+                            <gl-select :display="'Organization*'" :form="forms.updateUser" :name="'organization_id'" :items="orgsOptions" :input.sync="forms.updateUser.organization_id">
+                            </gl-select>
 
 
-                            <spark-select :display="'Role*'" :form="forms.updateUser" :name="'role_id'" :items="roleOptions" :input.sync="forms.updateUser.role_id">
-                            </spark-select>
+                            <gl-select :display="'Role*'" :form="forms.updateUser" :name="'role_id'" :items="roleOptions" :input.sync="forms.updateUser.role_id">
+                            </gl-select>
 
-                            <spark-select :display="'Type*'" :form="forms.updateUser" :name="'type'" :items="getTypeOptions()" :input.sync="forms.updateUser.type">
-                            </spark-select>
+                            <gl-select :display="'Type*'" :form="forms.updateUser" :name="'type'" :items="getTypeOptions()" :input.sync="forms.updateUser.type">
+                            </gl-select>
 
 
-                            <spark-text :display="'First Name*'" :form="forms.updateUser" :name="'first'" :input.sync="forms.updateUser.first">
-                            </spark-text>
-                            <spark-text :display="'Last Name*'" :form="forms.updateUser" :name="'last'" :input.sync="forms.updateUser.last">
-                            </spark-text>
+                            <gl-text :required="true" :display="'First Name*'" :form="forms.updateUser" :name="'first'" :input.sync="forms.updateUser.first">
+                            </gl-text>
+                            <gl-text :required="true" :display="'Last Name*'" :form="forms.updateUser" :name="'last'" :input.sync="forms.updateUser.last">
+                            </gl-text>
 
-                            <spark-email :display="'Email*'" :form="forms.updateUser" :name="'email'" :input.sync="forms.updateUser.email">
-                            </spark-email>
+                            <gl-email :display="'Email*'" :form="forms.updateUser" :name="'email'" :input.sync="forms.updateUser.email">
+                            </gl-email>
 
-                            <spark-password :display="'Current Password'" :form="forms.updateUser" :name="'current_password'" :input.sync="forms.updateUser.current_password">
-                            </spark-password>
+                            <gl-password :display="'Current Password'" :form="forms.updateUser" :name="'current_password'" :input.sync="forms.updateUser.current_password">
+                            </gl-password>
 
-                            <spark-password :display="'New Password'" :form="forms.updateUser" :name="'password'" :input.sync="forms.updateUser.password">
-                            </spark-password>
+                            <gl-password :display="'New Password'" :form="forms.updateUser" :name="'password'" :input.sync="forms.updateUser.password">
+                            </gl-password>
 
                         </div>
                     </div>

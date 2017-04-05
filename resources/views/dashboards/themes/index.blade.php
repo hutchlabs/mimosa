@@ -32,7 +32,7 @@
                 </div>
             </div>
 
-            <spark-error-alert :form="forms.updateTheme"></spark-error-alert>
+            <gl-error-alert :form="forms.updateTheme"></gl-error-alert>
 
             <!-- Edit Form -->
             <form class="form-horizontal" role="form">
@@ -48,8 +48,8 @@
                                             <div class="panel-heading">Hero Banner</div>
                                             <div class="panel-body" style="padding: 15px 30px 30px 30px;" style="padding: 10px">
 
-                                                <spark-text2 :display="'Hero Text*'" :form="forms.updateTheme" :name="'home_header'" :input.sync="forms.updateTheme.home_header">
-                                                </spark-text2>
+                                                <gl-text2 :display="'Hero Text*'" :form="forms.updateTheme" :name="'home_header'" :input.sync="forms.updateTheme.home_header">
+                                                </gl-text2>
 
                                             </div>
                                         </div>
@@ -61,8 +61,8 @@
                                         <div class="panel panel-default">
                                             <div class="panel-heading">1st Block</div>
                                             <div class="panel-body" style="padding: 15px 30px 30px 30px;">
-                                                <spark-text2 :display="'Title*'" :form="forms.updateTheme" :name="'home_first_title'" :input.sync="forms.updateTheme.home_first_title">
-                                                </spark-text2>
+                                                <gl-text2 :display="'Title*'" :form="forms.updateTheme" :name="'home_first_title'" :input.sync="forms.updateTheme.home_first_title">
+                                                </gl-text2>
 
                                                 <spark-textarea :display="'Text*'" :form="forms.updateTheme" :name="'home_first'" :input.sync="forms.updateTheme.home_first">
                                                 </spark-textarea>
@@ -74,8 +74,8 @@
                                         <div class="panel panel-default">
                                             <div class="panel-heading">2nd Block</div>
                                             <div class="panel-body" style="padding: 15px 30px 30px 30px;">
-                                                <spark-text2 :display="'Title*'" :form="forms.updateTheme" :name="'home_second_title'" :input.sync="forms.updateTheme.home_second_title">
-                                                </spark-text2>
+                                                <gl-text2 :display="'Title*'" :form="forms.updateTheme" :name="'home_second_title'" :input.sync="forms.updateTheme.home_second_title">
+                                                </gl-text2>
 
                                                 <spark-textarea :display="'Text*'" :form="forms.updateTheme" :name="'home_second'" :input.sync="forms.updateTheme.home_second">
                                                 </spark-textarea>
@@ -87,8 +87,8 @@
                                         <div class="panel panel-default">
                                             <div class="panel-heading">3rd Block</div>
                                             <div class="panel-body" style="padding: 15px 30px 30px 30px;">
-                                                <spark-text2 :display="'Title*'" :form="forms.updateTheme" :name="'home_third_title'" :input.sync="forms.updateTheme.home_third_title">
-                                                </spark-text2>
+                                                <gl-text2 :display="'Title*'" :form="forms.updateTheme" :name="'home_third_title'" :input.sync="forms.updateTheme.home_third_title">
+                                                </gl-text2>
 
                                                 <spark-textarea :display="'Text*'" :form="forms.updateTheme" :name="'home_third'" :input.sync="forms.updateTheme.home_third">
                                                 </spark-textarea>
@@ -115,8 +115,8 @@
                                             <div class="panel-heading">Hero Banner</div>
                                             <div class="panel-body" style="padding: 15px 30px 30px 30px;">
 
-                                                <spark-text2 :display="'Hero Text*'" :form="forms.updateTheme" :name="'partners_header'" :input.sync="forms.updateTheme.partners_header">
-                                                </spark-text2>
+                                                <gl-text2 :display="'Hero Text*'" :form="forms.updateTheme" :name="'partners_header'" :input.sync="forms.updateTheme.partners_header">
+                                                </gl-text2>
 
                                             </div>
                                         </div>
@@ -128,8 +128,8 @@
                                         <div class="panel panel-default">
                                             <div class="panel-heading">1st Block</div>
                                             <div class="panel-body" style="padding: 15px 30px 30px 30px;">
-                                                <spark-text2 :display="'Title*'" :form="forms.updateTheme" :name="'partners_first_title'" :input.sync="forms.updateTheme.partners_first_title">
-                                                </spark-text2>
+                                                <gl-text2 :display="'Title*'" :form="forms.updateTheme" :name="'partners_first_title'" :input.sync="forms.updateTheme.partners_first_title">
+                                                </gl-text2>
 
                                                 <spark-textarea :display="'Text*'" :form="forms.updateTheme" :name="'partners_first'" :input.sync="forms.updateTheme.partners_first">
                                                 </spark-textarea>
@@ -141,8 +141,8 @@
                                         <div class="panel panel-default">
                                             <div class="panel-heading">2nd Block</div>
                                             <div class="panel-body" style="padding: 15px 30px 30px 30px;">
-                                                <spark-text2 :display="'Title*'" :form="forms.updateTheme" :name="'partners_second_title'" :input.sync="forms.updateTheme.partners_second_title">
-                                                </spark-text2>
+                                                <gl-text2 :display="'Title*'" :form="forms.updateTheme" :name="'partners_second_title'" :input.sync="forms.updateTheme.partners_second_title">
+                                                </gl-text2>
 
                                                 <spark-textarea :display="'Text*'" :form="forms.updateTheme" :name="'partners_second'" :input.sync="forms.updateTheme.partners_second">
                                                 </spark-textarea>
@@ -154,8 +154,8 @@
                                         <div class="panel panel-default">
                                             <div class="panel-heading">3rd Block</div>
                                             <div class="panel-body" style="padding: 15px 30px 30px 30px;">
-                                                <spark-text2 :display="'Title*'" :form="forms.updateTheme" :name="'partners_third_title'" :input.sync="forms.updateTheme.partners_third_title">
-                                                </spark-text2>
+                                                <gl-text2 :display="'Title*'" :form="forms.updateTheme" :name="'partners_third_title'" :input.sync="forms.updateTheme.partners_third_title">
+                                                </gl-text2>
 
                                                 <spark-textarea :display="'Text*'" :form="forms.updateTheme" :name="'partners_third'" :input.sync="forms.updateTheme.partners_third">
                                                 </spark-textarea>
@@ -183,8 +183,8 @@
                                             <div class="panel-heading">Hero Banner</div>
                                             <div class="panel-body" style="padding: 15px 30px 30px 30px;">
 
-                                                <spark-text2 :display="'Hero Text*'" :form="forms.updateTheme" :name="'contact_header'" :input.sync="forms.updateTheme.contact_header">
-                                                </spark-text2>
+                                                <gl-text2 :display="'Hero Text*'" :form="forms.updateTheme" :name="'contact_header'" :input.sync="forms.updateTheme.contact_header">
+                                                </gl-text2>
 
                                             </div>
                                         </div>
@@ -196,8 +196,8 @@
                                         <div class="panel panel-default">
                                             <div class="panel-heading">1st Block</div>
                                             <div class="panel-body" style="padding: 15px 30px 30px 30px;">
-                                                <spark-text2 :display="'Title*'" :form="forms.updateTheme" :name="'contact_first_title'" :input.sync="forms.updateTheme.contact_first_title">
-                                                </spark-text2>
+                                                <gl-text2 :display="'Title*'" :form="forms.updateTheme" :name="'contact_first_title'" :input.sync="forms.updateTheme.contact_first_title">
+                                                </gl-text2>
 
                                                 <spark-textarea :display="'Text*'" :form="forms.updateTheme" :name="'contact_first'" :input.sync="forms.updateTheme.contact_first">
                                                 </spark-textarea>
@@ -209,8 +209,8 @@
                                         <div class="panel panel-default">
                                             <div class="panel-heading">2nd Block</div>
                                             <div class="panel-body" style="padding: 15px 30px 30px 30px;">
-                                                <spark-text2 :display="'Title*'" :form="forms.updateTheme" :name="'contact_second_title'" :input.sync="forms.updateTheme.contact_second_title">
-                                                </spark-text2>
+                                                <gl-text2 :display="'Title*'" :form="forms.updateTheme" :name="'contact_second_title'" :input.sync="forms.updateTheme.contact_second_title">
+                                                </gl-text2>
 
                                                 <spark-textarea :display="'Text*'" :form="forms.updateTheme" :name="'contact_second'" :input.sync="forms.updateTheme.contact_second">
                                                 </spark-textarea>
@@ -222,8 +222,8 @@
                                         <div class="panel panel-default">
                                             <div class="panel-heading">3rd Block</div>
                                             <div class="panel-body" style="padding: 15px 30px 30px 30px;">
-                                                <spark-text2 :display="'Title*'" :form="forms.updateTheme" :name="'contact_third_title'" :input.sync="forms.updateTheme.contact_third_title">
-                                                </spark-text2>
+                                                <gl-text2 :display="'Title*'" :form="forms.updateTheme" :name="'contact_third_title'" :input.sync="forms.updateTheme.contact_third_title">
+                                                </gl-text2>
 
                                                 <spark-textarea :display="'Text*'" :form="forms.updateTheme" :name="'contact_third'" :input.sync="forms.updateTheme.contact_third">
                                                 </spark-textarea>
@@ -249,8 +249,6 @@
 
         </div>
     </div>
-    <!-- / Update Theme -->
-    @include('dashboards.themes.edit')
 </div>
 
 </gradlead-themes-screen>

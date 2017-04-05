@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\User;
+use App\Events\UserCreated;
 use App\Gradlead\Organization;
 use App\Gradlead\Permission;
+use Illuminate\Support\Facades\Hash;
 
 class OrganizationController extends Controller
 {
@@ -34,6 +37,9 @@ class OrganizationController extends Controller
         $this->validate($request, [
                                    'name' => 'required|max:255',
                                    'type' => 'required|in:employer,gradlead,school',
+                                   'email' => 'required|email|unique:users,email',
+                                   'first' => 'required|max:255',
+                                   'last' => 'required|max:255',
                                   ]
                                 );
 
@@ -48,15 +54,24 @@ class OrganizationController extends Controller
             $o->modified_by = $user->id;
             $o->save();
         
+            // Add Admin User
+            $u = new User();
+            $u->first = $request->first;
+            $u->last = $request->last;  
+            $u->email = $request->email;
+            $u->password = Hash::make(substr(md5($request->last.$request->first),3,6));
+            $u->uuid = md5($request->first.time());
+            $u->organization_id = $o->id;
+            $u->role_id = 2; // Administrator
+            $u->type = $request->type;
+            $u->modified_by = $user->id;
+            $u->save();
+                 
             // Add permission record
             $acl = new Permission();
             $acl->organization_id = $o->id;
-            if ($request->type=='employer') {
-                $acl->preselect = 1;
-            }
-            if ($request->type=='school') {
-                $acl->events = 1;
-            }
+            if ($request->type=='employer') {  $acl->preselect = 1; }
+            if ($request->type=='school') {  $acl->events = 1; }
             $acl->modified_by = $user->id;
             $acl->save();
             
@@ -66,9 +81,9 @@ class OrganizationController extends Controller
                                                         'modified_by' => $user->id, 
                                                         'approved'=>1]);
             }
-            
-            // TODO: sent invitation to employer
-            
+                
+            event(new UserCreated($u));
+
             return $this->json_response($o);
         
         } else {
